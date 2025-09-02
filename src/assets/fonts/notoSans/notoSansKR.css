@@ -1,0 +1,79 @@
+/*
+Copyright (c) Google & Adobe
+Noto Sans CJK KR
+https://www.google.com/get/noto/
+Licensed under SIL Open Font License (OFL)
+*/
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR Black'), url('./NotoSansCJKkr-Black.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR Bold'), url('./NotoSansCJKkr-Bold.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR DemiLight'), url('./NotoSansCJKkr-DemiLight.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR Regular'), url('./NotoSansCJKkr-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR Light'), url('./NotoSansCJKkr-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR Medium'), url('./NotoSansCJKkr-Medium.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans KR';
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans KR Thin'), url('./NotoSansCJKkr-Thin.otf') format('opentype');
+}
+
+/* 모노 계열 (추가 파일) */
+@font-face {
+    font-family: 'Noto Sans Mono KR';
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans Mono KR Bold'), url('./NotoSansMonoCJKkr-Bold.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Noto Sans Mono KR';
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    src: local('Noto Sans Mono KR Regular'), url('./NotoSansMonoCJKkr-Regular.otf') format('opentype');
+}

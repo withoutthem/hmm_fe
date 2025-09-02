@@ -1,0 +1,53 @@
+#!/bin/sh
+# =====================================================================
+# Husky pre-commit hook (FE 전용 레포)
+# - FE: lint-staged → TS 타입체크 → Jest
+# =====================================================================
+
+. "$(dirname "$0")/husky.sh"
+set -euo pipefail
+
+# --------------------------- Helpers ---------------------------------
+log()   { printf "\033[36m%s\033[0m\n" "$*"; }
+ok()    { printf "✅ \033[32m%s\033[0m\n" "$*"; }
+warn()  { printf "⚠️  \033[33m%s\033[0m\n" "$*"; }
+fail()  { printf "❌ \033[31m%s\033[0m\n" "$*" >&2; exit 1; }
+error() { printf "❌ \033[31m%s\033[0m\n" "$*" >&2; }
+divider(){ printf "\n\033[35m──────────────────────────────────────────────\033[0m\n\n"; }
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$REPO_ROOT"
+
+divider
+log "🚀 Husky pre-commit Hook 시작"
+
+# ------------------------ Step 1: FE lint -----------------------------
+divider
+log "🔧 [Step 1] lint-staged 실행"
+if command -v npx >/dev/null 2>&1; then
+  npx lint-staged || fail "lint-staged 실패 → 커밋 차단"
+else
+  warn "npx가 없어 lint-staged를 건너뜁니다."
+fi
+
+# -------------------- Step 2: FE TypeScript ---------------------------
+divider
+log "🔎 [Step 2] TypeScript 타입체크(frontend)"
+if [ -f "package.json" ]; then
+  npm run typecheck || fail "TypeScript 타입체크 실패 → 커밋 차단"
+else
+  warn "package.json이 없어 타입체크를 건너뜁니다."
+fi
+
+# ----------------------- Step 3: FE Tests -----------------------------
+divider
+log "🧪 [Step 3] Jest 테스트(frontend)"
+if [ -f "package.json" ]; then
+  npm run test || fail "Jest 테스트 실패 → 커밋 차단"
+else
+  warn "package.json이 없어 테스트를 건너뜁니다."
+fi
+
+divider
+ok "🎉🎉🎉 [pre-commit] 모든 검사 통과 🎉🎉🎉"
+divider

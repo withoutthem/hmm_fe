@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# =====================================================================
+# Husky pre-push hook (FE 전용 레포)
+# - FE: build:dev 강제
+# =====================================================================
+
+. "$(dirname "$0")/husky.sh"
+set -euo pipefail
+
+# --------------------------- Helpers ---------------------------------
+CYN='\033[36m'; GRN='\033[32m'; YLW='\033[33m'; RED='\033[31m'; MAG='\033[35m'; NC='\033[0m'
+log()   { printf "${CYN}%s${NC}\n" "$*"; }
+ok()    { printf "✅ ${GRN}%s${NC}\n" "$*"; }
+warn()  { printf "⚠️  ${YLW}%s${NC}\n" "$*"; }
+fail()  { printf "❌ ${RED}%s${NC}\n" "$*" >&2; exit 1; }
+divider(){ printf "\n${MAG}──────────────────────────────────────────────${NC}\n\n"; }
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+cd "$REPO_ROOT"
+
+divider
+log "🚀 pre-push 시작: Frontend 개발 빌드 검증"
+
+# ------------------------ FE: build:dev -------------------------------
+divider
+log "🧱 [Step 1] Frontend 개발 빌드 (build:dev)"
+
+[ -f "package.json" ] || fail "package.json 이 없습니다."
+
+if command -v npm >/dev/null 2>&1; then
+  log "📦 npm ci (없으면 npm i)…"
+  if [ -f "package-lock.json" ]; then
+    npm ci >/dev/null 2>&1 || npm install
+  else
+    npm install
+  fi
+else
+  fail "npm 미설치로 FE 빌드를 수행할 수 없습니다."
+fi
+
+node -e "const p=require('./package.json'); process.exit(p?.scripts?.['build:dev']?0:1)" \
+  || fail "package.json에 scripts.build:dev 가 없습니다."
+
+FE_CMD="npm run build:dev"
+log "🏗 실행: ${FE_CMD}"
+sh -c "${FE_CMD}" || fail "Frontend 개발 빌드 실패 → push 중단"
+
+ok "Frontend 개발 빌드 통과"
+divider
+ok "🎉🎉🎉 [pre-push] FE 모든 빌드 통과(dev) 🎉🎉🎉 → push 진행"
