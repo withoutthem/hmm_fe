@@ -16,7 +16,6 @@ fail()  { printf "❌ ${RED}%s${NC}\n" "$*" >&2; exit 1; }
 divider(){ printf "\n${MAG}──────────────────────────────────────────────${NC}\n\n"; }
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
-cd "$REPO_ROOT"
 
 divider
 log "🚀 pre-push 시작: Frontend 개발 빌드 검증"
@@ -25,21 +24,29 @@ log "🚀 pre-push 시작: Frontend 개발 빌드 검증"
 divider
 log "🧱 [Step 1] Frontend 개발 빌드 (build:dev)"
 
-[ -f "package.json" ] || fail "package.json 이 없습니다."
+# (수정됨) frontend 폴더로 이동하여 작업을 수행합니다.
+cd "$REPO_ROOT/frontend" || fail "frontend 디렉토리를 찾을 수 없습니다."
+
+[ -f "package.json" ] || fail "frontend/package.json 이 없습니다."
 
 if command -v npm >/dev/null 2>&1; then
   log "📦 npm ci (없으면 npm i)…"
   if [ -f "package-lock.json" ]; then
-    npm ci >/dev/null 2>&1 || npm install
+    # npm ci는 출력이 길어질 수 있으므로 백그라운드에서 실행하고 결과만 확인
+    if ! npm ci --prefer-offline --no-audit --progress=false >/dev/null 2>&1; then
+        log "npm ci 실패. npm install로 재시도합니다..."
+        npm install || fail "npm install 실패"
+    fi
   else
-    npm install
+    npm install || fail "npm install 실패"
   fi
 else
   fail "npm 미설치로 FE 빌드를 수행할 수 없습니다."
 fi
 
+# package.json에 build:dev 스크립트가 있는지 확인
 node -e "const p=require('./package.json'); process.exit(p?.scripts?.['build:dev']?0:1)" \
-  || fail "package.json에 scripts.build:dev 가 없습니다."
+  || fail "frontend/package.json에 scripts.build:dev 가 없습니다."
 
 FE_CMD="npm run build:dev"
 log "🏗 실행: ${FE_CMD}"
