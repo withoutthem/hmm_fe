@@ -10,6 +10,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <Box className={'layout'}>
       {/*<Header/>*/}
+      {/* 수정 */}
       <Box component="main">{children}</Box>
       {/*<Footer/>*/}
     </Box>
