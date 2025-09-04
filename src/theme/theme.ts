@@ -180,6 +180,16 @@ const theme = createTheme({
       ],
     },
 
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          width: 'fit-content',
+          height: 'auto',
+          padding: '4px',
+        },
+      },
+    },
+
     MuiTextField: {
       styleOverrides: {
         root: {

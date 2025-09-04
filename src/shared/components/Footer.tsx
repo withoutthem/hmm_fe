@@ -1,50 +1,68 @@
-import { useState } from 'react'
 import { Box, type BoxProps, Button, styled, TextField } from '@mui/material'
-import useUIStore from '@domains/common/ui/store/ui.store'
+import useUIStore, { type ChatMessage } from '@domains/common/ui/store/ui.store'
 
 const Footer = () => {
-  const message = useUIStore((state) => state.message)
-  const setMessage = useUIStore((state) => state.setMessage)
-  const [images, setImages] = useState<File[]>([])
+  const message = useUIStore((s) => s.message)
+  const setMessage = useUIStore((s) => s.setMessage)
+  const images = useUIStore((s) => s.images)
+  const setImages = useUIStore((s) => s.setImages)
+  const messages = useUIStore((s) => s.messages)
+  const setMessages = useUIStore((s) => s.setMessages)
 
-  /** Ctrl + V로 이미지 붙여넣기 핸들러 */
-  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+  // Ctrl + V로 이미지 붙여넣기
+  const onPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
     if (e.clipboardData.files.length > 0) {
       const pastedFiles = Array.from(e.clipboardData.files).filter((file) =>
         file.type.startsWith('image/')
       )
       if (pastedFiles.length > 0) {
-        setImages((prev) => [...prev, ...pastedFiles])
+        setImages([...images, ...pastedFiles]) // 직접 처리
       }
     }
   }
 
-  /** 이미지 삭제 */
-  const handleRemoveImage = (idx: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== idx))
+  // 이미지 삭제
+  const onRemoveImage = (idx: number) => {
+    setImages(images.filter((_, i) => i !== idx)) // 직접 처리
   }
 
-  const handleSend = () => {
-    if (!message.trim() && images.length === 0) return
+  // 보내기버튼 클릭
+  type UserMessage = Extract<ChatMessage, { sender: 'user' }>
 
-    console.log('보낼 메시지:', message)
-    console.log('보낼 이미지:', images)
+  const onMessageSend = () => {
+    const trimmed = message.trim()
+    if (!trimmed && images.length === 0) return
 
-    // TODO: 서버로 메시지와 이미지 업로드 로직 추가
+    const userMsg: UserMessage = {
+      id: Date.now(),
+      sender: 'user',
+      ...(trimmed ? { message: trimmed } : {}), // 값 있을 때만 키 추가
+      ...(images.length ? { images } : {}), // 값 있을 때만 키 추가
+    }
+
+    setMessages([...messages, userMsg])
     setMessage('')
     setImages([])
+  }
+
+  const onMessageKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      onMessageSend()
+    }
   }
 
   return (
     <StyledFooter component={'footer'}>
       <InputContainer>
         <ImgTextField>
+          {/* 붙여넣은 이미지 미리보기 */}
           {images.length > 0 && (
             <ImagePreview>
               {images.map((file, idx) => (
                 <ImagePreviewItem key={idx}>
                   <img src={URL.createObjectURL(file)} alt={`pasted-${idx}`} />
-                  <DeleteButton onClick={() => handleRemoveImage(idx)}>×</DeleteButton>
+                  <DeleteButton onClick={() => onRemoveImage(idx)}>×</DeleteButton>
                 </ImagePreviewItem>
               ))}
             </ImagePreview>
@@ -57,23 +75,16 @@ const Footer = () => {
             placeholder="메시지를 입력하세요..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onPaste={handlePaste}
+            onPaste={onPaste}
             variant="outlined"
             fullWidth
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                handleSend()
-              }
-            }}
+            onKeyDown={onMessageKeyDown}
           />
         </ImgTextField>
 
         {/* 보내기 버튼 */}
-        <StyledButton onClick={handleSend}>보내기</StyledButton>
+        <StyledButton onClick={onMessageSend}>보내기</StyledButton>
       </InputContainer>
-
-      {/* 붙여넣은 이미지 미리보기 */}
     </StyledFooter>
   )
 }
@@ -93,8 +104,8 @@ const StyledFooter = styled(Box)<BoxProps>({
 
 const ImagePreviewItem = styled(Box)({
   position: 'relative',
-  width: '50px',
-  height: '50px',
+  width: '145px',
+  height: '145px',
   borderRadius: '4px',
   overflow: 'hidden',
   border: '1px solid',
@@ -144,6 +155,11 @@ const ImgTextField = styled(Box)({
 const ImagePreview = styled(Box)({
   display: 'flex',
   gap: '8px',
+  width: '100%',
+  height: '145px',
+  overflowY: 'auto',
+  flexWrap: 'wrap',
+  scrollbarWidth: 'thin',
 })
 
 const StyledTextField = styled(TextField)({

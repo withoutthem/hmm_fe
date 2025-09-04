@@ -1,4 +1,4 @@
-import { Box, styled, Typography } from '@mui/material'
+import { Box, IconButton, styled, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked, type RendererObject, type Tokens } from 'marked'
 import { ColumnBox } from '@shared/ui/layoutUtilComponents'
@@ -10,10 +10,12 @@ type WSTestPageProps = {
 
 const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
   const [messages, setMessages] = useState('')
+  const [done, setDone] = useState(false)
   const idxRef = useRef(0)
   const timerRef = useRef<number | null>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
-  // ✅ heading에 id 안 붙게 renderer 수정 (marked v5+)
+  // 단순 태그로 렌더링 커스터마이징
   const renderer = useMemo<RendererObject>(
     () => ({
       heading(token: Tokens.Heading) {
@@ -23,13 +25,13 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
     []
   )
 
-  // ✅ marked 옵션 한 번만 설정
+  // 마크다운을 HTML로 변환
   const parseMd = useMemo(() => {
     marked.use({ gfm: true, breaks: true, renderer })
     return (src: string) => marked.parse(src)
   }, [renderer])
 
-  // ✅ 스트리밍 버퍼 (blockquote / fenced code / list)
+  // 처리되지 않은 블록 요소 버퍼
   const pendingRef = useRef<{ quote?: string; fence?: string; list?: string }>({})
 
   const flushPending = () => {
@@ -40,6 +42,7 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
     return out
   }
 
+  // 토큰 검사 후 버퍼에 쌓거나 바로 렌더링
   const appendToken = (raw: string) => {
     if (raw === '>' || raw === '> ' || /^>\s/.test(raw)) {
       pendingRef.current.quote = (pendingRef.current.quote ?? '') + raw
@@ -55,25 +58,26 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
     }
 
     const lead = flushPending()
-    setMessages((prev) => prev + lead + raw) // ✅ \n도 그대로 쌓음
+    setMessages((prev) => prev + lead + raw)
   }
 
+  // 타자기처럼 찍히는 효과
   useEffect(() => {
     timerRef.current = window.setInterval(() => {
       const i = idxRef.current
       if (i >= tokens.length) {
-        // 남은 버퍼 플러시
         const tail = flushPending()
 
         if (tail) setMessages((prev) => prev + tail)
         if (timerRef.current) window.clearInterval(timerRef.current)
+
+        // 더이상 받아올 메세지가 없음
+        setDone(true)
         return
       }
 
       const chunk = String(tokens[i] ?? '')
-
       idxRef.current = i + 1
-
       appendToken(chunk)
     }, speed)
 
@@ -82,15 +86,32 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
     }
   }, [tokens, speed])
 
+  // HTML 파싱
   const parsedHtml = useMemo(() => parseMd(messages), [messages, parseMd])
+
+  const onCopy = () => {
+    const raw = contentRef.current?.innerText ?? ''
+    const cleaned = raw
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line !== '')
+      .join('\n')
+
+    navigator.clipboard.writeText(cleaned).catch(() => {})
+  }
 
   return (
     <ColumnBox>
       <Typography variant="h6">GenAi</Typography>
       <WSBubble>
         {/*<WSBubbleContent>{JSON.stringify(tokens)}</WSBubbleContent>*/}
-        <WSBubbleContent dangerouslySetInnerHTML={{ __html: parsedHtml }} />
+        <WSBubbleContent dangerouslySetInnerHTML={{ __html: parsedHtml }} ref={contentRef} />
       </WSBubble>
+      {done && (
+        <IconButton aria-label="delete" onClick={onCopy}>
+          <Copy />
+        </IconButton>
+      )}
     </ColumnBox>
   )
 }
@@ -159,3 +180,15 @@ const WSBubbleContent = styled(Box)({
     margin: '8px 0',
   },
 })
+
+const Copy = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M11 5H6C4.89543 5 4 5.89543 4 7V18C4 19.1046 4.89543 20 6 20H17C18.1046 20 19 19.1046 19 18V13M17.5858 3.58579C18.3668 2.80474 19.6332 2.80474 20.4142 3.58579C21.1953 4.36683 21.1953 5.63316 20.4142 6.41421L11.8284 15H9L9 12.1716L17.5858 3.58579Z"
+      stroke="#212528"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)

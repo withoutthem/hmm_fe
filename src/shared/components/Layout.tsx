@@ -1,4 +1,3 @@
-// src/shared/components/Layout/Layout.tsx
 import React from 'react'
 import Box from '@mui/material/Box'
 import Header from '@shared/components/Header'
