@@ -14,7 +14,7 @@ function App() {
 
   // 테스트용 푸시 토큰 핸들러
   const onTestPushTokens = (tokens: string[]) => {
-    setMessages([...messages, { id: Date.now(), sender: 'chatbot', tokens }])
+    setMessages([...messages, { id: Date.now(), sender: 'chatbot', type: 'message', tokens }])
   }
 
   // 퍼블리셔 컴포넌트 확인 핸들러
@@ -23,6 +23,10 @@ function App() {
     if (el) {
       el.style.display = 'flex'
     }
+  }
+
+  const onFallbackTest = () => {
+    setMessages([...messages, { id: Date.now(), sender: 'chatbot', type: 'fallback' }])
   }
 
   return (
@@ -34,6 +38,7 @@ function App() {
         {/*<MotionTestPage />*/}
         <PublushButton onClick={onPublisherCheck}>Publish</PublushButton>
 
+        {/* 테스트 버튼들 */}
         <TestFlexBox>
           <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_01)}>
             WS_TEST_01
@@ -41,20 +46,41 @@ function App() {
           <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_02)}>
             WS_TEST_02
           </Button>
+          <Button variant="primary" onClick={onFallbackTest}>
+            Fallback Test
+          </Button>
         </TestFlexBox>
 
-        {/* 타임라인 렌더 */}
+        {/* 메세지들 렌더 */}
         <MessageList>
-          {messages.map((m) =>
-            m.sender === 'chatbot' ? (
-              <ChatbotBubbleWrap key={m.id}>
-                <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
-                  <MarkDownAnimator tokens={m.tokens ?? []} speed={20} />
-                </DelayedRender>
-              </ChatbotBubbleWrap>
-            ) : (
+          {messages.map((m) => {
+            if (m.sender === 'chatbot') {
+              if (m.type === 'message') {
+                return (
+                  <ChatbotBubbleWrap key={m.id}>
+                    <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
+                      <MarkDownAnimator tokens={m.tokens ?? []} speed={20} />
+                    </DelayedRender>
+                  </ChatbotBubbleWrap>
+                )
+              }
+
+              if (m.type === 'fallback') {
+                return (
+                  <ChatbotBubbleWrap key={m.id}>
+                    <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
+                      <FallbackBubbleCon>🤖 Fallback 응답입니다.</FallbackBubbleCon>
+                    </DelayedRender>
+                  </ChatbotBubbleWrap>
+                )
+              }
+            }
+
+            // sender === 'user'
+            return (
               <UserBubbleWrap key={m.id}>
                 <UserBubbleCon>
+                  {/* ctrl + v 이미지들 */}
                   {m.images?.length ? (
                     <UserImgBubble>
                       {m.images.map((file, idx) => (
@@ -71,7 +97,7 @@ function App() {
                 </UserBubbleCon>
               </UserBubbleWrap>
             )
-          )}
+          })}
         </MessageList>
       </Layout>
 
@@ -128,6 +154,12 @@ const MessageList = styled(Box)({
 const ChatbotBubbleWrap = styled(Box)({
   display: 'flex',
   justifyContent: 'flex-start',
+})
+
+const FallbackBubbleCon = styled(Box)({
+  background: '#fff',
+  borderRadius: 8,
+  padding: '8px 12px',
 })
 
 const UserBubbleWrap = styled(Box)({

@@ -36,15 +36,15 @@ const Footer = () => {
     const userMsg: UserMessage = {
       id: Date.now(),
       sender: 'user',
-      ...(trimmed ? { message: trimmed } : {}), // 값 있을 때만 키 추가
-      ...(images.length ? { images } : {}), // 값 있을 때만 키 추가
+      type: 'message',
+      ...(trimmed ? { message: trimmed } : {}),
+      ...(images.length ? { images } : {}),
     }
 
     setMessages([...messages, userMsg])
     setMessage('')
     setImages([])
   }
-
   const onMessageKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()

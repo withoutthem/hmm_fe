@@ -2,10 +2,15 @@
 import { create } from 'zustand'
 
 export type Sender = 'user' | 'chatbot'
+export type MessageType = 'message' | 'fallback'
 
 export type ChatMessage =
-  | { id: number; sender: 'user'; message?: string; images?: File[] }
-  | { id: number; sender: 'chatbot'; tokens: string[] }
+  // sender가 user일때는 message 또는 images 중 하나 이상은 있어야 함
+  | { id: number; sender: 'user'; type: 'message'; message?: string; images?: File[] }
+  // sender가 chatbot일때 type이 message이면 tokens가 반드시 있어야 함
+  | { id: number; sender: 'chatbot'; type: 'message'; tokens: string[] }
+  // sender가 chatbot일때 type이 fallback이면 tokens 없음
+  | { id: number; sender: 'chatbot'; type: 'fallback' }
 
 // 1. 스토어의 전체 상태와 액션 타입을 한 번에 정의합니다.
 interface UiState {
