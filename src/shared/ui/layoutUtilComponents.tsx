@@ -9,3 +9,8 @@ export const AlignCenter: StyledComponent<BoxProps> = styled(Box)({
 export const FlexBox = styled(Box)({
   display: 'flex',
 })
+
+export const ColumnBox = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+})

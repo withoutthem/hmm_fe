@@ -1,8 +1,7 @@
 // MDHTMLAnimator.tsx
 import { type ComponentProps, useEffect, useMemo, useRef } from 'react'
-import { createRoot } from 'react-dom/client'
 import { motion } from 'motion/react'
-import Marked from 'marked-react'
+import { marked } from 'marked'
 
 /** 표시 단위 */
 type SegmentMode = 'word' | 'char' | 'sentence'
@@ -28,12 +27,15 @@ function ensureGlobalCss() {
 
   /* 공개 전 스타일 숨김(텍스트/테이블 등) */
   [data-mdha-pending] {
-    color: transparent !important;
-    border-color: transparent !important;
-    background: transparent !important;
+-   color: transparent !important;
+-   border-color: transparent !important;
+-   background: transparent !important;
++   visibility: hidden !important;      /* ✅ 레이아웃 유지하며 숨김 */
++   pointer-events: none !important;    /* 상호작용 막기 */
+    display: none !important;
   }
-  
-  /* ✅ [개선] 블록 요소의 불필요한 초기 여백 제거 */
+
+  /* 블록 요소의 초기 여백 제거 */
   p[data-mdha-pending], h1[data-mdha-pending], h2[data-mdha-pending], h3[data-mdha-pending],
   h4[data-mdha-pending], h5[data-mdha-pending], h6[data-mdha-pending],
   ul[data-mdha-pending], ol[data-mdha-pending], blockquote[data-mdha-pending],
@@ -46,15 +48,15 @@ function ensureGlobalCss() {
   li[data-mdha-pending] { list-style: none !important; }
   li[data-mdha-pending]::marker { content: "" !important; }
 
-  /* hr/br 은 공간도 차지하지 않게 */
+  /* hr/br 은 공간도 차지하지 않게 (예외적으로 display:none 유지) */
   hr[data-mdha-pending] { display: none !important; }
   br[data-mdha-pending] { display: none !important; }
-  *[data-mdha-pending] { display:none !important; }
-
+- *[data-mdha-pending] { display:none !important; }
++ /* 위의 visibility 규칙이 모든 요소를 커버하므로 이 줄은 제거 */
 
   /* 이미지: 레이아웃 튐 방지를 위해 visibility 사용 */
   img[data-mdha-pending] { visibility: hidden !important; }
-`
+  `
   const tag = document.createElement('style')
   tag.setAttribute('data-mdha-css', 'true')
   tag.appendChild(document.createTextNode(css))
@@ -273,7 +275,6 @@ export default function MDHTMLAnimator({
           if (e.kind === 'reveal') {
             reveal(e.el)
             entryIdx++
-            // ✅ [개선] 예산 소모 없이 즉시 다음 작업으로 넘어가 순서 문제 해결
             continue
           }
           const tok = e.tokens[tokenIdx]
@@ -300,30 +301,22 @@ export default function MDHTMLAnimator({
       rafId = requestAnimationFrame(step)
     }
 
+    const parser = new DOMParser()
+
     if (modeMemo === 'html') {
-      const parser = new DOMParser()
       const doc = parser.parseFromString(html ?? '', 'text/html')
       mountFromRoot(doc.body)
       if (delayMs > 0) timerId = window.setTimeout(startTyping, delayMs)
       else startTyping()
     } else {
-      const off = document.createElement('div')
-      off.style.cssText = 'position:fixed;left:-99999px;top:-99999px;opacity:0;'
-      document.body.appendChild(off)
-      const root = createRoot(off)
-      root.render(<Marked>{markdown as string}</Marked>)
-      const observer = new MutationObserver(() => {
-        if (off.childNodes.length > 0) {
-          observer.disconnect()
-          mountFromRoot(off)
-          root.unmount()
-          off.remove()
-          if (delayMs > 0) timerId = window.setTimeout(startTyping, delayMs)
-          else startTyping()
-        }
-      })
-      observer.observe(off, { childList: true, subtree: true })
+      // Markdown → HTML 문자열 (raw HTML 포함)
+      const mdHtml = marked.parse(markdown ?? '') as string
+      const doc = parser.parseFromString(mdHtml, 'text/html')
+      mountFromRoot(doc.body)
+      if (delayMs > 0) timerId = window.setTimeout(startTyping, delayMs)
+      else startTyping()
     }
+
     return () => {
       if (rafId) cancelAnimationFrame(rafId)
       if (timerId) clearTimeout(timerId)
