@@ -8,6 +8,6 @@ export default Header
 
 const StyledHeader = styled(Box)<BoxProps>({
   width: '100%',
-  height: '60px',
-  background: 'lightblue',
+  height: '48px',
+  background: '#fff',
 })

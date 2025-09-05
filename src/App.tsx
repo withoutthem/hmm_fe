@@ -1,4 +1,5 @@
-import { Button, CssBaseline, styled, Box, CircularProgress } from '@mui/material'
+import { Button, CssBaseline, styled, Box, CircularProgress, useTheme } from '@mui/material'
+import type { Theme } from '@mui/material'
 import ApplicationProvider from './app/providers/ApplicationProvider'
 import Layout from './shared/components/Layout'
 import { WS_TEST_01, WS_TEST_02 } from '@domains/common/components/testData'
@@ -11,6 +12,7 @@ import { useEffect, useState } from 'react'
 function App() {
   const messages = useUIStore((s) => s.messages)
   const setMessages = useUIStore((s) => s.setMessages)
+  const theme: Theme = useTheme()
 
   // 테스트용 푸시 토큰 핸들러
   const onTestPushTokens = (tokens: string[]) => {
@@ -57,7 +59,7 @@ function App() {
             if (m.sender === 'chatbot') {
               if (m.type === 'message') {
                 return (
-                  <ChatbotBubbleWrap key={m.id}>
+                  <ChatbotBubbleWrap key={m.id} className={'chatbot-bubble'}>
                     <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
                       <MarkDownAnimator tokens={m.tokens ?? []} speed={20} />
                     </DelayedRender>
@@ -67,7 +69,7 @@ function App() {
 
               if (m.type === 'fallback') {
                 return (
-                  <ChatbotBubbleWrap key={m.id}>
+                  <ChatbotBubbleWrap key={m.id} className={'fallback-bubble'}>
                     <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
                       <FallbackBubbleCon>🤖 Fallback 응답입니다.</FallbackBubbleCon>
                     </DelayedRender>
@@ -78,11 +80,11 @@ function App() {
 
             // sender === 'user'
             return (
-              <UserBubbleWrap key={m.id}>
+              <UserBubbleWrap key={m.id} className={'user-bubble'}>
                 <UserBubbleCon>
                   {/* ctrl + v 이미지들 */}
                   {m.images?.length ? (
-                    <UserImgBubble>
+                    <UserImgBubble className={'user-bubble-img'}>
                       {m.images.map((file, idx) => (
                         <UserUpdateImgCon key={idx}>
                           <UserUpdateImg
@@ -93,7 +95,11 @@ function App() {
                       ))}
                     </UserImgBubble>
                   ) : null}
-                  {m.message && <UserTextBubble>{m.message}</UserTextBubble>}
+                  {m.message && (
+                    <UserTextBubble className={'user-bubble-text'} theme={theme}>
+                      {m.message}
+                    </UserTextBubble>
+                  )}
                 </UserBubbleCon>
               </UserBubbleWrap>
             )
@@ -194,13 +200,16 @@ const UserUpdateImg = styled('img')({
   objectFit: 'cover',
 })
 
-const UserTextBubble = styled(Box)({
+const UserTextBubble = styled(Box)(({ theme }) => ({
   maxWidth: 640,
-  padding: '10px 12px',
-  borderRadius: 12,
-  background: '#fff',
+  padding: '16px',
+  borderRadius: '20px 0 20px 20px',
+  fontSize: '15px',
+  lineHeight: 1.4,
+  background: theme.palette.secondary.main,
+  color: '#fff',
   whiteSpace: 'pre-wrap',
-})
+}))
 
 const LoadingBubbleWrap = styled(Box)({
   display: 'flex',

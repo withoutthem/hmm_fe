@@ -101,7 +101,7 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
   }
 
   return (
-    <ColumnBox>
+    <ColumnBox className={'chatbot-bubble-con'}>
       <Typography variant="h6">GenAi</Typography>
       <WSBubble>
         {/*<WSBubbleContent>{JSON.stringify(tokens)}</WSBubbleContent>*/}

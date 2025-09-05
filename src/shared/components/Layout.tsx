@@ -31,7 +31,7 @@ const StyledLayout = styled(Box)<BoxProps>({
 const StyledMain = styled(Box)<BoxProps>({
   width: '100%',
   flex: 1,
-  background: 'lightcoral',
+  background: '#fff',
   overflowY: 'auto',
   overflowX: 'hidden',
   padding: '16px',
