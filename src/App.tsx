@@ -85,6 +85,25 @@ function App() {
                 <Input />
               </FlexBox>
               <SendButton>전송</SendButton>
+              <DataWrap>
+                <Typography>보낸데이터</Typography>
+                <DataViewer>
+                  {messages.map((msg, idx) => (
+                    <div key={idx}>
+                      {msg.text.split('\n').map((line, i) => (
+                        <span key={i}>
+                          {line}
+                          <br />
+                        </span>
+                      ))}
+                    </div>
+                  ))}
+                </DataViewer>
+              </DataWrap>
+              <DataWrap>
+                <Typography>받은데이터</Typography>
+                <DataViewer></DataViewer>
+              </DataWrap>
             </InputBox>
 
             <ChatBox className={'chat-box'}>
@@ -118,6 +137,14 @@ function App() {
                 <Input />
               </FlexBox>
               <SendButton>전송</SendButton>
+              <DataWrap>
+                <Typography>보낸데이터</Typography>
+                <DataViewer></DataViewer>
+              </DataWrap>
+              <DataWrap>
+                <Typography>받은데이터</Typography>
+                <DataViewer></DataViewer>
+              </DataWrap>
             </InputBox>
 
             <ChatBox className={'chat-box'}>
@@ -201,6 +228,22 @@ const BubbleTypo = styled(Typography)({
   display: 'inline-block',
   maxWidth: '300px',
   wordBreak: 'break-word',
+  whiteSpace: 'pre-wrap',
+})
+
+const DataWrap = styled(ColumnBox)({
+  flex: '1',
+  overflow: 'hidden',
+  maxWidth: '270px',
+})
+
+const DataViewer = styled(Box)({
+  background: '#fff',
+  border: '1px solid black',
+  overflowY: 'auto',
+  padding: '8px',
+  width: '100%',
+  flex: '1',
   whiteSpace: 'pre-wrap',
 })
 
