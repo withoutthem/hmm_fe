@@ -1,225 +1,256 @@
-import { Button, CssBaseline, styled, Box, CircularProgress, useTheme } from '@mui/material'
-import type { Theme } from '@mui/material'
+import { Box, Button, CssBaseline, Input, styled, TextField, Typography } from '@mui/material'
 import ApplicationProvider from './app/providers/ApplicationProvider'
-import Layout from './shared/components/Layout'
-import { WS_TEST_01, WS_TEST_02 } from '@domains/common/components/testData'
-import PublishFloating, { PublushButton } from '@pages/test/PublishFloating'
-import { AlignCenter, FlexBox } from '@shared/ui/layoutUtilComponents'
-import MarkDownAnimator from '@pages/test/MarkDownAnimator'
-import useUIStore from '@domains/common/ui/store/ui.store'
-import { useEffect, useState } from 'react'
+import ChatPage from '@pages/test/ChatPage'
+import { useState } from 'react'
+import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
+
+export const chatMockData = [
+  {
+    id: 1,
+    side: 'chatbot',
+    text: '🌌 단편 소설 — 유리정원의 밤',
+  },
+  {
+    id: 2,
+    side: 'user',
+    text: `도시는 늘 시끄러웠다. 자동차 경적, 사람들의 발소리, 광고판 불빛이 쉴 새 없이 흘렀다. 
+하지만 도심 한가운데, 유리로 둘러싸인 오래된 정원은 그 모든 소음을 삼켜버린 듯 고요했다. 
+민호는 그곳에 매일 밤 찾아왔다. 낮에는 대기업 사무실에서 하루 종일 수치와 보고서에 묻혀 
+사는 사람이었지만, 밤의 유리정원에서는 단 하나의 방문자였다. 그는 벤치에 앉아 빛바랜 노트를 펼쳤다. 
+그 노트에는 어린 시절의 꿈이 빼곡히 적혀 있었다.`,
+  },
+  {
+    id: 3,
+    side: 'chatbot',
+    text: `‘천문학자가 되고 싶다.’ ‘세상의 별을 직접 보고 싶다.’ 민호는 한숨을 내쉬었다. 
+현실은 달랐다. 별 대신 모니터를, 망원경 대신 마우스를 붙들고 살아가고 있었으니까. 
+그때였다. 정원의 천장이 천천히 열리더니, 유리 위로 별빛이 쏟아져 내렸다. 
+마치 오래 전 잊었던 꿈이 다시 현실로 내려오는 듯했다. 별빛 속에서 그는 희미하게 
+한 소녀의 웃음을 보았다. 어린 시절, 함께 별을 보던 첫사랑이었다.`,
+  },
+  {
+    id: 4,
+    side: 'user',
+    text: `“민호야, 별은 아직도 여기 있어.” 낯익은 목소리가 귓가에 울렸다. 
+그 순간, 민호는 깨달았다. 잃어버린 건 시간이 아니라, 바라보는 용기였다. 
+그날 이후로 그는 퇴근 후마다 작은 망원경을 들고 유리정원으로 향했다. 
+도시의 불빛은 여전히 눈부셨지만, 그의 눈에는 다시 별이 보였다.`,
+  },
+  {
+    id: 5,
+    side: 'chatbot',
+    text: `민호는 매일 밤 유리정원에 들렀다. 처음에는 단순히 별을 보기 위함이었지만, 
+어느 순간부터는 무언가에 이끌리듯 정원을 찾았다. 노트에 적힌 오래된 꿈들을 한 장씩 
+읽어 내려갈 때마다, 정원은 기묘하게 반응했다. “세계 여행하기”라는 글을 읽으면 벽면 
+유리에 바다가 비쳤고, “우주선 타보기”라는 문장을 넘기자 머리 위로 은하수가 
+소용돌이쳤다. 민호는 두려웠다. 마치 자신이 잊어버린 것들이 정원 속에서 되살아나는 듯했으니까. 
+하지만 동시에 가슴이 뛰었다.`,
+  },
+]
 
 function App() {
-  const messages = useUIStore((s) => s.messages)
-  const setMessages = useUIStore((s) => s.setMessages)
-  const theme: Theme = useTheme()
-
-  // 테스트용 푸시 토큰 핸들러
-  const onTestPushTokens = (tokens: string[]) => {
-    setMessages([...messages, { id: Date.now(), sender: 'chatbot', type: 'message', tokens }])
-  }
-
-  // 퍼블리셔 컴포넌트 확인 핸들러
-  const onPublisherCheck = () => {
-    const el = document.getElementById('publish')
-    if (el) {
-      el.style.display = 'flex'
-    }
-  }
-
-  const onFallbackTest = () => {
-    setMessages([...messages, { id: Date.now(), sender: 'chatbot', type: 'fallback' }])
-  }
+  const [isTest, setIsTest] = useState(true)
 
   return (
     <ApplicationProvider>
       <CssBaseline />
-      <Layout>
-        {/*<TestPage />*/}
-        {/*<WebSocketTestPage />*/}
-        {/*<MotionTestPage />*/}
-        <PublushButton onClick={onPublisherCheck}>Publish</PublushButton>
 
-        {/* 테스트 버튼들 */}
+      <TestButton variant={'primary'} onClick={() => setIsTest((e) => !e)}>
+        {isTest ? '생성형챗봇으로가기' : 'Test챗봇으로가기'}
+      </TestButton>
+
+      {isTest ? (
         <TestFlexBox>
-          <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_01)}>
-            WS_TEST_01
-          </Button>
-          <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_02)}>
-            WS_TEST_02
-          </Button>
-          <Button variant="primary" onClick={onFallbackTest}>
-            Fallback Test
-          </Button>
-        </TestFlexBox>
-
-        {/* 메세지들 렌더 */}
-        <MessageList>
-          {messages.map((m) => {
-            if (m.sender === 'chatbot') {
-              if (m.type === 'message') {
-                return (
-                  <ChatbotBubbleWrap key={m.id} className={'chatbot-bubble'}>
-                    <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
-                      <MarkDownAnimator tokens={m.tokens ?? []} speed={20} />
-                    </DelayedRender>
-                  </ChatbotBubbleWrap>
-                )
-              }
-
-              if (m.type === 'fallback') {
-                return (
-                  <ChatbotBubbleWrap key={m.id} className={'fallback-bubble'}>
-                    <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
-                      <FallbackBubbleCon>🤖 Fallback 응답입니다.</FallbackBubbleCon>
-                    </DelayedRender>
-                  </ChatbotBubbleWrap>
-                )
-              }
-            }
-
-            // sender === 'user'
-            return (
-              <UserBubbleWrap key={m.id} className={'user-bubble'}>
-                <UserBubbleCon>
-                  {/* ctrl + v 이미지들 */}
-                  {m.images?.length ? (
-                    <UserImgBubble className={'user-bubble-img'}>
-                      {m.images.map((file, idx) => (
-                        <UserUpdateImgCon key={idx}>
-                          <UserUpdateImg
-                            src={URL.createObjectURL(file)}
-                            alt={`user-${m.id}-${idx}`}
-                          />
-                        </UserUpdateImgCon>
-                      ))}
-                    </UserImgBubble>
-                  ) : null}
-                  {m.message && (
-                    <UserTextBubble className={'user-bubble-text'} theme={theme}>
-                      {m.message}
-                    </UserTextBubble>
+          <Typography>공통설정값</Typography>
+          <FlexBox>
+            라벨
+            <Input />
+          </FlexBox>
+          <Wrap>
+            <ChatBox className={'chat-box'}>
+              <ChatBoxCon>
+                <TitleBox>
+                  <Typography>라이브챗 Test</Typography>
+                </TitleBox>
+                <ChatMessageCont>
+                  {chatMockData.map((msg) =>
+                    msg.side === 'chatbot' ? (
+                      <ChatbotBubble key={msg.id}>
+                        <BubbleTypo>{msg.text}</BubbleTypo>
+                      </ChatbotBubble>
+                    ) : (
+                      <UserBubble key={msg.id}>
+                        <BubbleTypo>{msg.text}</BubbleTypo>
+                      </UserBubble>
+                    )
                   )}
-                </UserBubbleCon>
-              </UserBubbleWrap>
-            )
-          })}
-        </MessageList>
-      </Layout>
+                </ChatMessageCont>
+                <TextAreaBox>
+                  <TextField />
+                  <SendButton>전송</SendButton>
+                </TextAreaBox>
+              </ChatBoxCon>
+            </ChatBox>
 
-      <PublishFloating />
+            <InputBox className={'input-box'}>
+              <FlexBox>
+                이메일 :
+                <Input />
+              </FlexBox>
+              <FlexBox>
+                USER ID :
+                <Input />
+              </FlexBox>
+              <FlexBox>
+                Label :
+                <Input />
+              </FlexBox>
+              <FlexBox>
+                Label :
+                <Input />
+              </FlexBox>
+              <SendButton>전송</SendButton>
+            </InputBox>
+
+            <ChatBox className={'chat-box'}>
+              <ChatBoxCon>
+                <TitleBox>
+                  <Typography>DapTalk Test</Typography>
+                </TitleBox>
+                <ChatMessageCont>Bubble</ChatMessageCont>
+                <TextAreaBox>
+                  <TextField />
+                  <SendButton>전송</SendButton>
+                </TextAreaBox>
+              </ChatBoxCon>
+            </ChatBox>
+
+            <InputBox className={'input-box'}>
+              <FlexBox>
+                이메일 :
+                <Input />
+              </FlexBox>
+              <FlexBox>
+                USER ID :
+                <Input />
+              </FlexBox>
+              <FlexBox>
+                Label :
+                <Input />
+              </FlexBox>
+              <FlexBox>
+                Label :
+                <Input />
+              </FlexBox>
+              <SendButton>전송</SendButton>
+            </InputBox>
+
+            <ChatBox className={'chat-box'}>
+              <ChatBoxCon>
+                <TitleBox>
+                  <Typography>실제화면</Typography>
+                </TitleBox>
+                <ChatMessageCont>Bubble</ChatMessageCont>
+                <TextAreaBox>
+                  <TextField />
+                  <SendButton>전송</SendButton>
+                </TextAreaBox>
+              </ChatBoxCon>
+            </ChatBox>
+          </Wrap>
+        </TestFlexBox>
+      ) : (
+        <ChatPage />
+      )}
     </ApplicationProvider>
   )
 }
 
 export default App
 
-/** 일정 시간 후 children을 렌더링하고, 그 전엔 placeholder 표시 */
-const DelayedRender = ({
-  delayMs,
-  children,
-  placeholder,
-}: {
-  delayMs: number
-  children: React.ReactNode
-  placeholder?: React.ReactNode
-}) => {
-  const [ready, setReady] = useState(false)
-  useEffect(() => {
-    const t = setTimeout(() => setReady(true), delayMs)
-    return () => clearTimeout(t)
-  }, [delayMs])
-  return ready ? <>{children}</> : <>{placeholder ?? null}</>
-}
-
-/** 챗봇용 로딩 버블 */
-const LoadingBubble = () => (
-  <LoadingBubbleWrap>
-    <LoadingBubbleCon>
-      <AlignCenter>
-        <CircularProgress size={16} />
-        <span>로딩중…</span>
-      </AlignCenter>
-    </LoadingBubbleCon>
-  </LoadingBubbleWrap>
-)
-
-const TestFlexBox = styled(FlexBox)({
+const TestButton = styled(Button)({
   position: 'fixed',
-  top: '2px',
-  left: '10px',
+  top: '0',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  background: 'red',
+})
+
+const TestFlexBox = styled(ColumnBox)({
+  width: '100vw',
+  height: '100vh',
+  padding: '8px',
   gap: '8px',
 })
 
-const MessageList = styled(Box)({
+const Wrap = styled(FlexBox)({
   display: 'flex',
-  flexDirection: 'column',
-  gap: 12,
-})
-
-const ChatbotBubbleWrap = styled(Box)({
-  display: 'flex',
-  justifyContent: 'flex-start',
-})
-
-const FallbackBubbleCon = styled(Box)({
-  background: '#fff',
-  borderRadius: 8,
-  padding: '8px 12px',
-})
-
-const UserBubbleWrap = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-  gap: 8,
-})
-
-const UserBubbleCon = styled(Box)({
-  maxWidth: '500px',
-})
-
-const UserImgBubble = styled(Box)({
-  display: 'flex',
-  gap: 8,
-  flexWrap: 'wrap',
-  maxWidth: 500,
-})
-
-const UserUpdateImgCon = styled(Box)({
-  width: 120,
-  height: 120,
+  gap: '4px',
+  flex: '1',
   overflow: 'hidden',
-  borderRadius: 8,
-  border: '1px solid #e0e0e0',
 })
 
-const UserUpdateImg = styled('img')({
-  width: '100%',
+const ChatBox = styled(ColumnBox)({
   height: '100%',
-  objectFit: 'cover',
+  flex: '1',
 })
 
-const UserTextBubble = styled(Box)(({ theme }) => ({
-  maxWidth: 640,
-  padding: '16px',
-  borderRadius: '20px 0 20px 20px',
-  fontSize: '15px',
-  lineHeight: 1.4,
-  background: theme.palette.secondary.main,
-  color: '#fff',
-  whiteSpace: 'pre-wrap',
-}))
-
-const LoadingBubbleWrap = styled(Box)({
-  display: 'flex',
-  justifyContent: 'flex-start',
+const ChatBoxCon = styled(ColumnBox)({
+  flex: '1',
+  border: '1px solid #ccc',
+  borderRadius: 8,
+  height: '100%',
+  overflow: 'hidden',
 })
 
-const LoadingBubbleCon = styled(Box)({
-  width: 'auto',
+const TitleBox = styled(Box)({
+  padding: '4px 4px 4px 8px',
+})
+
+const ChatMessageCont = styled(ColumnBox)({
+  flex: '1',
+  padding: '8px',
+  background: '#eee',
+  overflowY: 'auto',
+  scrollbarWidth: 'thin',
+  gap: '8px',
+})
+
+const ChatbotBubble = styled(Box)({})
+
+const BubbleTypo = styled(Typography)({
   background: '#fff',
   border: '1px solid #ccc',
   borderRadius: 12,
   padding: '10px 12px',
+  display: 'inline-block',
+  maxWidth: '300px',
+  wordBreak: 'break-word',
+})
+
+const UserBubble = styled(Box)({ alignSelf: 'flex-end' })
+
+const TextAreaBox = styled(FlexBox)({
+  gap: '4px',
+  padding: '6px',
+  alignItems: 'center',
+  borderTop: '1px solid',
+  '&>div': { flex: '1' },
+  '& input': { padding: '0' },
+})
+
+const SendButton = styled(Button)({
+  width: 'fit-content',
+  padding: '3px 12px',
+  borderRadius: '4px',
+  minWidth: 'auto',
+  height: 'auto',
+  background: 'black',
+  color: 'white',
+})
+
+const InputBox = styled(ColumnBox)({
+  paddingTop: '23px',
+  gap: '8px',
+  '&>button': { marginLeft: 'auto' },
 })
