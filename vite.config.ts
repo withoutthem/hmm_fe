@@ -20,7 +20,20 @@ export default defineConfig(({ mode }) => {
       },
     },
     cacheDir: 'node_modules/.vite-hpc',
-    server: { port: 5173 },
+    server: {
+      port: 5173,
+      proxy: {
+        '/api': {
+          target: env.VITE_API_BASE_URL,
+          changeOrigin: true,
+        },
+        '/ws': {
+          target: env.VITE_WS_BASE_URL,
+          changeOrigin: true,
+          ws: true,
+        },
+      },
+    },
     preview: { port: 4173 },
     build: {
       target: 'es2022',

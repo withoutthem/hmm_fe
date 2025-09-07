@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Box, IconButton, styled, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked, type RendererObject, type Tokens } from 'marked'
@@ -48,7 +49,7 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
       pendingRef.current.quote = (pendingRef.current.quote ?? '') + raw
       return
     }
-    if (raw === '```' || /^```/.test(raw)) {
+    if (raw === '```' || raw.startsWith('```')) {
       pendingRef.current.fence = (pendingRef.current.fence ?? '') + raw
       return
     }
