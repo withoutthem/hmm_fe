@@ -1,0 +1,53 @@
+# =============================================================================
+# Frontend Repository CI/CD Pipeline (.gitlab-ci.yml)
+# 목적: React/Vite를 'dev' 모드로 빌드하여 dist/를 아티팩트(frontend/dist/)로 남김
+# =============================================================================
+
+#•	목적: Vite를 dev 모드로 빌드하여 **frontend/dist/**를 아티팩트로 남깁니다.
+#•	트리거 조건: develop 브랜치에서 FE 관련 파일 변경 시 자동 실행, MR→develop일 때는 수동 실행.
+#•	검증: dist/ 디렉터리와 dist/index.html 존재 확인 → 없으면 실패.
+#•	결과: frontend/dist/ 폴더가 7일(현재 1일로 설정) 동안 아티팩트로 보관됩니다.
+
+stages: [build]
+
+variables:
+  NODE_IMAGE: "node:22-alpine"
+  DEV_BRANCH: "develop"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - frontend/node_modules/
+  policy: pull-push
+
+build-frontend:
+  stage: build
+  image: $NODE_IMAGE
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $DEV_BRANCH'
+      changes:
+        - "frontend/**/*"
+        - "frontend/.env.dev"
+        - ".gitlab-ci.yml"
+      when: on_success
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $DEV_BRANCH'
+      when: manual
+  before_script:
+    - cd frontend
+    - node -v && npm -v
+    - |
+      if [ -f package-lock.json ]; then
+        npm ci
+      else
+        npm install
+      fi
+  script:
+    - npm run build:dev
+    - test -d "dist" || (echo "dist 생성 실패"; exit 1)
+    - test -f "dist/index.html" || (echo "index.html 누락"; exit 1)
+  artifacts:
+    name: "frontend-static-$CI_COMMIT_SHORT_SHA"
+    when: on_success
+    expire_in: 1 days
+    paths:
+      - frontend/dist/

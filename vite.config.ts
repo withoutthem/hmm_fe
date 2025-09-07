@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
     build: {
       target: 'es2022',
       rollupOptions: { treeshake: true },
-      outDir: '../backend/src/main/resources/static',
+      outDir: 'dist',
       emptyOutDir: true,
     },
     define: {
