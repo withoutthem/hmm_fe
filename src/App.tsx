@@ -2,7 +2,7 @@ import { Button, CssBaseline, styled } from '@mui/material'
 import ApplicationProvider from './app/providers/ApplicationProvider'
 import { useState } from 'react'
 import ChatPage from '@pages/test/ChatPage'
-import TestPage from '@pages/test/TestPage'
+// import TestPage from '@pages/test/TestPage'
 import TestPageV2 from '@pages/test/TestPageV2'
 
 function App() {

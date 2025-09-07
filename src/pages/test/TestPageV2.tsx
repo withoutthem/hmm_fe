@@ -1,24 +1,17 @@
 /* eslint-disable */
-import {
-  Button,
-  styled,
-  TextField,
-  Typography,
-  FormControlLabel,
-  Switch,
-  Divider,
-  Box,
-} from '@mui/material'
+import { Button, styled, TextField, Typography, Divider, Box } from '@mui/material'
 import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useWs } from '@app/providers/WsProvider'
 import { createStompFrame, type StompFrame } from '@shared/platform/ws/stomp'
+import { useSSE } from '@shared/platform/sse' // ✅ 새로 만든 SSE 훅
 
+// 단일 메시지 타입 정의
 type Msg = { type: 'chatbot' | 'user'; text: string; ts: number }
 
 const TestPage = () => {
   // -------------------------------
-  // auto-scroll
+  // Auto-scroll 훅 (채팅/로그 박스 자동 스크롤)
   const useAutoScroll = <T extends HTMLElement>(deps: unknown[]) => {
     const ref = useRef<T | null>(null)
     useEffect(() => {
@@ -29,135 +22,107 @@ const TestPage = () => {
   }
 
   // -------------------------------
-  // WebSocket
+  // WebSocket (Livechat 테스트)
   const { publish, subscribe, ws } = useWs()
-  const [wsTopic, setWsTopic] = useState('chat:test') // 클라 로컬 라우팅 키(그대로 유지)
+  const [wsTopic, setWsTopic] = useState('chat:test')
   const [sendText, setSendText] = useState('')
   const [messages, setMessages] = useState<Msg[]>([])
   const [wsLogs, setWsLogs] = useState<string[]>([])
   const chatRef = useAutoScroll<HTMLDivElement>([messages])
   const logRef = useAutoScroll<HTMLPreElement>([wsLogs])
 
-  const log = (s: string) => setWsLogs((p) => [...p, `[${time()}] ${s}`])
+  const log = (s: string) => setWsLogs((p) => [...p, `🕑 [${time()}] ${s}`])
 
-  // 상태 표기
-  const wsState = (() => {
-    const s = (ws && (ws as any).readyState) as number | undefined
-    return s ?? WebSocket.CLOSED
-  })()
+  // 현재 WebSocket 상태
+  const wsState = (ws && (ws as any).readyState) ?? WebSocket.CLOSED
   const wsOpen = wsState === WebSocket.OPEN
   const wsStatus = useMemo(() => {
-    switch (wsState) {
-      case 0:
-        return 'connecting'
-      case 1:
-        return 'connected'
-      case 2:
-        return 'closing'
-      default:
-        return 'disconnected'
-    }
+    return ['connecting', 'connected', 'closing', 'disconnected'][wsState] ?? 'idle'
   }, [wsState])
 
-  // 서버 구독/해제 (STOMP-Frame)
+  // 서버 구독/해제
   useEffect(() => {
     if (!wsTopic.trim()) return
     if (wsOpen) {
       publish(wsTopic, createStompFrame('/test/bus/subscribe', { topic: wsTopic }))
-      log(`→ subscribe ${wsTopic}`)
+      log(`📡 Subscribed to ${wsTopic}`)
     }
     return () => {
       publish(wsTopic, createStompFrame('/test/bus/unsubscribe', { topic: wsTopic }))
-      log(`→ unsubscribe ${wsTopic}`)
+      log(`❌ Unsubscribed from ${wsTopic}`)
     }
-    // wsOpen, wsTopic 변화 시 처리
   }, [wsOpen, wsTopic, publish])
 
-  // 수신 렌더(클라 라우팅은 topic 기반 그대로)
+  // 메시지 수신
   useEffect(() => {
     if (!wsTopic.trim()) return
     const off = subscribe(wsTopic, (m: unknown) => {
       const t = toText(m)
-      log(`recv @${wsTopic}: ${t}`)
+      log(`💬 recv @${wsTopic}: ${t}`)
       setMessages((p) => [...p, { type: 'chatbot', text: t, ts: Date.now() }])
     })
-    log(`handler ready for "${wsTopic}"`)
-    return () => {
-      off()
-      log(`handler off for "${wsTopic}"`)
-    }
+    return () => off()
   }, [wsTopic, subscribe])
 
+  // 메시지 발행
   const sendPublish = () => {
     const text = sendText.trim()
-    if (!text) return
-    if (!wsOpen) {
-      log('send blocked: socket not open')
-      return
-    }
-    // STOMP-Frame: /test/bus/publish
-    const f: StompFrame = createStompFrame('/test/bus/publish', { topic: wsTopic, data: { text } })
+    if (!text || !wsOpen) return
+    const f: StompFrame = createStompFrame('/test/bus/publish', {
+      topic: wsTopic,
+      data: { text },
+    })
     publish(wsTopic, f)
-    log(`publish @${wsTopic}: ${text}`)
+    log(`✉️ publish @${wsTopic}: ${text}`)
     setMessages((p) => [...p, { type: 'user', text, ts: Date.now() }])
     setSendText('')
   }
 
+  // Clock 시작 요청
   const startClock = () => {
-    if (!wsOpen) {
-      log('clock blocked: socket not open')
-      return
-    }
-    // STOMP-Frame: /test/clock/start
+    if (!wsOpen) return
     publish(wsTopic, createStompFrame('/test/clock/start'))
-    log('clock start requested')
+    log('⏰ Clock start requested')
   }
 
   // -------------------------------
-  // SSE
-  const [ssePath, setSsePath] = useState('/api/test/sse') // 프록시 사용 시 /api 권장
-  const [withCred, setWithCred] = useState(false)
-  const [sseOpen, setSseOpen] = useState(false)
+  // SSE (테스트 스트리밍)
   const [sseLogs, setSseLogs] = useState<string[]>([])
   const [sseItems, setSseItems] = useState<string[]>([])
-  const sseRef = useRef<EventSource | null>(null)
   const sseLogRef = useAutoScroll<HTMLPreElement>([sseLogs])
   const sseListRef = useAutoScroll<HTMLDivElement>([sseItems])
-  const slog = (s: string) => setSseLogs((p) => [...p, `[${time()}] ${s}`])
 
-  const startSse = () => {
-    if (sseOpen) return
-    const url = buildUrl(ssePath) // /api/test/sse → dev에서 Vite 프록시로 18080에 전달
-    const es = new EventSource(url, { withCredentials: withCred })
-    sseRef.current = es
-    es.onopen = () => {
-      setSseOpen(true)
-      slog(`open: ${url}`)
+  const {
+    open: sseOpen,
+    start: startSse,
+    stop: stopSse,
+  } = useSSE(
+    { pathOrUrl: '/api/test/sse', autoStart: false, namedEvents: ['tick'] },
+    {
+      onOpen: (url) => setSseLogs((p) => [...p, `✅ open: ${url}`]),
+      onMessage: (m) => {
+        setSseItems((p) => [...p, m.data])
+        setSseLogs((p) => [...p, `📥 data: ${m.data}`])
+      },
+      onNamedEvent: (eventName, message) => {
+        // eventName은 'tick'이 됩니다.
+        const data = message.data
+        setSseItems((p) => [...p, data])
+        setSseLogs((p) => [...p, `📥 [${eventName}] data: ${data}`])
+      },
+      onError: (err) => setSseLogs((p) => [...p, `❌ error: ${err}`]),
+      onRetry: (a, d) => setSseLogs((p) => [...p, `🔁 retry #${a} in ${d}ms`]),
     }
-    es.onmessage = (ev) => {
-      slog(`data: ${ev.data}`)
-      setSseItems((p) => [...p, ev.data])
-    }
-    es.onerror = (ev) => {
-      slog(`error: ${toText(ev)}`)
-    }
-  }
-  const stopSse = () => {
-    sseRef.current?.close()
-    sseRef.current = null
-    if (sseOpen) slog('closed')
-    setSseOpen(false)
-  }
-  useEffect(() => () => stopSse(), [])
+  )
 
   // -------------------------------
   // UI
   return (
     <Root>
-      {/* WS */}
+      {/* WebSocket 패널 */}
       <Panel>
         <Header>
-          <Typography variant="subtitle1">WebSocket (Livechat) Test</Typography>
+          <Typography variant="subtitle1">💬 WebSocket (Livechat)</Typography>
           <Status $ok={wsOpen}>{wsStatus}</Status>
         </Header>
 
@@ -175,12 +140,7 @@ const TestPage = () => {
             size="small"
             value={sendText}
             onChange={(e) => setSendText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                sendPublish()
-              }
-            }}
+            onKeyDown={(e) => e.key === 'Enter' && sendPublish()}
             disabled={!wsOpen}
           />
           <Button variant="contained" onClick={sendPublish} disabled={!wsOpen}>
@@ -191,52 +151,43 @@ const TestPage = () => {
           </Button>
         </Row>
 
-        <SubHeader>Received</SubHeader>
+        <SubHeader>📥 Received</SubHeader>
         <ChatArea ref={chatRef}>
           {messages.map((m, i) => (
             <MsgLine key={`${i}-${m.ts}`} data-type={m.type}>
-              <span>{m.type === 'user' ? 'You' : 'Bot'}</span>
+              <span>{m.type === 'user' ? '🙋 You' : '🤖 Bot'}</span>
               <MsgBubble>{m.text}</MsgBubble>
               <small>{new Date(m.ts).toLocaleTimeString()}</small>
             </MsgLine>
           ))}
         </ChatArea>
 
-        <SubHeader>WS Logs</SubHeader>
-        <LogBox ref={logRef}>{wsLogs.join('\n') || 'no logs'}</LogBox>
+        <SubHeader>📝 WS Logs</SubHeader>
+        <LogBox ref={logRef}>{wsLogs.join('\n') || 'no logs yet'}</LogBox>
       </Panel>
 
       <Divider orientation="vertical" flexItem />
 
-      {/* SSE */}
+      {/* SSE 패널 */}
       <Panel>
         <Header>
-          <Typography variant="subtitle1">HTTP SSE Test</Typography>
-          <FormControlLabel
-            control={<Switch checked={withCred} onChange={(e) => setWithCred(e.target.checked)} />}
-            label="withCredentials"
-          />
+          <Typography variant="subtitle1">📡 SSE (Server-Sent Events)</Typography>
+          <Status $ok={sseOpen}>{sseOpen ? 'connected' : 'disconnected'}</Status>
         </Header>
 
         <Row>
-          <TextField
-            label="SSE Path or URL"
-            size="small"
-            value={ssePath}
-            onChange={(e) => setSsePath(e.target.value)}
-          />
           <Button variant="contained" onClick={startSse} disabled={sseOpen}>
-            Start
+            ▶️ Start
           </Button>
           <Button variant="outlined" onClick={stopSse} disabled={!sseOpen}>
-            Stop
+            ⏹ Stop
           </Button>
         </Row>
 
-        <SubHeader>Stream Logs</SubHeader>
-        <LogBox ref={sseLogRef}>{sseLogs.join('\n') || 'no stream yet'}</LogBox>
+        <SubHeader>📝 SSE Logs</SubHeader>
+        <LogBox ref={sseLogRef}>{sseLogs.join('\n') || 'no logs yet'}</LogBox>
 
-        <SubHeader>Rendered Items</SubHeader>
+        <SubHeader>📥 SSE Items</SubHeader>
         <ListBox ref={sseListRef}>
           {sseItems.map((line, idx) => (
             <div key={`${idx}-${line.slice(0, 8)}`}>{line}</div>
@@ -249,11 +200,9 @@ const TestPage = () => {
 
 export default TestPage
 
-// ---------- utils/style ----------
-function time() {
-  return new Date().toLocaleTimeString()
-}
-function toText(x: unknown) {
+// ---------- utils ----------
+const time = () => new Date().toLocaleTimeString()
+const toText = (x: unknown) => {
   try {
     if (typeof x === 'string') return x
     if (x instanceof Event) return `[Event type=${x.type}]`
@@ -262,26 +211,16 @@ function toText(x: unknown) {
     return String(x)
   }
 }
-function buildUrl(pathOrUrl: string) {
-  try {
-    return new URL(pathOrUrl).toString()
-  } catch {
-    /* relative */
-  }
-  if (pathOrUrl.startsWith('/')) return `${location.origin}${pathOrUrl}`
-  return `${location.origin}/${pathOrUrl}`
-}
 
+// ---------- styles ----------
 const Root = styled(FlexBox)({
   width: '100vw',
   height: '100vh',
-  padding: '10px',
   gap: 12,
-  paddingTop: '72px',
+  padding: '72px 10px 10px',
 })
 const Panel = styled(ColumnBox)({
   flex: 1,
-  minWidth: 0,
   border: '1px solid #ddd',
   borderRadius: 8,
   padding: 12,
@@ -311,7 +250,7 @@ const ChatArea = styled('div')({
 })
 const MsgLine = styled('div')({
   display: 'grid',
-  gridTemplateColumns: '40px 1fr auto',
+  gridTemplateColumns: '60px 1fr auto',
   alignItems: 'start',
   gap: 8,
   '&[data-type="user"] span': { color: '#1976d2' },
@@ -319,7 +258,6 @@ const MsgLine = styled('div')({
   '& small': { opacity: 0.6, fontSize: 11, alignSelf: 'center' },
 })
 const MsgBubble = styled('div')({
-  display: 'inline-block',
   background: '#fff',
   border: '1px solid #ddd',
   borderRadius: 12,
@@ -340,7 +278,6 @@ const LogBox = styled('pre')({
 })
 const ListBox = styled(Box)({
   height: 160,
-  margin: 0,
   padding: '8px 12px',
   background: '#fff',
   border: '1px solid #eee',
