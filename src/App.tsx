@@ -3,11 +3,17 @@ import ApplicationProvider from './app/providers/ApplicationProvider'
 import ChatPage from '@pages/test/ChatPage'
 import { useState } from 'react'
 import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
+import { Virtuoso } from 'react-virtuoso'
 
 function App() {
   const [messages, setMessages] = useState<{ type: 'chatbot' | 'user'; text: string }[]>([])
   const [liveChatInput, setLiveChatInput] = useState('')
   const [isTest, setIsTest] = useState(true)
+  const [isError, setIsError] = useState(false)
+
+  if (isError) {
+    throw new Error('렌더링 중에 발생한 에러! (ErrorBoundary에서 잡힘)')
+  }
 
   const handleSendLiveChat = () => {
     if (!liveChatInput.trim()) return
@@ -19,9 +25,14 @@ function App() {
     <ApplicationProvider>
       <CssBaseline />
 
-      <TestButton variant={'primary'} onClick={() => setIsTest((e) => !e)}>
-        {isTest ? '생성형챗봇으로가기' : 'Test챗봇으로가기'}
-      </TestButton>
+      <TextBox>
+        <Button sx={{ background: 'red' }} variant={'primary'} onClick={() => setIsTest((e) => !e)}>
+          {isTest ? '생성형챗봇으로가기' : 'Test챗봇으로가기'}
+        </Button>
+        <Button sx={{ background: 'blue' }} variant={'primary'} onClick={() => setIsError(true)}>
+          에러 발생 테스트
+        </Button>
+      </TextBox>
 
       {isTest ? (
         <TestFlexBox>
@@ -37,17 +48,26 @@ function App() {
                   <Typography>라이브챗 Test</Typography>
                 </TitleBox>
                 <ChatMessageCont>
-                  {messages.map((msg, i) =>
-                    msg.type === 'chatbot' ? (
-                      <ChatbotBubble key={i}>
-                        <BubbleTypo>{msg.text}</BubbleTypo>
-                      </ChatbotBubble>
-                    ) : (
-                      <UserBubble key={i}>
-                        <BubbleTypo>{msg.text}</BubbleTypo>
-                      </UserBubble>
-                    )
-                  )}
+                  <Virtuoso
+                    data={messages}
+                    overscan={0}
+                    itemContent={(index, m) => {
+                      if (m.type === 'user') {
+                        return (
+                          <UserBubble key={index}>
+                            <BubbleTypo>{m.text}</BubbleTypo>
+                          </UserBubble>
+                        )
+                      }
+                      if (m.type === 'chatbot') {
+                        return (
+                          <ChatbotBubble key={index}>
+                            <BubbleTypo>{m.text}</BubbleTypo>
+                          </ChatbotBubble>
+                        )
+                      }
+                    }}
+                  />
                 </ChatMessageCont>
                 <TextAreaBox>
                   <TextField
@@ -170,12 +190,13 @@ function App() {
 
 export default App
 
-const TestButton = styled(Button)({
+const TextBox = styled(Box)({
   position: 'fixed',
   top: '0',
   left: '50%',
   transform: 'translateX(-50%)',
-  background: 'red',
+  display: 'flex',
+  gap: '8px',
 })
 
 const TestFlexBox = styled(ColumnBox)({
@@ -216,6 +237,22 @@ const ChatMessageCont = styled(ColumnBox)({
   overflowY: 'auto',
   scrollbarWidth: 'thin',
   gap: '8px',
+
+  '& >div[data-testid="virtuoso-scroller"]': {
+    border: '1px solid',
+    scrollbarWidth: 'thin',
+  },
+
+  '& div[data-testid="virtuoso-item-list"]': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+
+  '& div[data-testid="virtuoso-item-list"] > div': {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 })
 
 const ChatbotBubble = styled(Box)({})
