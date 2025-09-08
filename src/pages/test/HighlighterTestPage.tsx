@@ -14,14 +14,14 @@ const HighlighterTestPage = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [message, setMessage] = useState('')
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [searchWords, setSearchWords] = useState<string[]>(['']) // 실시간 검색어 업데이트 상태
+  const [searchWords, setSearchWords] = useState<string>('') // 검색어 상태를 문자열로 변경
 
   // 채팅 전송
   const onSendChat = () => {
     if (!message.trim() && !imagePreview) return
 
-    setMessages([
-      ...messages,
+    setMessages((prevMessages) => [
+      ...prevMessages,
       {
         type: 'user',
         ...(message ? { text: message } : {}),
@@ -50,10 +50,26 @@ const HighlighterTestPage = () => {
     }
   }
 
+  // Enter 시 message값을 m.text에 저장 (검색 가능하도록)
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      onSendChat() // 채팅 전송
+    }
+  }
+
   // 검색어 변경
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSearchWords = e.target.value.split(' ') // 스페이스로 구분된 여러 검색어 지원
-    setSearchWords(newSearchWords)
+    setSearchWords(e.target.value) // 입력값을 그대로 searchWords에 반영
+  }
+
+  // 하이라이팅된 텍스트 생성
+  const highlightedText = (text: string) => {
+    if (!searchWords) return text // 검색어가 비어있으면 그대로 반환
+
+    // 정규식을 사용하여 검색어 부분을 <mark>로 감싸줍니다.
+    const regex = new RegExp(`(${searchWords})`, 'gi')
+    return text.replace(regex, '<mark>$1</mark>')
   }
 
   return (
@@ -72,7 +88,6 @@ const HighlighterTestPage = () => {
                 <Typography>검색</Typography>
                 <Input
                   sx={{ flex: '1' }}
-                  value={searchWords.join(' ')} // 현재 검색어들 보여주기
                   onChange={handleSearchInputChange} // 입력값을 searchWords에 반영
                 />
               </AlignCenter>
@@ -99,7 +114,7 @@ const HighlighterTestPage = () => {
                           {m.text && (
                             <div
                               dangerouslySetInnerHTML={{
-                                __html: m.text, // HTML 텍스트를 그대로 렌더링
+                                __html: highlightedText(m.text), // 최신 텍스트에 대해서만 하이라이팅 적용
                               }}
                             />
                           )}
@@ -114,7 +129,7 @@ const HighlighterTestPage = () => {
                           {m.text && (
                             <Highlighter
                               highlightClassName="highlight"
-                              searchWords={searchWords}
+                              searchWords={[searchWords]} // 하나의 문자열로 searchWords 전달
                               autoEscape
                               textToHighlight={m.text}
                             />
@@ -146,12 +161,7 @@ const HighlighterTestPage = () => {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onPaste={handlePaste}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault()
-                      onSendChat()
-                    }
-                  }}
+                  onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => handleKeyDown(e)}
                 />
                 <SendButton onClick={onSendChat}>전송</SendButton>
               </TextAreaBox>
