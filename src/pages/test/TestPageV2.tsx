@@ -105,7 +105,6 @@ const TestPage = () => {
         setSseLogs((p) => [...p, `📥 data: ${m.data}`])
       },
       onNamedEvent: (eventName, message) => {
-        // eventName은 'tick'이 됩니다.
         const data = message.data
         setSseItems((p) => [...p, data])
         setSseLogs((p) => [...p, `📥 [${eventName}] data: ${data}`])

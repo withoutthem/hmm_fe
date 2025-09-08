@@ -4,5 +4,10 @@ import '@assets/fonts/pretendard/pretendard.css'
 import '@assets/fonts/notoSans/notoSansKR.css'
 import '@styles/reset.css'
 import '@styles/global.css'
+import AppErrorBoundary from '@app/providers/AppErrorBoundary'
 
-createRoot(document.getElementById('root')!).render(<App />)
+createRoot(document.getElementById('root')!).render(
+  <AppErrorBoundary>
+    <App />
+  </AppErrorBoundary>
+)

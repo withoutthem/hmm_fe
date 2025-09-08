@@ -6,6 +6,7 @@ import { AlignCenter, FlexBox } from '@shared/ui/layoutUtilComponents'
 import MarkDownAnimator from '@pages/test/MarkDownAnimator'
 import useUIStore from '@domains/common/ui/store/ui.store'
 import { useEffect, useState } from 'react'
+import { Virtuoso } from 'react-virtuoso'
 
 const ChatPage = () => {
   const messages = useUIStore((s) => s.messages)
@@ -49,56 +50,55 @@ const ChatPage = () => {
           </Button>
         </TestFlexBox>
 
-        {/* 메세지들 렌더 */}
-        <MessageList>
-          {messages.map((m) => {
-            if (m.sender === 'chatbot') {
-              if (m.type === 'message') {
-                return (
-                  <ChatbotBubbleWrap key={m.id} className={'chatbot-bubble'}>
-                    <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
-                      <MarkDownAnimator tokens={m.tokens ?? []} speed={20} />
-                    </DelayedRender>
-                  </ChatbotBubbleWrap>
-                )
+        {/* 메세지 렌더링 */}
+        <MessagesContainer>
+          <Virtuoso
+            data={messages}
+            overscan={0} // 렌더링 범위
+            itemContent={(index, m) => {
+              if (m.sender === 'chatbot') {
+                if (m.type === 'message') {
+                  return (
+                    <ChatbotBubbleWrap key={m.id}>
+                      <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
+                        <MarkDownAnimator tokens={m.tokens ?? []} speed={20} />
+                      </DelayedRender>
+                    </ChatbotBubbleWrap>
+                  )
+                }
+                if (m.type === 'fallback') {
+                  return (
+                    <ChatbotBubbleWrap key={m.id}>
+                      <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
+                        <FallbackBubbleCon>🤖 Fallback 응답입니다.</FallbackBubbleCon>
+                      </DelayedRender>
+                    </ChatbotBubbleWrap>
+                  )
+                }
               }
 
-              if (m.type === 'fallback') {
-                return (
-                  <ChatbotBubbleWrap key={m.id} className={'fallback-bubble'}>
-                    <DelayedRender delayMs={3000} placeholder={<LoadingBubble />}>
-                      <FallbackBubbleCon>🤖 Fallback 응답입니다.</FallbackBubbleCon>
-                    </DelayedRender>
-                  </ChatbotBubbleWrap>
-                )
-              }
-            }
-
-            // sender === 'user'
-            return (
-              <UserBubbleWrap key={m.id} className={'user-bubble'}>
-                <UserBubbleCon>
-                  {/* ctrl + v 이미지들 */}
-                  {m.images?.length ? (
-                    <UserImgBubble className={'user-bubble-img'}>
-                      {m.images.map((file, idx) => (
-                        <UserUpdateImgCon key={idx}>
-                          <UserUpdateImg
-                            src={URL.createObjectURL(file)}
-                            alt={`user-${m.id}-${idx}`}
-                          />
-                        </UserUpdateImgCon>
-                      ))}
-                    </UserImgBubble>
-                  ) : null}
-                  {m.message && (
-                    <UserTextBubble className={'user-bubble-text'}>{m.message}</UserTextBubble>
-                  )}
-                </UserBubbleCon>
-              </UserBubbleWrap>
-            )
-          })}
-        </MessageList>
+              return (
+                <UserBubbleWrap key={m.id}>
+                  <UserBubbleCon>
+                    {m.images?.length ? (
+                      <UserImgBubble>
+                        {m.images.map((file, idx) => (
+                          <UserUpdateImgCon key={idx}>
+                            <UserUpdateImg
+                              src={URL.createObjectURL(file)}
+                              alt={`user-${m.id}-${idx}`}
+                            />
+                          </UserUpdateImgCon>
+                        ))}
+                      </UserImgBubble>
+                    ) : null}
+                    {m.message && <UserTextBubble>{m.message}</UserTextBubble>}
+                  </UserBubbleCon>
+                </UserBubbleWrap>
+              )
+            }}
+          />
+        </MessagesContainer>
       </Layout>
       <PublishFloating />
     </>
@@ -157,10 +157,15 @@ const TestFlexBox = styled(FlexBox)({
   gap: '8px',
 })
 
-const MessageList = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 12,
+const MessagesContainer = styled(Box)({
+  width: '100%',
+  height: '100%',
+
+  '& div[data-testid="virtuoso-scroller"]': {
+    flex: '1',
+    gap: '8px',
+    scrollbarWidth: 'thin',
+  },
 })
 
 const ChatbotBubbleWrap = styled(Box)({
@@ -177,6 +182,7 @@ const FallbackBubbleCon = styled(Box)({
 const UserBubbleWrap = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
+  marginTop: '8px',
   alignItems: 'flex-end',
   gap: 8,
 })
