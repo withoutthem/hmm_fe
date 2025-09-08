@@ -246,10 +246,12 @@ const HighlighterTestPage = () => {
               <Typography>DapTalk Test</Typography>
             </TitleBox>
             <ChatMessageCont>Bubble</ChatMessageCont>
-            <TextAreaBox>
-              <TextField />
-              <SendButton>전송</SendButton>
-            </TextAreaBox>
+            <MessageInputContainer>
+              <TextAreaBox>
+                <TextField />
+                <SendButton>전송</SendButton>
+              </TextAreaBox>
+            </MessageInputContainer>
           </ChatBoxCon>
         </ChatBox>
 
@@ -287,10 +289,12 @@ const HighlighterTestPage = () => {
               <Typography>실제화면</Typography>
             </TitleBox>
             <ChatMessageCont>Bubble</ChatMessageCont>
-            <TextAreaBox>
-              <TextField />
-              <SendButton>전송</SendButton>
-            </TextAreaBox>
+            <MessageInputContainer>
+              <TextAreaBox>
+                <TextField />
+                <SendButton>전송</SendButton>
+              </TextAreaBox>
+            </MessageInputContainer>
           </ChatBoxCon>
         </ChatBox>
       </Wrap>
@@ -392,16 +396,14 @@ const MessageInputContainer = styled(Box)({
   borderTop: '1px solid',
   padding: '6px',
   display: 'flex',
-  flexDirection: 'column',
+  flexWrap: 'wrap',
   gap: '6px',
 })
 
-const MessageImgBox = styled(Box)({
-  display: 'flex',
-  flexWrap: 'wrap',
-})
+const MessageImgBox = styled(Box)({})
 
 const TextAreaBox = styled(FlexBox)({
+  width: '100%',
   gap: '4px',
   alignItems: 'center',
   '&>div': { flex: '1' },
