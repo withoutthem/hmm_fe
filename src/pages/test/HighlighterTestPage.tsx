@@ -1,36 +1,36 @@
 import { Box, Button, Input, styled, TextField, Typography } from '@mui/material'
 import { AlignCenter, ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
 import { Virtuoso } from 'react-virtuoso'
-import Highlighter from 'react-highlight-words'
 import { useState } from 'react'
+import DOMPurify from 'dompurify'
 
 interface ChatMessage {
   type: 'chatbot' | 'user'
   text?: string
-  image?: string // 이미지 Base64 or URL
+  image?: string[] // 이미지 Base64 or URL
 }
 
 const HighlighterTestPage = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [message, setMessage] = useState('')
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [searchWords, setSearchWords] = useState<string>('') // 검색어 상태를 문자열로 변경
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]) // 여러 이미지 미리보기 상태로 변경
+  const [searchWords, setSearchWords] = useState<string[]>([]) // searchWords를 배열로 변경
 
   // 채팅 전송
   const onSendChat = () => {
-    if (!message.trim() && !imagePreview) return
+    if (!message.trim() && imagePreviews.length === 0) return // 이미지 미리보기도 체크
 
     setMessages((prevMessages) => [
       ...prevMessages,
       {
         type: 'user',
         ...(message ? { text: message } : {}),
-        ...(imagePreview ? { image: imagePreview } : {}),
+        ...(imagePreviews.length > 0 ? { image: imagePreviews } : {}), // 여러 이미지 배열을 그대로 넣음
       },
     ])
 
     setMessage('')
-    setImagePreview(null) // 이미지 초기화
+    setImagePreviews([]) // 이미지 미리보기 초기화
   }
 
   // 이미지 붙여넣기
@@ -42,7 +42,7 @@ const HighlighterTestPage = () => {
         if (file) {
           const reader = new FileReader()
           reader.onload = () => {
-            setImagePreview(reader.result as string)
+            setImagePreviews((prev) => [...prev, reader.result as string]) // 새로운 이미지를 배열에 추가
           }
           reader.readAsDataURL(file)
         }
@@ -60,16 +60,29 @@ const HighlighterTestPage = () => {
 
   // 검색어 변경
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchWords(e.target.value) // 입력값을 그대로 searchWords에 반영
+    // 공백을 기준으로 단어의 갯수를 나눔
+    const words = e.target.value.split(' ').filter((word) => word.trim() !== '')
+    setSearchWords(words)
+  }
+
+  // 검색어 이스케이프
+  const escapeRegExp = (string: string) => {
+    return string.replace(/[.*+?^=!:${}()|/\\]/g, '\\$&')
   }
 
   // 하이라이팅된 텍스트 생성
   const highlightedText = (text: string) => {
-    if (!searchWords) return text // 검색어가 비어있으면 그대로 반환
+    if (searchWords.length === 0) return text
 
-    // 정규식을 사용하여 검색어 부분을 <mark>로 감싸줍니다.
-    const regex = new RegExp(`(${searchWords})`, 'gi')
-    return text.replace(regex, '<mark>$1</mark>')
+    // 각 searchWords를 mark 태그로 감싸기
+    let highlighted = text
+    searchWords.forEach((word) => {
+      const escapedWord = escapeRegExp(word) // 정규식 안전하게 이스케이프
+      const regex = new RegExp(`(${escapedWord})`, 'gi')
+      highlighted = highlighted.replace(regex, '<mark>$1</mark>')
+    })
+
+    return DOMPurify.sanitize(highlighted) // XSS 공격 방지
   }
 
   return (
@@ -86,10 +99,7 @@ const HighlighterTestPage = () => {
               <Typography>라이브챗 Test</Typography>
               <AlignCenter sx={{ gap: '4px' }}>
                 <Typography>검색</Typography>
-                <Input
-                  sx={{ flex: '1' }}
-                  onChange={handleSearchInputChange} // 입력값을 searchWords에 반영
-                />
+                <Input sx={{ flex: '1' }} onChange={handleSearchInputChange} />
               </AlignCenter>
             </TitleBox>
             <ChatMessageCont>
@@ -102,19 +112,22 @@ const HighlighterTestPage = () => {
                       <UserBubble key={index}>
                         <BubbleTypoBox>
                           {/*이미지미리보기*/}
-                          {m.image && (
+                          {Array.isArray(m.image) && m.image.length > 0 && (
                             <div>
-                              <img
-                                src={m.image}
-                                alt="user upload"
-                                style={{ maxWidth: '200px', borderRadius: '8px' }}
-                              />
+                              {m.image.map((img, index) => (
+                                <img
+                                  key={index}
+                                  src={img}
+                                  alt={`user upload ${index + 1}`}
+                                  style={{ maxWidth: '200px', borderRadius: '8px', margin: '5px' }}
+                                />
+                              ))}
                             </div>
                           )}
                           {m.text && (
                             <div
                               dangerouslySetInnerHTML={{
-                                __html: highlightedText(m.text), // 최신 텍스트에 대해서만 하이라이팅 적용
+                                __html: highlightedText(m.text), // 검색된 텍스트에 대해서만 하이라이팅 적용
                               }}
                             />
                           )}
@@ -127,11 +140,14 @@ const HighlighterTestPage = () => {
                       <ChatbotBubble key={index}>
                         <BubbleTypoBox>
                           {m.text && (
-                            <Highlighter
-                              highlightClassName="highlight"
-                              searchWords={[searchWords]} // 하나의 문자열로 searchWords 전달
-                              autoEscape
-                              textToHighlight={m.text}
+                            /**
+                             * 가져오는 값으로 수정해야 함
+                             * 가져오는 값으로 수정해야 함
+                             * */
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: highlightedText(m.text), // 검색된 텍스트에 대해서만 하이라이팅 적용
+                              }}
                             />
                           )}
                         </BubbleTypoBox>
@@ -141,17 +157,17 @@ const HighlighterTestPage = () => {
                 }}
               />
             </ChatMessageCont>
-            <div>
+            <MessageInputContainer>
               {/* 이미지 미리보기 */}
-              {imagePreview && (
-                <div style={{ marginTop: '10px' }}>
+              {imagePreviews.map((image, index) => (
+                <MessageImgBox key={index}>
                   <img
-                    src={imagePreview}
-                    alt="미리보기"
+                    src={image}
+                    alt={`미리보기 ${index + 1}`}
                     style={{ maxWidth: '200px', border: '1px solid #ccc' }}
                   />
-                </div>
-              )}
+                </MessageImgBox>
+              ))}
 
               <TextAreaBox>
                 <TextField
@@ -160,12 +176,12 @@ const HighlighterTestPage = () => {
                   fullWidth
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  onPaste={handlePaste}
+                  onPaste={handlePaste} // 이미지 붙여넣기 이벤트 처리
                   onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => handleKeyDown(e)}
                 />
                 <SendButton onClick={onSendChat}>전송</SendButton>
               </TextAreaBox>
-            </div>
+            </MessageInputContainer>
           </ChatBoxCon>
         </ChatBox>
 
@@ -192,15 +208,22 @@ const HighlighterTestPage = () => {
             <DataViewer>
               {messages.map((msg, idx) => (
                 <div key={idx}>
+                  {/* 이미지 배열이 있는 경우, 여러 이미지 출력 */}
                   {msg.image && (
                     <div>
-                      <img
-                        src={msg.image}
-                        alt="uploaded"
-                        style={{ maxWidth: '200px', borderRadius: '8px' }}
-                      />
+                      {msg.image.map((imgSrc, imageIndex) => (
+                        <div key={imageIndex}>
+                          <img
+                            src={imgSrc}
+                            alt={`uploaded-${imageIndex}`}
+                            style={{ maxWidth: '200px', borderRadius: '8px' }}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
+
+                  {/* 텍스트 출력 */}
                   {msg.text?.split('\n').map((line, i) => (
                     <span key={i}>
                       {line}
@@ -365,11 +388,22 @@ const DataViewer = styled(Box)({
 
 const UserBubble = styled(Box)({ alignSelf: 'flex-end' })
 
+const MessageInputContainer = styled(Box)({
+  borderTop: '1px solid',
+  padding: '6px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '6px',
+})
+
+const MessageImgBox = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+})
+
 const TextAreaBox = styled(FlexBox)({
   gap: '4px',
-  padding: '6px',
   alignItems: 'center',
-  borderTop: '1px solid',
   '&>div': { flex: '1' },
   '& input': { padding: '0' },
 })
