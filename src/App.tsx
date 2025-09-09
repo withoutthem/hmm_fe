@@ -18,8 +18,14 @@ function App() {
     throw new Error('렌더링 중에 발생한 에러! (ErrorBoundary에서 잡힘)')
   }
 
+  const pageKeys = Object.keys(testPageMapper) as (keyof typeof testPageMapper)[]
+
   const switchPage = () => {
-    setPage((p) => (p === 'test' ? 'test2' : p === 'test2' ? 'highlighter' : 'test'))
+    setPage((p) => {
+      const idx = pageKeys.indexOf(p)
+      const nextIdx = (idx + 1) % pageKeys.length
+      return pageKeys[nextIdx] as (typeof pageKeys)[number]
+    })
   }
 
   return (

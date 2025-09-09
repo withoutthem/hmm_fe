@@ -14,7 +14,7 @@ const HighlighterTestPage = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [message, setMessage] = useState('')
   const [imagePreviews, setImagePreviews] = useState<string[]>([]) // 여러 이미지 미리보기 상태로 변경
-  const [searchWords, setSearchWords] = useState<string[]>([]) // searchWords를 배열로 변경
+  const [searchWords, setSearchWords] = useState<string[]>([]) // 검색어
 
   // 채팅 전송
   const onSendChat = () => {
