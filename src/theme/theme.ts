@@ -254,12 +254,8 @@ const theme = createTheme({
           style: {
             backgroundColor: '#20265B',
             color: '#fff',
-            '&&:active ': {
-              backgroundColor: '#181C44',
-            },
-            '&:disabled': {
-              color: '#797D9D',
-            },
+            '&&:active ': { backgroundColor: '#181C44' },
+            '&:disabled': { color: '#797D9D' },
           },
         },
         {
@@ -267,12 +263,8 @@ const theme = createTheme({
           style: {
             backgroundColor: '#E9ECEF',
             color: '#343A40',
-            '&:active ': {
-              backgroundColor: '#D2D5D8',
-            },
-            '&:disabled': {
-              color: '#B2BBC3',
-            },
+            '&:active ': { backgroundColor: '#D2D5D8' },
+            '&:disabled': { color: '#B2BBC3' },
           },
         },
       ],
@@ -306,16 +298,14 @@ const theme = createTheme({
           style: {
             gap: '8px',
 
-            '& button.MuiButtonGroup-firstButton': {
-              width: '35%',
-            },
-            '& button.MuiButtonGroup-lastButton': {
-              width: '65%',
-            },
+            '& button.MuiButtonGroup-firstButton': { width: '35%' },
+            '& button.MuiButtonGroup-lastButton': { width: '65%' },
           },
         },
         {
-          props: { variant: 'column' },
+          props: {
+            variant: 'column',
+          },
           style: {
             gap: '8px',
             flexDirection: 'column',
@@ -356,29 +346,58 @@ const theme = createTheme({
       variants: [
         {
           props: { variant: 'secondary' },
-          style: {
-            color: '#495057',
-          },
+          style: { color: '#495057' },
         },
         {
           props: { variant: 'tertiary' },
-          style: {
-            color: '#6D747B',
-          },
+          style: { color: '#6D747B' },
         },
         {
           props: { variant: 'quaternary' },
-          style: {
-            color: '#878F96',
-          },
+          style: { color: '#878F96' },
         },
         {
           props: { variant: 'disabled' },
-          style: {
-            color: '#B2BBC3',
-          },
+          style: { color: '#B2BBC3' },
         },
       ],
+    },
+
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          background: '#fff',
+          borderRadius: '8px',
+
+          '& fieldset': {
+            borderRadius: '8px',
+            top: 0,
+          },
+
+          '& legend': {
+            display: 'none',
+          },
+
+          '& .MuiFormLabel-root': {
+            display: 'none',
+          },
+
+          '& .MuiInputBase-root.MuiOutlinedInput-root:hover': {
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'blue' },
+          },
+
+          '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused': {
+            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'red', borderWidth: '1px' },
+          },
+
+          '& .MuiTextField-root': {
+            background: 'transparent',
+            borderRadius: '12px',
+
+            '& label.Mui-focused': { display: 'none' },
+          },
+        },
+      },
     },
   },
 })

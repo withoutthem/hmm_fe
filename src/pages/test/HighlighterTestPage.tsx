@@ -30,7 +30,7 @@ const HighlighterTestPage = () => {
     ])
 
     setMessage('')
-    setImagePreviews([]) // 이미지 미리보기 초기화
+    setImagePreviews([])
   }
 
   // 이미지 붙여넣기
@@ -65,7 +65,7 @@ const HighlighterTestPage = () => {
     setSearchWords(words)
   }
 
-  // 검색어 이스케이프
+  // 특수문자 검색어 이스케이프
   const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^=!:${}()|/\\]/g, '\\$&')
   }

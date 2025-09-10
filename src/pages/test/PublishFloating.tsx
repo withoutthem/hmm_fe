@@ -1,6 +1,8 @@
-import { Box, Button, ButtonGroup, styled } from '@mui/material'
+import { Autocomplete, Box, Button, ButtonGroup, styled, TextField } from '@mui/material'
 
 const PublishFloating = () => {
+  const options = ['가나다', '나다라', '마바사', '아자']
+
   return (
     <StyledPublishFloating id={'publish'}>
       <PublushButton
@@ -70,6 +72,25 @@ const PublishFloating = () => {
             `}
           </TestCodeBox>
         </TestBubble>
+
+        <TestBubble>
+          <Autocomplete
+            disablePortal
+            id="autocomplete-example"
+            options={options}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Choose an option"
+                size="small"
+                fullWidth
+                InputLabelProps={{ className: '' }}
+              />
+            )}
+          />
+        </TestBubble>
+
+        <TestBubble sx={{ height: '500px' }} />
       </StyledPublishContainer>
     </StyledPublishFloating>
   )
@@ -95,8 +116,10 @@ const StyledPublishFloating = styled(Box)({
   bottom: 0,
   width: '100vw',
   height: '100vh',
+  overflowY: 'auto',
   background: '#fff',
   display: 'none',
+  zIndex: 999,
 })
 
 const StyledPublishContainer = styled(Box)({

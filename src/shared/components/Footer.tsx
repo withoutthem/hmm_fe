@@ -1,4 +1,15 @@
-import { Box, type BoxProps, IconButton, List, ListItem, styled, TextField } from '@mui/material'
+import {
+  Box,
+  type BoxProps,
+  IconButton,
+  List,
+  ListItem,
+  styled,
+  TextField,
+  ClickAwayListener,
+  keyframes,
+  Autocomplete,
+} from '@mui/material'
 import useUIStore, { type UserMessage } from '@domains/common/ui/store/ui.store'
 import { useState } from 'react'
 import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
@@ -18,9 +29,9 @@ const Footer = () => {
   const messages = useUIStore((s) => s.messages)
   const setMessages = useUIStore((s) => s.setMessages)
 
-  const [allSuggestions, setAllSuggestions] = useState<string[]>([])
-  const [suggestions, setSuggestions] = useState<string[]>([])
-  const [suggestionsPage, setSuggestionsPage] = useState(1)
+  const [allSuggestions, setAllSuggestions] = useState<string[]>([]) // 모든 검색어
+  const [suggestions, setSuggestions] = useState<string[]>([]) //화면에 보이는 검색어
+  const [suggestionsPage, setSuggestionsPage] = useState(1) // 검색어 페이지네이션
 
   // Ctrl + V로 이미지 붙여넣기
   const onPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
@@ -90,7 +101,7 @@ const Footer = () => {
         .filter((title) => title.includes(query))
 
       setAllSuggestions(filtered) // 전체 저장
-      setSuggestions(filtered.slice(0, 5)) // 처음 10개만 노출
+      setSuggestions(filtered.slice(0, 5))
       setSuggestionsPage(1)
     } catch (err) {
       console.error('API Error:', err)
@@ -140,57 +151,59 @@ const Footer = () => {
   }
 
   return (
-    <StyledFooter component={'footer'}>
-      <InputContainer>
-        <ImgTextField>
-          {/* 붙여넣은 이미지 미리보기 */}
-          {images.length > 0 && (
-            <ImagePreview>
-              {images.map((file, idx) => (
-                <ImagePreviewItem key={idx}>
-                  <img src={URL.createObjectURL(file)} alt={`pasted-${idx}`} />
-                  <DeleteButton onClick={() => onRemoveImage(idx)}>×</DeleteButton>
-                </ImagePreviewItem>
-              ))}
-            </ImagePreview>
-          )}
-
-          <ColumnBox>
-            {/* 자동완성 */}
-            {suggestions.length > 0 && (
-              <SuggestionBox className={'suggestion-box'}>
-                <SuggestionList onScroll={onScroll}>
-                  {suggestions.map((s, idx) => (
-                    <SuggestionListItem key={idx} onClick={() => onSuggestionClick(s)}>
-                      <span dangerouslySetInnerHTML={{ __html: highlightMatch(s, message) }} />
-                    </SuggestionListItem>
-                  ))}
-                </SuggestionList>
-              </SuggestionBox>
+    <ClickAwayListener onClickAway={() => setSuggestions([])}>
+      <StyledFooter component={'footer'}>
+        <InputContainer>
+          <ImgTextField>
+            {/* 붙여넣은 이미지 미리보기 */}
+            {images.length > 0 && (
+              <ImagePreview>
+                {images.map((file, idx) => (
+                  <ImagePreviewItem key={idx}>
+                    <img src={URL.createObjectURL(file)} alt={`pasted-${idx}`} />
+                    <DeleteButton onClick={() => onRemoveImage(idx)}>×</DeleteButton>
+                  </ImagePreviewItem>
+                ))}
+              </ImagePreview>
             )}
 
-            <ChatInputBar className={'chat-input-bar'}>
-              {/* 메시지 입력 영역 */}
-              <StyledTextField
-                multiline
-                maxRows={3}
-                placeholder="궁금한 내용을 입력해주세요."
-                value={message}
-                onChange={onMessageChange}
-                onPaste={onPaste}
-                variant="outlined"
-                fullWidth
-                onKeyDown={onMessageKeyDown}
-              />
-              {/* 보내기 버튼 */}
-              <SendButton onClick={onMessageSend}>
-                <SendIcon />
-              </SendButton>
-            </ChatInputBar>
-          </ColumnBox>
-        </ImgTextField>
-      </InputContainer>
-    </StyledFooter>
+            <ColumnBox sx={{ position: 'relative' }}>
+              {/* 자동완성 */}
+              {suggestions.length > 0 && (
+                <SuggestionBox>
+                  <SuggestionList onScroll={onScroll}>
+                    {suggestions.map((s, idx) => (
+                      <SuggestionListItem key={idx} onClick={() => onSuggestionClick(s)}>
+                        <span dangerouslySetInnerHTML={{ __html: highlightMatch(s, message) }} />
+                      </SuggestionListItem>
+                    ))}
+                  </SuggestionList>
+                </SuggestionBox>
+              )}
+              <ChatInputBar className={'chat-input-bar'}>
+                {/* 메시지 입력 영역 */}
+                <StyledTextField
+                  multiline
+                  maxRows={3}
+                  placeholder="궁금한 내용을 입력해주세요."
+                  value={message}
+                  onChange={onMessageChange}
+                  onPaste={onPaste}
+                  variant="outlined"
+                  fullWidth
+                  onKeyDown={onMessageKeyDown}
+                />
+
+                {/* 보내기 버튼 */}
+                <SendButton onClick={onMessageSend}>
+                  <SendIcon />
+                </SendButton>
+              </ChatInputBar>
+            </ColumnBox>
+          </ImgTextField>
+        </InputContainer>
+      </StyledFooter>
+    </ClickAwayListener>
   )
 }
 
@@ -199,7 +212,6 @@ export default Footer
 const StyledFooter = styled(Box)<BoxProps>({
   width: '100%',
   background: '#fff',
-  // padding: '8px 20px',
   boxSizing: 'border-box',
   display: 'flex',
   fonSzie: '16px',
@@ -272,16 +284,37 @@ const ImagePreview = styled(Box)({
   padding: '8px 8px 0 8px',
 })
 
+const fadeInUp = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(0%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-100%);
+  }
+`
+
 const SuggestionBox = styled(Box)({
+  position: 'absolute',
+  top: '0',
+  left: '0',
+  // transition: 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out',
+  willChange: 'transform, opacity',
   background: '#fff',
   boxShadow: '0 -8px 26px #22222214',
   borderRadius: '24px 24px 0 0',
   margin: 0,
   padding: '36px 0px 16px',
+  width: '100%',
+  opacity: 0,
+  transform: 'translateY(0%)',
+  animation: `${fadeInUp} .3s ease-out`,
+  animationFillMode: 'forwards',
 })
 
 const SuggestionList = styled(List)({
-  maxHeight: '122px',
+  maxHeight: '102px',
   overflowY: 'auto',
   padding: '0',
 })
@@ -301,7 +334,10 @@ const SuggestionListItem = styled(ListItem)({
 
 const ChatInputBar = styled(FlexBox)({
   gap: '8px',
+  position: 'relative',
   padding: '8px 20px',
+  background: '#fff',
+  zIndex: '1',
 })
 
 const StyledTextField = styled(TextField)({
