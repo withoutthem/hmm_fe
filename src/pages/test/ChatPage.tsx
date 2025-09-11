@@ -1,15 +1,9 @@
-import { Button, styled, Box, CircularProgress } from '@mui/material'
+import { Button, styled, Box } from '@mui/material'
 import Layout from '@shared/components/Layout'
 import { WS_TEST_01, WS_TEST_02 } from '@domains/common/components/testData'
 import PublishFloating, { PublushButton } from '@pages/test/PublishFloating'
-import { AlignCenter, FlexBox } from '@shared/ui/layoutUtilComponents'
-import MarkDownAnimator from '@pages/test/MarkDownAnimator'
-import useUIStore, {
-  type ChatbotFallback,
-  type ChatbotMessage,
-  type UserMessage,
-} from '@domains/common/ui/store/ui.store'
-import { useEffect, useState } from 'react'
+import { FlexBox } from '@shared/ui/layoutUtilComponents'
+import useUIStore from '@domains/common/ui/store/ui.store'
 import { Virtuoso } from 'react-virtuoso'
 import ChatbotMessageBubble from '@pages/test/components/ChatMessageBubble'
 import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble'

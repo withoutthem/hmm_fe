@@ -383,10 +383,12 @@ const theme = createTheme({
           },
 
           '& .MuiInputBase-root.MuiOutlinedInput-root:hover': {
+            // hover했을때
             '& .MuiOutlinedInput-notchedOutline': { borderColor: 'blue' },
           },
 
           '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused': {
+            //focus되었을때
             '& .MuiOutlinedInput-notchedOutline': { borderColor: 'red', borderWidth: '1px' },
           },
 

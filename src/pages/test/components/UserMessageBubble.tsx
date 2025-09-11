@@ -1,23 +1,30 @@
 import { Box, styled } from '@mui/material'
 import type { UserMessage } from '@domains/common/ui/store/ui.store'
+import DOMPurify from 'dompurify'
+import { useRef } from 'react'
+import { htmlToText } from 'html-to-text'
 
-const UserMessageBubble = ({ m, index }: { m: UserMessage; index: number }) => (
-  <UserBubbleWrap key={index}>
-    <UserBubbleCon>
-      {m.images?.length ? (
-        <UserImgBubble>
-          {m.images.map((file, idx) => (
-            <UserUpdateImgCon key={idx}>
-              <UserUpdateImg src={URL.createObjectURL(file)} alt={`user-${index}-${idx}`} />
-            </UserUpdateImgCon>
-          ))}
-        </UserImgBubble>
-      ) : null}
+const UserMessageBubble = ({ m, index }: { m: UserMessage; index: number }) => {
+  const safeMessage = m.message ? DOMPurify().sanitize(m.message) : ''
 
-      {m.message && <UserTextBubble>{m.message}</UserTextBubble>}
-    </UserBubbleCon>
-  </UserBubbleWrap>
-)
+  return (
+    <UserBubbleWrap key={index}>
+      <UserBubbleCon>
+        {m.images?.length ? (
+          <UserImgBubble>
+            {m.images.map((file, idx) => (
+              <UserUpdateImgCon key={idx}>
+                <UserUpdateImg src={URL.createObjectURL(file)} alt={`user-${index}-${idx}`} />
+              </UserUpdateImgCon>
+            ))}
+          </UserImgBubble>
+        ) : null}
+
+        {m.message && <UserTextBubble dangerouslySetInnerHTML={{ __html: safeMessage }} />}
+      </UserBubbleCon>
+    </UserBubbleWrap>
+  )
+}
 
 export default UserMessageBubble
 

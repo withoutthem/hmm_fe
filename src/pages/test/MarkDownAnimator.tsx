@@ -3,6 +3,8 @@ import { Box, IconButton, styled, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked, type RendererObject, type Tokens } from 'marked'
 import { ColumnBox } from '@shared/ui/layoutUtilComponents'
+import DOMPurify from 'dompurify'
+import { htmlToText } from 'html-to-text' // html 태그 제거용
 
 type WSTestPageProps = {
   tokens: string[]
@@ -88,17 +90,45 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
   }, [tokens, speed])
 
   // HTML 파싱
-  const parsedHtml = useMemo(() => parseMd(messages), [messages, parseMd])
+  const parsedHtml = useMemo(() => {
+    const rawHtml = parseMd(messages) as string
+    return DOMPurify.sanitize(rawHtml)
+  }, [messages, parseMd])
 
   const onCopy = () => {
-    const raw = contentRef.current?.innerText ?? ''
-    const cleaned = raw
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line !== '')
-      .join('\n')
+    const raw = contentRef.current?.innerHTML ?? ''
 
-    navigator.clipboard.writeText(cleaned).catch(() => {})
+    const safeHtml = DOMPurify.sanitize(raw)
+
+    const text = htmlToText(safeHtml, {
+      wordwrap: false, // 자동 줄바꿈 X
+      selectors: [
+        {
+          selector: 'a',
+          options: { hideLinkHrefIfSameAsText: true }, // 링크 처리 옵션
+        },
+      ],
+    })
+
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+
+    textarea.style.position = 'fixed'
+    textarea.style.top = '0'
+    textarea.style.left = '-9999px'
+
+    document.body.appendChild(textarea)
+    textarea.focus()
+    textarea.select()
+
+    try {
+      document.execCommand('copy')
+      console.log(text)
+    } catch (err) {
+      console.error('복사 실패', err)
+    }
+
+    document.body.removeChild(textarea)
   }
 
   return (
