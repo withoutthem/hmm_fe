@@ -32,6 +32,7 @@
     "dayjs": "^1.11.13",
     "dompurify": "^3.2.6",
     "framer-motion": "^12.23.12",
+    "html-to-plaintext": "^0.1.1",
     "i18next": "^25.4.1",
     "marked-react": "^3.0.1",
     "motion": "^11.15.0",
@@ -43,12 +44,12 @@
     "react-i18next": "^15.0.3",
     "react-router-dom": "^7.0.2",
     "react-virtuoso": "^4.14.0",
+    "string-strip-html": "^13.4.13",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@jest/globals": "^30.0.5",
-    "@types/html-to-text": "^9.0.4",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",

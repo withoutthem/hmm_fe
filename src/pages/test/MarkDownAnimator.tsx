@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked, type RendererObject, type Tokens } from 'marked'
 import { ColumnBox } from '@shared/ui/layoutUtilComponents'
 import DOMPurify from 'dompurify'
-import { htmlToText } from 'html-to-text' // html 태그 제거용
+import { stripHtml } from 'string-strip-html'
 
 type WSTestPageProps = {
   tokens: string[]
@@ -98,20 +98,17 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
   const onCopy = () => {
     const raw = contentRef.current?.innerHTML ?? ''
 
+    // 1. HTML sanitize
     const safeHtml = DOMPurify.sanitize(raw)
 
-    const text = htmlToText(safeHtml, {
-      wordwrap: false, // 자동 줄바꿈 X
-      selectors: [
-        {
-          selector: 'a',
-          options: { hideLinkHrefIfSameAsText: true }, // 링크 처리 옵션
-        },
-      ],
+    // 2. HTML 태그 제거 + 줄바꿈 처리
+    const { result } = stripHtml(safeHtml, {
+      skipHtmlDecoding: false, // HTML 엔티티(&nbsp; 등)도 텍스트로 변환
     })
 
+    // 3. textarea 방식으로 복사
     const textarea = document.createElement('textarea')
-    textarea.value = text
+    textarea.value = result
 
     textarea.style.position = 'fixed'
     textarea.style.top = '0'
@@ -123,7 +120,7 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
 
     try {
       document.execCommand('copy')
-      console.log(text)
+      console.log('복사 성공:', result)
     } catch (err) {
       console.error('복사 실패', err)
     }

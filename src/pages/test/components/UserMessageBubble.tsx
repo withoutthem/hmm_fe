@@ -1,8 +1,6 @@
 import { Box, styled } from '@mui/material'
 import type { UserMessage } from '@domains/common/ui/store/ui.store'
 import DOMPurify from 'dompurify'
-import { useRef } from 'react'
-import { htmlToText } from 'html-to-text'
 
 const UserMessageBubble = ({ m, index }: { m: UserMessage; index: number }) => {
   const safeMessage = m.message ? DOMPurify().sanitize(m.message) : ''
