@@ -2,7 +2,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import theme from '@theme/theme'
 import { type ReactNode } from 'react'
 import { QueryProvider } from '@shared/platform/query'
-import { WsProvider } from '@app/providers/WsProvider'
+import { StompProvider } from '@app/providers/StompProvider'
 
 interface ApplicationProvidersProps {
   children: ReactNode
@@ -11,9 +11,9 @@ interface ApplicationProvidersProps {
 const ApplicationProvider = ({ children }: ApplicationProvidersProps) => {
   return (
     <QueryProvider>
-      <WsProvider>
+      <StompProvider>
         <ThemeProvider theme={theme}>{children}</ThemeProvider>
-      </WsProvider>
+      </StompProvider>
     </QueryProvider>
   )
 }
