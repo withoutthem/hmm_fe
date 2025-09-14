@@ -1,33 +1,37 @@
-import { useState } from 'react'
-import { Box, Button, CssBaseline, styled } from '@mui/material'
-import ApplicationProvider from './app/providers/ApplicationProvider'
-import ChatPage from '@pages/test/ChatPage'
-import HighlighterTestPage from '@pages/test/HighlighterTestPage'
-import TestPageV2 from '@pages/test/TestPageV2'
-import GlobalDialog from '@domains/chatbot/components/dialog/GlobalDialog'
+import { useState } from 'react';
+import { Box, Button, CssBaseline, styled } from '@mui/material';
+import ApplicationProvider from './app/providers/ApplicationProvider';
+import ChatPage from '@pages/test/ChatPage';
+import HighlighterTestPage from '@pages/test/HighlighterTestPage';
+import TestPageV2 from '@pages/test/TestPageV2';
+import GlobalDialog from '@domains/chatbot/components/dialog/GlobalDialog';
+import { connectOnce } from '@shared/platform/stomp';
 
 const testPageMapper = {
   test: <ChatPage />,
   test2: <TestPageV2 />,
   highlighter: <HighlighterTestPage />,
-}
+};
 
 function App() {
-  const [isError, setIsError] = useState(false)
-  const [page, setPage] = useState<'test' | 'test2' | 'highlighter'>('test')
+  const [isError, setIsError] = useState(false);
+  const [page, setPage] = useState<'test' | 'test2' | 'highlighter'>('test');
   if (isError) {
-    throw new Error('렌더링 중에 발생한 에러! (ErrorBoundary에서 잡힘)')
+    throw new Error('렌더링 중에 발생한 에러! (ErrorBoundary에서 잡힘)');
   }
 
-  const pageKeys = Object.keys(testPageMapper) as (keyof typeof testPageMapper)[]
+  const pageKeys = Object.keys(testPageMapper) as (keyof typeof testPageMapper)[];
 
   const switchPage = () => {
     setPage((p) => {
-      const idx = pageKeys.indexOf(p)
-      const nextIdx = (idx + 1) % pageKeys.length
-      return pageKeys[nextIdx] as (typeof pageKeys)[number]
-    })
-  }
+      const idx = pageKeys.indexOf(p);
+      const nextIdx = (idx + 1) % pageKeys.length;
+      return pageKeys[nextIdx] as (typeof pageKeys)[number];
+    });
+  };
+
+  // WebSocket 연결 (StompProvider)
+  connectOnce();
 
   return (
     <ApplicationProvider>
@@ -43,10 +47,10 @@ function App() {
 
       <GlobalDialog />
     </ApplicationProvider>
-  )
+  );
 }
 
-export default App
+export default App;
 
 const TextBox = styled(Box)({
   position: 'fixed',
@@ -55,4 +59,4 @@ const TextBox = styled(Box)({
   transform: 'translateX(-50%)',
   display: 'flex',
   gap: '8px',
-})
+});
