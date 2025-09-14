@@ -8,10 +8,13 @@ import { Virtuoso } from 'react-virtuoso'
 import ChatbotMessageBubble from '@pages/test/components/ChatMessageBubble'
 import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble'
 import UserMessageBubble from '@pages/test/components/UserMessageBubble'
+import useDialogStore from '@domains/common/ui/store/dialog.store'
 
 const ChatPage = () => {
   const messages = useUIStore((s) => s.messages)
   const setMessages = useUIStore((s) => s.setMessages)
+
+  const openDialog = useDialogStore((s) => s.openDialog)
 
   // 테스트용 푸시 토큰 핸들러
   const onTestPushTokens = (tokens: string[]) => {
@@ -48,6 +51,9 @@ const ChatPage = () => {
           </Button>
           <Button variant="primary" onClick={onFallbackTest}>
             Fallback Test
+          </Button>
+          <Button variant="primary" onClick={() => openDialog('history')}>
+            dialog
           </Button>
         </TestFlexBox>
 

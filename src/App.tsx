@@ -4,6 +4,7 @@ import ApplicationProvider from './app/providers/ApplicationProvider'
 import ChatPage from '@pages/test/ChatPage'
 import HighlighterTestPage from '@pages/test/HighlighterTestPage'
 import TestPageV2 from '@pages/test/TestPageV2'
+import GlobalDialog from '@domains/chatbot/components/dialog/GlobalDialog'
 
 const testPageMapper = {
   test: <ChatPage />,
@@ -39,6 +40,8 @@ function App() {
       </TextBox>
 
       {testPageMapper[page]}
+
+      <GlobalDialog />
     </ApplicationProvider>
   )
 }

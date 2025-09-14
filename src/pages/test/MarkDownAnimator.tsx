@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked, type RendererObject, type Tokens } from 'marked'
 import { ColumnBox } from '@shared/ui/layoutUtilComponents'
 import DOMPurify from 'dompurify'
-import { stripHtml } from 'string-strip-html'
+import { stripHtml } from 'string-strip-html' //html 태그 제거 라이브러리
 
 type WSTestPageProps = {
   tokens: string[]
@@ -95,13 +95,12 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
     return DOMPurify.sanitize(rawHtml)
   }, [messages, parseMd])
 
+  // 버블 복사하기
   const onCopy = () => {
     const raw = contentRef.current?.innerHTML ?? ''
 
-    // 1. HTML sanitize
     const safeHtml = DOMPurify.sanitize(raw)
 
-    // 2. HTML 태그 제거 + 줄바꿈 처리
     const { result } = stripHtml(safeHtml, {
       skipHtmlDecoding: false, // HTML 엔티티(&nbsp; 등)도 텍스트로 변환
     })

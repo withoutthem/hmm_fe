@@ -8,12 +8,12 @@ import {
   TextField,
   ClickAwayListener,
   keyframes,
-  Autocomplete,
 } from '@mui/material'
 import useUIStore, { type UserMessage } from '@domains/common/ui/store/ui.store'
 import { useState } from 'react'
 import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
 import DOMPurify from 'dompurify'
+import { useInfiniteScroll } from '@domains/common/hooks/useInfiniteScroll'
 
 interface MockData {
   userId: number
@@ -30,8 +30,8 @@ const Footer = () => {
   const setMessages = useUIStore((s) => s.setMessages)
 
   const [allSuggestions, setAllSuggestions] = useState<string[]>([]) // 모든 검색어
-  const [suggestions, setSuggestions] = useState<string[]>([]) //화면에 보이는 검색어
-  const [suggestionsPage, setSuggestionsPage] = useState(1) // 검색어 페이지네이션
+
+  const { items: visibleSuggestions, onScroll, reset } = useInfiniteScroll(allSuggestions, 10) // 자동스크롤
 
   // Ctrl + V로 이미지 붙여넣기
   const onPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
@@ -52,7 +52,6 @@ const Footer = () => {
 
   const onMessageSend = () => {
     const trimmed = message.trim()
-
     if (!trimmed && images.length === 0) return
 
     const userMsg: UserMessage = {
@@ -62,47 +61,31 @@ const Footer = () => {
       ...(images.length ? { images } : {}),
     }
 
-    setMessages([...messages, userMsg])
-    setMessage('')
-    setImages([])
-    setSuggestions([])
-  }
-
-  const onScroll = (e: React.UIEvent<HTMLUListElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-      // 다음 페이지 로드
-      const nextPage = suggestionsPage + 1
-      const nextItems = allSuggestions.slice(0, nextPage * 10)
-      if (nextItems.length > suggestions.length) {
-        setSuggestions(nextItems)
-        setSuggestionsPage(nextPage)
-      }
-    }
+    setMessages([...messages, userMsg]) // 전체 메시지에 추가
+    setMessage('') // 메시지 초기화
+    setImages([]) // 업로드 된 이미지 초기화
+    setAllSuggestions([]) // 자동완성 초기화
+    reset() // 자동스크롤 초기화
   }
 
   // 엔터키 전송
   const onMessageKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
+
       onMessageSend()
     }
   }
-
   // 자동완성 API 호출
   const fetchSuggestions = async (query: string) => {
     try {
       const res = await fetch('https://jsonplaceholder.typicode.com/posts')
-      const raw = (await res.json()) as unknown
-      const data = raw as MockData[]
+      const raw = (await res.json()) as MockData[]
 
-      const filtered = data
-        .map((item: MockData) => item.title)
-        .filter((title) => title.includes(query))
+      const filtered = raw.map((item) => item.title).filter((title) => title.includes(query))
 
-      setAllSuggestions(filtered) // 전체 저장
-      setSuggestions(filtered.slice(0, 5))
-      setSuggestionsPage(1)
+      setAllSuggestions(filtered)
+      reset() // 페이지네이션 초기화
     } catch (err) {
       console.error('API Error:', err)
     }
@@ -114,9 +97,12 @@ const Footer = () => {
     setMessage(value)
 
     if (value.length >= 2) {
+      // 검색어가 2개 이상될때 API 호출
       await fetchSuggestions(value)
     } else {
-      setSuggestions([])
+      // 검색어가 2개 미만이면 자동완성 노출 X
+      setAllSuggestions([])
+      reset()
     }
   }
 
@@ -147,11 +133,14 @@ const Footer = () => {
     setMessages([...messages, userMsg])
     setMessage('')
     setImages([])
-    setSuggestions([])
+
+    // 👇 자동완성 닫기
+    setAllSuggestions([])
+    reset()
   }
 
   return (
-    <ClickAwayListener onClickAway={() => setSuggestions([])}>
+    <ClickAwayListener onClickAway={() => setAllSuggestions([])}>
       <StyledFooter component={'footer'}>
         <InputContainer>
           <ImgTextField>
@@ -169,10 +158,10 @@ const Footer = () => {
 
             <ColumnBox sx={{ position: 'relative' }}>
               {/* 자동완성 */}
-              {suggestions.length > 0 && (
+              {visibleSuggestions.length > 0 && (
                 <SuggestionBox>
                   <SuggestionList onScroll={onScroll}>
-                    {suggestions.map((s, idx) => (
+                    {visibleSuggestions.map((s, idx) => (
                       <SuggestionListItem key={idx} onClick={() => onSuggestionClick(s)}>
                         <span dangerouslySetInnerHTML={{ __html: highlightMatch(s, message) }} />
                       </SuggestionListItem>

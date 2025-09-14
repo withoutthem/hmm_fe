@@ -401,6 +401,22 @@ const theme = createTheme({
         },
       },
     },
+
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          width: '100%',
+          background: '#fff',
+
+          '& div[role="tablist"]': {
+            '& button': {
+              flex: '1',
+              maxWidth: 'none',
+            },
+          },
+        },
+      },
+    },
   },
 })
 
