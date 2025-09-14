@@ -3,7 +3,6 @@ import theme from '@theme/theme';
 import { type ReactNode } from 'react';
 import { QueryProvider } from '@shared/platform/query';
 import { StompProvider } from '@app/providers/StompProvider';
-import { WsProvider } from '@app/providers/WsProvider';
 
 interface ApplicationProvidersProps {
   children: ReactNode;

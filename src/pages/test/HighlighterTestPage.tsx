@@ -1,24 +1,24 @@
-import { Box, Button, Input, styled, TextField, Typography } from '@mui/material'
-import { AlignCenter, ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
-import { Virtuoso } from 'react-virtuoso'
-import { useState } from 'react'
-import DOMPurify from 'dompurify'
+import { Box, Button, Input, styled, TextField, Typography } from '@mui/material';
+import { AlignCenter, ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents';
+import { Virtuoso } from 'react-virtuoso';
+import { useState } from 'react';
+import DOMPurify from 'dompurify';
 
 interface ChatMessage {
-  type: 'chatbot' | 'user'
-  text?: string
-  image?: string[] // 이미지 Base64 or URL
+  type: 'chatbot' | 'user';
+  text?: string;
+  image?: string[]; // 이미지 Base64 or URL
 }
 
 const HighlighterTestPage = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [message, setMessage] = useState('')
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]) // 여러 이미지 미리보기 상태로 변경
-  const [searchWords, setSearchWords] = useState<string[]>([]) // 검색어
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [message, setMessage] = useState('');
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // 여러 이미지 미리보기 상태로 변경
+  const [searchWords, setSearchWords] = useState<string[]>([]); // 검색어
 
   // 채팅 전송
   const onSendChat = () => {
-    if (!message.trim() && imagePreviews.length === 0) return // 이미지 미리보기도 체크
+    if (!message.trim() && imagePreviews.length === 0) return; // 이미지 미리보기도 체크
 
     setMessages((prevMessages) => [
       ...prevMessages,
@@ -27,63 +27,63 @@ const HighlighterTestPage = () => {
         ...(message ? { text: message } : {}),
         ...(imagePreviews.length > 0 ? { image: imagePreviews } : {}), // 여러 이미지 배열을 그대로 넣음
       },
-    ])
+    ]);
 
-    setMessage('')
-    setImagePreviews([])
-  }
+    setMessage('');
+    setImagePreviews([]);
+  };
 
   // 이미지 붙여넣기
   const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
-    const items = e.clipboardData.items
+    const items = e.clipboardData.items;
     for (const item of items) {
       if (item.type.startsWith('image/')) {
-        const file = item.getAsFile()
+        const file = item.getAsFile();
         if (file) {
-          const reader = new FileReader()
+          const reader = new FileReader();
           reader.onload = () => {
-            setImagePreviews((prev) => [...prev, reader.result as string]) // 새로운 이미지를 배열에 추가
-          }
-          reader.readAsDataURL(file)
+            setImagePreviews((prev) => [...prev, reader.result as string]); // 새로운 이미지를 배열에 추가
+          };
+          reader.readAsDataURL(file);
         }
       }
     }
-  }
+  };
 
   // Enter 시 message값을 m.text에 저장 (검색 가능하도록)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      onSendChat() // 채팅 전송
+      e.preventDefault();
+      onSendChat(); // 채팅 전송
     }
-  }
+  };
 
   // 검색어 변경
   const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // 공백을 기준으로 단어의 갯수를 나눔
-    const words = e.target.value.split(' ').filter((word) => word.trim() !== '')
-    setSearchWords(words)
-  }
+    const words = e.target.value.split(' ').filter((word) => word.trim() !== '');
+    setSearchWords(words);
+  };
 
   // 특수문자 검색어 이스케이프
   const escapeRegExp = (string: string) => {
-    return string.replace(/[.*+?^=!:${}()|/\\]/g, '\\$&')
-  }
+    return string.replace(/[.*+?^=!:${}()|/\\]/g, '\\$&');
+  };
 
   // 하이라이팅된 텍스트 생성
   const highlightedText = (text: string) => {
-    if (searchWords.length === 0) return text
+    if (searchWords.length === 0) return text;
 
     // 각 searchWords를 mark 태그로 감싸기
-    let highlighted = text
+    let highlighted = text;
     searchWords.forEach((word) => {
-      const escapedWord = escapeRegExp(word) // 정규식 안전하게 이스케이프
-      const regex = new RegExp(`(${escapedWord})`, 'gi')
-      highlighted = highlighted.replace(regex, '<mark>$1</mark>')
-    })
+      const escapedWord = escapeRegExp(word); // 정규식 안전하게 이스케이프
+      const regex = new RegExp(`(${escapedWord})`, 'gi');
+      highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+    });
 
-    return DOMPurify.sanitize(highlighted) // XSS 공격 방지
-  }
+    return DOMPurify.sanitize(highlighted); // XSS 공격 방지
+  };
 
   return (
     <TestFlexBox>
@@ -133,7 +133,7 @@ const HighlighterTestPage = () => {
                           )}
                         </BubbleTypoBox>
                       </UserBubble>
-                    )
+                    );
                   }
                   if (m.type === 'chatbot') {
                     return (
@@ -152,7 +152,7 @@ const HighlighterTestPage = () => {
                           )}
                         </BubbleTypoBox>
                       </ChatbotBubble>
-                    )
+                    );
                   }
                 }}
               />
@@ -299,29 +299,29 @@ const HighlighterTestPage = () => {
         </ChatBox>
       </Wrap>
     </TestFlexBox>
-  )
-}
+  );
+};
 
-export default HighlighterTestPage
+export default HighlighterTestPage;
 
 const TestFlexBox = styled(ColumnBox)({
   width: '100vw',
   height: '100vh',
   padding: '8px',
   gap: '8px',
-})
+});
 
 const Wrap = styled(FlexBox)({
   display: 'flex',
   gap: '4px',
   flex: '1',
   overflow: 'hidden',
-})
+});
 
 const ChatBox = styled(ColumnBox)({
   height: '100%',
   flex: '1',
-})
+});
 
 const ChatBoxCon = styled(ColumnBox)({
   flex: '1',
@@ -329,13 +329,13 @@ const ChatBoxCon = styled(ColumnBox)({
   borderRadius: 8,
   height: '100%',
   overflow: 'hidden',
-})
+});
 
 const TitleBox = styled(Box)({
   display: 'flex',
   justifyContent: 'space-between',
   padding: '4px 4px 4px 8px',
-})
+});
 
 const ChatMessageCont = styled(ColumnBox)({
   flex: '1',
@@ -359,9 +359,9 @@ const ChatMessageCont = styled(ColumnBox)({
     display: 'flex',
     flexDirection: 'column',
   },
-})
+});
 
-const ChatbotBubble = styled(Box)({})
+const ChatbotBubble = styled(Box)({});
 
 const BubbleTypoBox = styled(Box)({
   background: '#fff',
@@ -372,13 +372,13 @@ const BubbleTypoBox = styled(Box)({
   maxWidth: '300px',
   wordBreak: 'break-word',
   whiteSpace: 'pre-wrap',
-})
+});
 
 const DataWrap = styled(ColumnBox)({
   flex: '1',
   overflow: 'hidden',
   maxWidth: '270px',
-})
+});
 
 const DataViewer = styled(Box)({
   background: '#fff',
@@ -388,9 +388,9 @@ const DataViewer = styled(Box)({
   width: '100%',
   flex: '1',
   whiteSpace: 'pre-wrap',
-})
+});
 
-const UserBubble = styled(Box)({ alignSelf: 'flex-end' })
+const UserBubble = styled(Box)({ alignSelf: 'flex-end' });
 
 const MessageInputContainer = styled(Box)({
   borderTop: '1px solid',
@@ -398,9 +398,9 @@ const MessageInputContainer = styled(Box)({
   display: 'flex',
   flexWrap: 'wrap',
   gap: '6px',
-})
+});
 
-const MessageImgBox = styled(Box)({})
+const MessageImgBox = styled(Box)({});
 
 const TextAreaBox = styled(FlexBox)({
   width: '100%',
@@ -408,7 +408,7 @@ const TextAreaBox = styled(FlexBox)({
   alignItems: 'center',
   '&>div': { flex: '1' },
   '& input': { padding: '0' },
-})
+});
 
 const SendButton = styled(Button)({
   width: 'fit-content',
@@ -418,10 +418,10 @@ const SendButton = styled(Button)({
   height: 'auto',
   background: 'black',
   color: 'white',
-})
+});
 
 const InputBox = styled(ColumnBox)({
   paddingTop: '23px',
   gap: '8px',
   '&>button': { marginLeft: 'auto' },
-})
+});
