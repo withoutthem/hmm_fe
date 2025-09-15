@@ -9,7 +9,7 @@ import {
   ClickAwayListener,
   keyframes,
 } from '@mui/material'
-import useUIStore, { type UserMessage } from '@domains/common/ui/store/ui.store'
+import useMessageStore, { type UserMessage } from '@domains/common/ui/store/message.store'
 import { useState } from 'react'
 import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents'
 import DOMPurify from 'dompurify'
@@ -22,12 +22,12 @@ interface MockData {
 }
 
 const Footer = () => {
-  const message = useUIStore((s) => s.message)
-  const setMessage = useUIStore((s) => s.setMessage)
-  const images = useUIStore((s) => s.images)
-  const setImages = useUIStore((s) => s.setImages)
-  const messages = useUIStore((s) => s.messages)
-  const setMessages = useUIStore((s) => s.setMessages)
+  const message = useMessageStore((s) => s.message)
+  const setMessage = useMessageStore((s) => s.setMessage)
+  const images = useMessageStore((s) => s.images)
+  const setImages = useMessageStore((s) => s.setImages)
+  const messages = useMessageStore((s) => s.messages)
+  const setMessages = useMessageStore((s) => s.setMessages)
 
   const [allSuggestions, setAllSuggestions] = useState<string[]>([]) // 모든 검색어
 

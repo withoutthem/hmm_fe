@@ -4,19 +4,23 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { marked, type RendererObject, type Tokens } from 'marked'
 import { ColumnBox } from '@shared/ui/layoutUtilComponents'
 import DOMPurify from 'dompurify'
-import { stripHtml } from 'string-strip-html' //html 태그 제거 라이브러리
+import { stripHtml } from 'string-strip-html'
+import { useOnceAnimation } from '@domains/common/hooks/useOnceAnimation'
+import { popIn } from '@domains/common/hooks/animations' //html 태그 제거 라이브러리
 
 type WSTestPageProps = {
   tokens: string[]
   speed?: number
+  index: number
 }
 
-const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
+const MarkDownAnimator = ({ tokens, speed = 60, index }: WSTestPageProps) => {
   const [messages, setMessages] = useState('')
   const [done, setDone] = useState(false)
   const idxRef = useRef(0)
   const timerRef = useRef<number | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const animated = useOnceAnimation(index)
 
   // 단순 태그로 렌더링 커스터마이징
   const renderer = useMemo<RendererObject>(
@@ -128,7 +132,7 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
   }
 
   return (
-    <ColumnBox className={'chatbot-bubble-con'}>
+    <StyledMarkdownWrap className={`chatbot-bubble-con ${animated ? 'pop-in' : ''}`}>
       <Typography variant="h6">GenAi</Typography>
       <WSBubble>
         {/*<WSBubbleContent>{JSON.stringify(tokens)}</WSBubbleContent>*/}
@@ -139,11 +143,19 @@ const MarkDownAnimator = ({ tokens, speed = 60 }: WSTestPageProps) => {
           <Copy />
         </IconButton>
       )}
-    </ColumnBox>
+    </StyledMarkdownWrap>
   )
 }
 
 export default MarkDownAnimator
+
+const StyledMarkdownWrap = styled(ColumnBox)({
+  transformOrigin: 'top left',
+
+  '&.pop-in': {
+    animation: `${popIn} 0.4s cubic-bezier(0.22, 1, 0.36, 1) both`,
+  },
+})
 
 const WSBubble = styled(Box)({
   width: '500px',

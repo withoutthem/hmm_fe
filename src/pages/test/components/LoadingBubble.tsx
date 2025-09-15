@@ -1,5 +1,6 @@
 import { Box, CircularProgress, styled } from '@mui/material'
 import { AlignCenter } from '@shared/ui/layoutUtilComponents'
+import { popIn } from '@domains/common/hooks/animations'
 
 export const LoadingBubble = () => (
   <LoadingBubbleWrap>
@@ -25,4 +26,6 @@ const LoadingBubbleCon = styled(Box)({
   border: '1px solid #ccc',
   borderRadius: 12,
   padding: '10px 12px',
+  transformOrigin: 'top left',
+  animation: `${popIn} 0.4s cubic-bezier(0.22, 1, 0.36, 1) both`,
 })
