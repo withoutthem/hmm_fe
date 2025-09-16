@@ -1,137 +1,137 @@
 // src/styles/theme.ts
-import { createTheme } from '@mui/material/styles'
+import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface Palette {
     border: {
-      primary: string
-      secondary: string
-      focused: string
-    }
+      primary: string;
+      secondary: string;
+      focused: string;
+    };
     backgroundCustom: {
-      primary: string
-      secondary: string
-      scrim: string
-    }
+      primary: string;
+      secondary: string;
+      scrim: string;
+    };
   }
 
   interface PaletteOptions {
     border?: {
-      primary: string
-      secondary: string
-      focused: string
-    }
+      primary: string;
+      secondary: string;
+      focused: string;
+    };
     backgroundCustom?: {
-      primary: string
-      secondary: string
-      scrim: string
-    }
+      primary: string;
+      secondary: string;
+      scrim: string;
+    };
   }
 }
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
-    display1Bold: React.CSSProperties
-    display1: React.CSSProperties
-    display2Bold: React.CSSProperties
-    display2: React.CSSProperties
-    title1Bold: React.CSSProperties
-    title1: React.CSSProperties
-    title2Bold: React.CSSProperties
-    title2: React.CSSProperties
-    subtitle1Bold: React.CSSProperties
-    subtitle1: React.CSSProperties
-    subtitle1Light: React.CSSProperties
-    subtitle2Bold: React.CSSProperties
-    subtitle2: React.CSSProperties
-    subtitle2Light: React.CSSProperties
-    subtitle3Bold: React.CSSProperties
-    subtitle3: React.CSSProperties
-    subtitle3Light: React.CSSProperties
-    body1Bold: React.CSSProperties
-    body1: React.CSSProperties
-    body1Light: React.CSSProperties
-    body2Bold: React.CSSProperties
-    body2: React.CSSProperties
-    body2Light: React.CSSProperties
-    body3Bold: React.CSSProperties
-    body3: React.CSSProperties
-    body3Light: React.CSSProperties
-    caption1Bold: React.CSSProperties
-    caption1: React.CSSProperties
-    caption1Light: React.CSSProperties
-    caption2Bold: React.CSSProperties
-    caption2: React.CSSProperties
-    caption2Light: React.CSSProperties
+    display1Bold: React.CSSProperties;
+    display1: React.CSSProperties;
+    display2Bold: React.CSSProperties;
+    display2: React.CSSProperties;
+    title1Bold: React.CSSProperties;
+    title1: React.CSSProperties;
+    title2Bold: React.CSSProperties;
+    title2: React.CSSProperties;
+    subtitle1Bold: React.CSSProperties;
+    subtitle1: React.CSSProperties;
+    subtitle1Light: React.CSSProperties;
+    subtitle2Bold: React.CSSProperties;
+    subtitle2: React.CSSProperties;
+    subtitle2Light: React.CSSProperties;
+    subtitle3Bold: React.CSSProperties;
+    subtitle3: React.CSSProperties;
+    subtitle3Light: React.CSSProperties;
+    body1Bold: React.CSSProperties;
+    body1: React.CSSProperties;
+    body1Light: React.CSSProperties;
+    body2Bold: React.CSSProperties;
+    body2: React.CSSProperties;
+    body2Light: React.CSSProperties;
+    body3Bold: React.CSSProperties;
+    body3: React.CSSProperties;
+    body3Light: React.CSSProperties;
+    caption1Bold: React.CSSProperties;
+    caption1: React.CSSProperties;
+    caption1Light: React.CSSProperties;
+    caption2Bold: React.CSSProperties;
+    caption2: React.CSSProperties;
+    caption2Light: React.CSSProperties;
   }
 
   interface TypographyVariantsOptions {
-    display1Bold?: React.CSSProperties
-    display1?: React.CSSProperties
-    display2Bold?: React.CSSProperties
-    display2?: React.CSSProperties
-    title1Bold?: React.CSSProperties
-    title1?: React.CSSProperties
-    title2Bold?: React.CSSProperties
-    title2?: React.CSSProperties
-    subtitle1Bold?: React.CSSProperties
-    subtitle1?: React.CSSProperties
-    subtitle1Light?: React.CSSProperties
-    subtitle2Bold?: React.CSSProperties
-    subtitle2?: React.CSSProperties
-    subtitle2Light?: React.CSSProperties
-    subtitle3Bold?: React.CSSProperties
-    subtitle3?: React.CSSProperties
-    subtitle3Light?: React.CSSProperties
-    body1Bold?: React.CSSProperties
-    body1?: React.CSSProperties
-    body1Light?: React.CSSProperties
-    body2Bold?: React.CSSProperties
-    body2?: React.CSSProperties
-    body2Light?: React.CSSProperties
-    body3Bold?: React.CSSProperties
-    body3?: React.CSSProperties
-    body3Light?: React.CSSProperties
-    caption1Bold?: React.CSSProperties
-    caption1?: React.CSSProperties
-    caption1Light?: React.CSSProperties
-    caption2Bold?: React.CSSProperties
-    caption2?: React.CSSProperties
-    caption2Light?: React.CSSProperties
+    display1Bold?: React.CSSProperties;
+    display1?: React.CSSProperties;
+    display2Bold?: React.CSSProperties;
+    display2?: React.CSSProperties;
+    title1Bold?: React.CSSProperties;
+    title1?: React.CSSProperties;
+    title2Bold?: React.CSSProperties;
+    title2?: React.CSSProperties;
+    subtitle1Bold?: React.CSSProperties;
+    subtitle1?: React.CSSProperties;
+    subtitle1Light?: React.CSSProperties;
+    subtitle2Bold?: React.CSSProperties;
+    subtitle2?: React.CSSProperties;
+    subtitle2Light?: React.CSSProperties;
+    subtitle3Bold?: React.CSSProperties;
+    subtitle3?: React.CSSProperties;
+    subtitle3Light?: React.CSSProperties;
+    body1Bold?: React.CSSProperties;
+    body1?: React.CSSProperties;
+    body1Light?: React.CSSProperties;
+    body2Bold?: React.CSSProperties;
+    body2?: React.CSSProperties;
+    body2Light?: React.CSSProperties;
+    body3Bold?: React.CSSProperties;
+    body3?: React.CSSProperties;
+    body3Light?: React.CSSProperties;
+    caption1Bold?: React.CSSProperties;
+    caption1?: React.CSSProperties;
+    caption1Light?: React.CSSProperties;
+    caption2Bold?: React.CSSProperties;
+    caption2?: React.CSSProperties;
+    caption2Light?: React.CSSProperties;
   }
 }
 
 // 2. TypographyPropsVariantOverrides 확장
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
-    h1Bold: true
-    h2Bold: true
-    h3Bold: true
-    h4Bold: true
+    h1Bold: true;
+    h2Bold: true;
+    h3Bold: true;
+    h4Bold: true;
   }
 }
 
 declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
-    primary: true
-    secondary: true
+    primary: true;
+    secondary: true;
   }
 }
 
 declare module '@mui/material/ButtonGroup' {
   interface ButtonGroupPropsVariantOverrides {
-    symmetry: true
-    asymmetry: true
-    column: true
+    symmetry: true;
+    asymmetry: true;
+    column: true;
   }
 }
 
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
-    secondary: true
-    tertiary: true
-    quaternary: true
-    disabled: true
+    secondary: true;
+    tertiary: true;
+    quaternary: true;
+    disabled: true;
   }
 }
 
@@ -225,7 +225,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         '*': {
-          fontFamily: `"Pretendard", "Noto Sans KR" !important`,
+          fontFamily: `"Pretendard", "Noto Sans JP", "Noto Sans SC", "Noto Sans TC", -apple-system, "Segoe UI", Roboto, sans-serif`,
           boxSizing: 'border-box',
           margin: '0px',
           padding: '0px',
@@ -418,6 +418,6 @@ const theme = createTheme({
       },
     },
   },
-})
+});
 
-export default theme
+export default theme;
