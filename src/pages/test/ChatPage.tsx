@@ -106,7 +106,7 @@ const ChatPage = () => {
     if (messages.length === 0) return
     const last = messages[messages.length - 1] as ChatMessage
     if (last.sender === 'user') {
-      onTestPushTokens(HTML_TEST_1)
+      onTestPushTokens(WS_TEST_01)
     }
   }, [messages.length])
 
