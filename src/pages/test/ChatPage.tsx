@@ -1,6 +1,11 @@
 import { Button, styled, Box } from '@mui/material'
 import Layout from '@shared/components/Layout'
-import { WS_TEST_01, WS_TEST_02 } from '@domains/common/components/testData'
+import {
+  HTML_TEST_1,
+  HTML_TEST_2,
+  WS_TEST_01,
+  WS_TEST_02,
+} from '@domains/common/components/testData'
 import PublishFloating, { PublushButton } from '@pages/test/PublishFloating'
 import { FlexBox } from '@shared/ui/layoutUtilComponents'
 import useMessageStore, {
@@ -21,17 +26,17 @@ import { type ReactNode, useEffect, useRef, useState, useLayoutEffect } from 're
 const ChatPage = () => {
   const messages = useMessageStore((s) => s.messages)
   const setMessages = useMessageStore((s) => s.setMessages)
-  const [lastDiffHeight, setLastDiffHeight] = useState<number | null>(null)
-
   const messageContentRef = useRef<HTMLDivElement>(null)
-  const heightsRef = useRef<Record<number, number>>({})
   const virtuosoRef = useRef<VirtuosoHandle>(null)
-  const messageHeight = messageContentRef.current?.clientHeight ?? 0
 
   const openDialog = useDialogStore((s) => s.openDialog)
 
-  // 스무스 스크롤 함수
-  const smoothScrollToBottom = () => {
+  const [lastDiffHeight, setLastDiffHeight] = useState<number | null>(null)
+
+  /**
+   * 스크롤영역
+   */
+  const scrollToBottomWithAnimation = () => {
     const scrollerEl = document.querySelector('[data-testid="virtuoso-scroller"]')
     if (!scrollerEl) return
 
@@ -41,7 +46,7 @@ const ChatPage = () => {
     let startTime: number | null = null
 
     const step = (timestamp: number) => {
-      if (!startTime) startTime = timestamp
+      if (startTime === null) startTime = timestamp
       const progress = Math.min((timestamp - startTime) / duration, 1)
 
       // easeInOutCubic
@@ -50,26 +55,108 @@ const ChatPage = () => {
 
       scrollerEl.scrollTop = start + (end - start) * ease
 
-      if (progress < 1) requestAnimationFrame(step)
+      if (progress < 1) {
+        requestAnimationFrame(step)
+      }
     }
 
     requestAnimationFrame(step)
   }
 
-  const showLoadingThenReplace = (replaceMsg: ChatbotMessage | ChatbotFallback, delay = 3000) => {
-    const loadingMsg: ChatbotLoading = { sender: 'chatbot', type: 'loading' }
-    setMessages([...messages, loadingMsg])
+  useEffect(() => {
+    if (messages.length > 0) {
+      // 렌더 직후 여러 프레임 동안 반복 실행해서 "안 그려졌을 때도" 대응
+      let count = 0
+      const tryScroll = () => {
+        scrollToBottomWithAnimation()
+        count++
+        if (count < 5) requestAnimationFrame(tryScroll) // 5프레임 정도 재시도
+      }
+      requestAnimationFrame(tryScroll)
+    }
+  }, [messages.length])
+  /**
+   * 스크롤영역
+   */
 
-    setTimeout(() => {
-      const prev = useMessageStore.getState().messages
-      const newMessages = [...prev]
-      newMessages[newMessages.length - 1] = replaceMsg
-      setMessages(newMessages)
-    }, delay)
+  const showLoadingThenReplace = (replaceMsg: ChatbotMessage | ChatbotFallback, delay = 3000) => {
+    /**
+     * 여기부분이 user 버블 추가하는 부분
+     */
+    const loadingMsg: ChatbotLoading = { sender: 'chatbot', type: 'loading' }
+    setMessages((prev) => [...prev, loadingMsg])
+
+    /**
+     * 여기부분이 chatbot 버블 추가하는 부분
+     */
+    setMessages((prev) => {
+      const next = [...prev]
+      next[next.length - 1] = replaceMsg
+      return next
+    })
   }
 
+  // user 메시지 입력되면 chatbot 응답 시뮬레이션
   const onTestPushTokens = (tokens: string[]) => {
     showLoadingThenReplace({ sender: 'chatbot', type: 'message', tokens })
+  }
+
+  // user 메시지 입력되면 chatbot 응답 시뮬레이션
+  useEffect(() => {
+    if (messages.length === 0) return
+    const last = messages[messages.length - 1] as ChatMessage
+    if (last.sender === 'user') {
+      onTestPushTokens(HTML_TEST_1)
+    }
+  }, [messages.length])
+
+  // 마지막 user 버블의 높이 알아내는 로직
+  useLayoutEffect(() => {
+    if (messages.length === 0) return
+
+    const lastMessage = messages[messages.length - 1]
+    if (lastMessage?.sender !== 'user') return
+
+    const scrollerEl = document.querySelector('[data-testid="virtuoso-scroller"]') as HTMLElement
+    const targetIndex = messages.length - 1
+
+    let attempts = 0
+    const tryGetEl = () => {
+      const targetEl = scrollerEl.querySelector(`[data-item-index="${targetIndex}"]`) as HTMLElement
+
+      if (targetEl) {
+        if (messageContentRef.current) {
+          const size = targetEl.clientHeight // 높이
+
+          console.log('targetEl', targetEl.offsetTop)
+
+          if (size) {
+            // 전체 높이에서 user 메시지 높이 뺀값을 min-height로 설정
+            const containerH = messageContentRef.current.clientHeight - Number(size)
+            console.log(
+              `${messageContentRef.current.clientHeight} - ${Number(size)} = ${containerH}`
+            )
+            setLastDiffHeight(containerH)
+          }
+        }
+      } else {
+        // targetEl이 아직 렌더링되지 않음
+
+        console.log('어디인거냐')
+
+        if (attempts < 5) {
+          attempts++
+          requestAnimationFrame(tryGetEl)
+        }
+      }
+    }
+
+    requestAnimationFrame(tryGetEl)
+  }, [messages.length])
+
+  // fallback message 테스트
+  const onFallbackTest = () => {
+    showLoadingThenReplace({ sender: 'chatbot', type: 'fallback' })
   }
 
   const onPublisherCheck = () => {
@@ -77,45 +164,15 @@ const ChatPage = () => {
     if (el) el.style.display = 'flex'
   }
 
-  const onFallbackTest = () => {
-    showLoadingThenReplace({ sender: 'chatbot', type: 'fallback' })
-  }
-
-  // user 메시지 입력되면 chatbot 응답 시뮬레이션
-  useEffect(() => {
-    if (messages.length === 0) return
-    const last = messages[messages.length - 1] as ChatMessage
-
-    if (last.sender === 'user') {
-      onTestPushTokens(WS_TEST_02)
-    }
-  }, [messages.length])
-
-  // 높이 계산
-  useLayoutEffect(() => {
-    const messageHeight = messageContentRef.current?.clientHeight ?? 0
-    const keys = Object.keys(heightsRef.current)
-
-    if (keys.length > 0) {
-      const lastIndex = Number(
-        Object.keys(heightsRef.current)[Object.keys(heightsRef.current).length - 1]
-      )
-      const lastHeight = heightsRef.current[lastIndex] ?? 0
-
-      console.log(heightsRef.current)
-
-      console.log('lastHeight', `${messageHeight} - ${lastHeight} = ${messageHeight - lastHeight}`)
-
-      setLastDiffHeight(messageHeight - lastHeight)
-    }
-  }, [messages.length])
-
   return (
     <>
       <Layout>
         <PublushButton onClick={onPublisherCheck}>Publish</PublushButton>
 
         <TestFlexBox>
+          <Button variant="primary" onClick={() => openDialog('history')}>
+            dialog
+          </Button>
           <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_01)}>
             WS_TEST_01
           </Button>
@@ -125,25 +182,21 @@ const ChatPage = () => {
           <Button variant="primary" onClick={onFallbackTest}>
             Fallback Test
           </Button>
-          <Button variant="primary" onClick={() => openDialog('history')}>
-            dialog
-          </Button>
         </TestFlexBox>
 
         <MessagesContainer ref={messageContentRef}>
           <Virtuoso
-            ref={virtuosoRef}
             data={messages}
-            overscan={0}
+            ref={virtuosoRef}
+            overscan={5}
             itemContent={(index, m) => {
               if (m.sender === 'chatbot') {
                 const isLastMessage = index === messages.length - 1
-
                 return (
                   <ChatbotItemWrapper
                     isLastMessage={isLastMessage}
                     lastDiffHeight={lastDiffHeight}
-                    onExpand={smoothScrollToBottom} // ⬅️ 여기서 주입
+                    scrollToBottom={scrollToBottomWithAnimation}
                   >
                     {m.type === 'message' && (
                       <ChatbotMessageBubble tokens={m.tokens} index={index} />
@@ -155,16 +208,9 @@ const ChatPage = () => {
               }
 
               if (m.sender === 'user') {
-                return (
-                  <UserMessageBubble
-                    m={m}
-                    index={index}
-                    ref={(el) => {
-                      if (el) heightsRef.current[index] = el.clientHeight
-                    }}
-                  />
-                )
+                return <UserMessageBubble m={m} index={index} />
               }
+
               return null
             }}
           />
@@ -190,6 +236,7 @@ const MessagesContainer = styled(Box)({
   height: '100%',
   '& div[data-testid="virtuoso-scroller"]': {
     flex: '1',
+    height: '100%',
     gap: '8px',
     scrollbarWidth: 'thin',
   },
@@ -205,50 +252,47 @@ type ChatbotItemWrapperProps = {
   children: ReactNode
   isLastMessage: boolean
   lastDiffHeight: number | null
-  onExpand?: () => void
+  scrollToBottom: () => void
 }
 
 const ChatbotItemWrapper = ({
   children,
   isLastMessage,
   lastDiffHeight,
-  onExpand,
+  scrollToBottom,
 }: ChatbotItemWrapperProps) => {
   const [expanded, setExpanded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  // 새 메시지 들어오면 expand 애니메이션 시작
+  // console.log('lastDiffHeight', lastDiffHeight)
+
   useEffect(() => {
     if (isLastMessage) {
-      setExpanded(false)
-      const t = setTimeout(() => setExpanded(true), 50)
-      return () => clearTimeout(t)
+      setExpanded(true)
+      scrollToBottom()
     }
-  }, [isLastMessage, lastDiffHeight])
+  }, [isLastMessage])
 
-  // transition 끝났을 때 마지막 보정
   useEffect(() => {
+    if (!ref.current || !isLastMessage) return
     const el = ref.current
-    if (!el || !isLastMessage) return
 
-    const handleEnd = () => {
-      onExpand?.() // 최종 보정
+    const handleTransitionEnd = () => {
+      scrollToBottom()
     }
 
-    el.addEventListener('transitionend', handleEnd)
-    return () => el.removeEventListener('transitionend', handleEnd)
-  }, [isLastMessage, onExpand])
-
-  // console.log('lastDiffHeight', lastDiffHeight)
+    el.addEventListener('transitionend', handleTransitionEnd)
+    return () => el.removeEventListener('transitionend', handleTransitionEnd)
+  }, [isLastMessage, scrollToBottom])
 
   return (
     <Box
       ref={ref}
       component="section"
       sx={{
-        background: 'lightblue',
-        minHeight: isLastMessage ? (expanded ? (lastDiffHeight ?? 200) : 200) : 200,
-        transition: 'min-height .3s ease',
+        // background: 'lightgreen',
+        minHeight: isLastMessage ? (expanded ? (lastDiffHeight ?? 0) : 0) : 0,
+        transition: 'min-height .5s ease',
       }}
     >
       {children}

@@ -619,7 +619,7 @@ export const HTML_TEST_1 = `
   <!-- 위험 태그: 제거되어야 함 -->
   <script>alert('xss')</script>
   <style>body{background:red}</style>
-  <iframe src="https://example.com"></iframe>
+<!--  <iframe src="https://example.com"></iframe>-->
 
   <h2>링크/이미지</h2>
   <ul>
@@ -659,6 +659,7 @@ export const HTML_TEST_1 = `
   <blockquote>
     인용문 — 한국어/English/日本語/العربية ⭐️
   </blockquote>
+  
 </div>
 `
 
