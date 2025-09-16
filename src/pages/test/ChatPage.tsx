@@ -21,7 +21,7 @@ import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble'
 import UserMessageBubble from '@pages/test/components/UserMessageBubble'
 import useDialogStore from '@domains/common/ui/store/dialog.store'
 import LoadingBubble from '@pages/test/components/LoadingBubble'
-import { type ReactNode, useEffect, useRef, useState, useLayoutEffect } from 'react'
+import { type ReactNode, useEffect, useRef, useState, useLayoutEffect, useCallback } from 'react'
 
 const ChatPage = () => {
   const messages = useMessageStore((s) => s.messages)
@@ -36,7 +36,7 @@ const ChatPage = () => {
   /**
    * 스크롤영역
    */
-  const scrollToBottomWithAnimation = () => {
+  const scrollToBottomWithAnimation = useCallback(() => {
     const scrollerEl = document.querySelector('[data-testid="virtuoso-scroller"]')
     if (!scrollerEl) return
 
@@ -61,7 +61,7 @@ const ChatPage = () => {
     }
 
     requestAnimationFrame(step)
-  }
+  }, [])
 
   useEffect(() => {
     if (messages.length > 0) {
@@ -79,34 +79,13 @@ const ChatPage = () => {
    * 스크롤영역
    */
 
-  const showLoadingThenReplace = (replaceMsg: ChatbotMessage | ChatbotFallback, delay = 3000) => {
-    /**
-     * 여기부분이 user 버블 추가하는 부분
-     */
-    const loadingMsg: ChatbotLoading = { sender: 'chatbot', type: 'loading' }
-    setMessages((prev) => [...prev, loadingMsg])
-
-    /**
-     * 여기부분이 chatbot 버블 추가하는 부분
-     */
-    setMessages((prev) => {
-      const next = [...prev]
-      next[next.length - 1] = replaceMsg
-      return next
-    })
-  }
-
-  // user 메시지 입력되면 chatbot 응답 시뮬레이션
-  const onTestPushTokens = (tokens: string[]) => {
-    showLoadingThenReplace({ sender: 'chatbot', type: 'message', tokens })
-  }
-
   // user 메시지 입력되면 chatbot 응답 시뮬레이션
   useEffect(() => {
     if (messages.length === 0) return
     const last = messages[messages.length - 1] as ChatMessage
     if (last.sender === 'user') {
-      onTestPushTokens(WS_TEST_01)
+      // user 메세지가 추가되면 챗봇 답변 시뮬레이션
+      setMessages((prev) => [...prev, { sender: 'chatbot', type: 'message', tokens: WS_TEST_01 }])
     }
   }, [messages.length])
 
@@ -127,22 +106,17 @@ const ChatPage = () => {
       if (targetEl) {
         if (messageContentRef.current) {
           const size = targetEl.clientHeight // 높이
-
-          console.log('targetEl', targetEl.offsetTop)
-
           if (size) {
             // 전체 높이에서 user 메시지 높이 뺀값을 min-height로 설정
             const containerH = messageContentRef.current.clientHeight - Number(size)
-            console.log(
-              `${messageContentRef.current.clientHeight} - ${Number(size)} = ${containerH}`
-            )
+            console.log(`${messageContentRef.current.clientHeight} - ${size} = ${containerH}`)
             setLastDiffHeight(containerH)
           }
         }
       } else {
         // targetEl이 아직 렌더링되지 않음
 
-        console.log('어디인거냐')
+        console.log('targetEl', targetEl)
 
         if (attempts < 5) {
           attempts++
@@ -156,7 +130,7 @@ const ChatPage = () => {
 
   // fallback message 테스트
   const onFallbackTest = () => {
-    showLoadingThenReplace({ sender: 'chatbot', type: 'fallback' })
+    setMessages((prev) => [...prev, { sender: 'chatbot', type: 'fallback' }])
   }
 
   const onPublisherCheck = () => {
@@ -170,17 +144,11 @@ const ChatPage = () => {
         <PublushButton onClick={onPublisherCheck}>Publish</PublushButton>
 
         <TestFlexBox>
-          <Button variant="primary" onClick={() => openDialog('history')}>
-            dialog
-          </Button>
-          <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_01)}>
-            WS_TEST_01
-          </Button>
-          <Button variant="primary" onClick={() => onTestPushTokens(WS_TEST_02)}>
-            WS_TEST_02
-          </Button>
           <Button variant="primary" onClick={onFallbackTest}>
             Fallback Test
+          </Button>
+          <Button variant="primary" onClick={() => openDialog('history')}>
+            dialog
           </Button>
         </TestFlexBox>
 
@@ -188,7 +156,7 @@ const ChatPage = () => {
           <Virtuoso
             data={messages}
             ref={virtuosoRef}
-            overscan={5}
+            overscan={10}
             itemContent={(index, m) => {
               if (m.sender === 'chatbot') {
                 const isLastMessage = index === messages.length - 1
