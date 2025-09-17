@@ -8,9 +8,6 @@ import {
   TextField,
   ClickAwayListener,
   keyframes,
-  Menu,
-  MenuItem,
-  Typography,
 } from '@mui/material';
 import useMessageStore, { type UserMessage } from '@domains/common/ui/store/message.store';
 import { useState } from 'react';
@@ -19,10 +16,6 @@ import DOMPurify from 'dompurify';
 import { useInfiniteScroll } from '@domains/common/hooks/useInfiniteScroll';
 import { SendIcon } from '@shared/icons/SendIcon';
 import { AddIcon } from '@shared/icons/AddIcon';
-import { ResetIcon } from '@shared/icons/ResetIcon';
-import { ChatIcon } from '@shared/icons/ChatIcon';
-import { HistoryIcon } from '@shared/icons/HistoryIcon';
-import { FAQIcon } from '@shared/icons/FAQIcon';
 import useUiStore from '@domains/common/ui/store/ui.store';
 
 interface MockData {

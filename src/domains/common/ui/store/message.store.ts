@@ -1,7 +1,7 @@
 // src/domains/common/ui/ui.store.ts
 import { create } from 'zustand';
 
-export type ChatMessage = UserMessage | ChatbotMessage | ChatbotLoading;
+export type ChatMessage = UserMessage | ChatbotMessage | ChatbotAdaptiveCard | ChatbotLoading;
 
 // user 메세지
 export interface UserMessage {
@@ -14,9 +14,19 @@ export interface UserMessage {
 // chatbot 정상 메시지
 export interface ChatbotMessage {
   sender: 'chatbot';
-  type: 'message' | 'adaptiveCard';
-  tokens: string[];
+  type: 'message';
+  tokens: string;
   fallback?: false;
+}
+
+export interface ChatbotAdaptiveCard {
+  sender: 'chatbot';
+  type: 'adaptiveCard';
+  fallback?: false;
+  card: {
+    title: string;
+    description?: string;
+  };
 }
 
 export interface ChatbotLoading {

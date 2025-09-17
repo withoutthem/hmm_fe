@@ -1,11 +1,10 @@
-import { Button, styled, Box } from '@mui/material';
+import * as AdaptiveCards from 'adaptivecards';
+import { styled, Box } from '@mui/material';
 import Layout from '@shared/components/Layout';
-import { HTML_TEST_1, WS_TEST_01 } from '@domains/common/components/testData';
 import PublishFloating, { PublushButton } from '@pages/test/PublishFloating';
-import { FlexBox } from '@shared/ui/layoutUtilComponents';
 import useMessageStore, {
+  type ChatbotAdaptiveCard,
   type ChatbotLoading,
-  type ChatbotMessage,
   type ChatMessage,
 } from '@domains/common/ui/store/message.store';
 import { Virtuoso } from 'react-virtuoso';
@@ -15,16 +14,189 @@ import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble'
 import UserMessageBubble from '@pages/test/components/UserMessageBubble';
 // import useDialogStore from '@domains/common/ui/store/dialog.store';
 import LoadingBubble from '@pages/test/components/LoadingBubble';
-import { type ReactNode, useEffect, useRef, useState, useLayoutEffect, useCallback } from 'react';
+import { useEffect, useRef, useState, useLayoutEffect, useCallback } from 'react';
 import type { JSX } from 'react/jsx-runtime';
 import AdaptiveCardRenderer from '@pages/test/components/AdaptiveCardRenderer';
+import ChatbotItemWrapper from '@pages/test/components/ChatbotItemWrapper';
+
+const AdaptiveCardData = {
+  type: 'AdaptiveCard',
+  version: '1.3',
+  body: [
+    // 1. 기본 텍스트
+    {
+      type: 'TextBlock',
+      text: '1. 기본 텍스트',
+      size: 'large',
+      weight: 'bolder',
+      separator: false,
+    },
+    {
+      type: 'TextBlock',
+      id: 'hello',
+      text: '안녕하세요! 👋 AdaptiveCard 테스트 카드입니다.',
+      size: 'large',
+      weight: 'bolder',
+      separator: false,
+    },
+    { type: 'TextBlock', text: 'AdaptiveCard 테스트 카드입니다.' },
+
+    // 2. 입력폼
+    { type: 'TextBlock', text: '2. 입력폼', size: 'large', weight: 'bolder' },
+    { type: 'TextBlock', text: '회원가입 폼', weight: 'bolder', size: 'medium' },
+    { type: 'Input.Text', id: 'name', placeholder: '이름' },
+    { type: 'Input.Text', id: 'email', placeholder: '이메일', style: 'Email' },
+
+    // 3. 이미지 갤러리
+    { type: 'TextBlock', text: '3. 이미지 갤러리', size: 'large', weight: 'bolder' },
+    { type: 'TextBlock', text: '추천 여행지 🌏', weight: 'bolder', size: 'medium' },
+    {
+      type: 'ImageSet',
+      imagesize: 'medium',
+      images: [
+        { type: 'Image', url: 'https://picsum.photos/200/150?1' },
+        { type: 'Image', url: 'https://picsum.photos/200/150?2' },
+        { type: 'Image', url: 'https://picsum.photos/200/150?3' },
+      ],
+    },
+
+    // 4. 체크리스트
+    { type: 'TextBlock', text: '4. 체크리스트', size: 'large', weight: 'bolder' },
+    { type: 'TextBlock', text: '오늘의 할 일 ✅', weight: 'bolder', size: 'medium' },
+    {
+      type: 'Input.Toggle',
+      id: 'task1',
+      title: 'React 공부하기',
+      valueOn: 'true',
+      valueOff: 'false',
+    },
+    {
+      type: 'Input.Toggle',
+      id: 'task2',
+      title: '운동 30분 하기',
+      valueOn: 'true',
+      valueOff: 'false',
+    },
+    {
+      type: 'Input.Toggle',
+      id: 'task3',
+      title: '책 10페이지 읽기',
+      valueOn: 'true',
+      valueOff: 'false',
+    },
+
+    // 5. 날짜 선택
+    { type: 'TextBlock', text: '5. 날짜 선택', size: 'large', weight: 'bolder' },
+    { type: 'TextBlock', text: '예약 날짜와 시간을 선택하세요 📅', weight: 'bolder' },
+    { type: 'Input.Date', id: 'date', title: '날짜 선택' },
+
+    {
+      type: 'Container',
+      items: [
+        {
+          type: 'ColumnSet',
+          columns: [
+            {
+              type: 'Column',
+              width: 'stretch',
+              items: [
+                {
+                  type: 'ColumnSet',
+                  columns: [
+                    {
+                      type: 'Column',
+                      width: 'auto',
+                      items: [
+                        { type: 'TextBlock', text: '입차시간', weight: 'Bolder', wrap: true },
+                      ],
+                    },
+                    {
+                      type: 'Column',
+                      width: 'stretch',
+                      items: [
+                        {
+                          type: 'Input.ChoiceSet',
+                          id: 'startTime',
+                          style: 'compact',
+                          choices: [
+                            { title: '09:00', value: '09:00' },
+                            { title: '09:30', value: '09:30' },
+                            { title: '10:00', value: '10:00' },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'Column',
+              width: 'stretch',
+              items: [
+                {
+                  type: 'ColumnSet',
+                  columns: [
+                    {
+                      type: 'Column',
+                      width: 'auto',
+                      items: [
+                        { type: 'TextBlock', text: '출차시간', weight: 'Bolder', wrap: true },
+                      ],
+                    },
+                    {
+                      type: 'Column',
+                      width: 'stretch',
+                      items: [
+                        {
+                          type: 'Input.ChoiceSet',
+                          id: 'endTime',
+                          style: 'compact',
+                          choices: [
+                            { title: '09:00', value: '09:00' },
+                            { title: '09:30', value: '09:30' },
+                            { title: '10:00', value: '10:00' },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // 6. FactSet (테이블 느낌)
+    { type: 'TextBlock', text: '6. FactSet (테이블 느낌)', size: 'large', weight: 'bolder' },
+    { type: 'TextBlock', text: '주문 내역 🛒', weight: 'bolder', size: 'medium' },
+    {
+      type: 'FactSet',
+      facts: [
+        { title: '상품', value: '노트북' },
+        { title: '수량', value: '1' },
+        { title: '가격', value: '₩1,500,000' },
+      ],
+    },
+
+    // 7. Hero 이미지
+    { type: 'TextBlock', text: '7. Hero 이미지', size: 'large', weight: 'bolder' },
+    { type: 'Image', url: 'https://picsum.photos/400/200', size: 'Stretch' },
+    { type: 'TextBlock', text: '이 상품을 구매하시겠습니까?', weight: 'bolder', wrap: true },
+  ],
+  actions: [
+    { type: 'Action.Submit', title: '확인' },
+    { type: 'Action.OpenUrl', title: '자세히 보기', url: 'https://example.com' },
+  ],
+} as unknown as AdaptiveCards.IAdaptiveCard;
 
 const ChatPage = () => {
   const messages = useMessageStore((s) => s.messages);
   const setMessages = useMessageStore((s) => s.setMessages);
   const messageContentRef = useRef<HTMLDivElement>(null);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // const openDialog = useDialogStore((s) => s.openDialog);
 
@@ -99,23 +271,30 @@ const ChatPage = () => {
       setMessages((prev) => [...prev, loadingMsg]);
 
       // 2) 3초 후 로딩 제거 + 실제 응답 추가
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setMessages((prev) => {
           const newMsgs = [...prev];
           const last = newMsgs[newMsgs.length - 1];
           if (last?.type === 'loading') {
             newMsgs.pop();
           }
+
+          // adaptiveCard일때 테스트
           newMsgs.push({
             sender: 'chatbot',
-            type: 'message',
-            tokens: WS_TEST_01,
-          });
+            type: 'adaptiveCard',
+            card: { title: 'Adaptive Card 테스트', description: '이건 카드 형식 UI예요.' },
+          } as ChatbotAdaptiveCard);
+
+          // 일반 메시지 테스트
+          // newMsgs.push({
+          //   sender: 'chatbot',
+          //   type: 'message',
+          //   tokens: HTML_TEST_1,
+          // });
           return newMsgs;
         });
-      }, 3000);
-
-      return () => clearTimeout(timer);
+      }, 2000);
     }
   }, [messages.length, setMessages]);
 
@@ -129,7 +308,6 @@ const ChatPage = () => {
     const scrollerEl = document.querySelector('[data-testid="virtuoso-scroller"]') as HTMLElement;
     const targetIndex = messages.length - 1;
 
-    let attempts = 0;
     const tryGetEl = () => {
       const targetEl = scrollerEl.querySelector(
         `[data-item-index="${targetIndex}"]`
@@ -147,13 +325,7 @@ const ChatPage = () => {
         }
       } else {
         // targetEl이 아직 렌더링되지 않음
-
-        console.log('targetEl', targetEl);
-
-        if (attempts < 5) {
-          attempts++;
-          requestAnimationFrame(tryGetEl);
-        }
+        requestAnimationFrame(tryGetEl);
       }
     };
 
@@ -195,15 +367,31 @@ const ChatPage = () => {
 
                 let content: JSX.Element | null = null;
 
+                // 로딩중일때
                 if (m.type === 'loading') {
                   content = <LoadingBubble />;
-                } else if (m.type === 'message') {
-                  const msg = m as ChatbotMessage;
-                  content = <ChatbotMessageBubble tokens={msg.tokens} index={index} />;
-                } else if (m.type === 'adaptiveCard') {
-                  content = <AdaptiveCardRenderer />;
-                } else if (m.type === 'fallback') {
+                }
+                // fallback일때
+                else if (
+                  (m.type === 'message' && m.fallback) ||
+                  (m.type === 'adaptiveCard' && m.fallback)
+                ) {
                   content = <ChatbotFallbackBubble index={index} />;
+                }
+                // 메시지일때 ( fallback이 아닌 )
+                else if (m.type === 'message') {
+                  content = <ChatbotMessageBubble tokens={m.tokens} index={index} />;
+                }
+                // adaptiveCard일때 ( fallback이 아닌 )
+                else if (m.type === 'adaptiveCard') {
+                  content = (
+                    <AdaptiveCardContainer>
+                      <AdaptiveCardRenderer
+                        card={AdaptiveCardData}
+                        onSubmit={(data) => console.log('제출된 데이터:', data)}
+                      />
+                    </AdaptiveCardContainer>
+                  );
                 }
 
                 return (
@@ -233,14 +421,6 @@ const ChatPage = () => {
 
 export default ChatPage;
 
-// Styled Components
-const TestFlexBox = styled(FlexBox)({
-  position: 'fixed',
-  top: '2px',
-  left: '10px',
-  gap: '8px',
-});
-
 const MessagesContainer = styled(Box)({
   width: '100%',
   height: '100%',
@@ -257,55 +437,10 @@ export const ChatbotBubbleWrap = styled(Box)({
   justifyContent: 'flex-start',
 });
 
-// ChatbotItemWrapper
-type ChatbotItemWrapperProps = {
-  children: ReactNode;
-  isLastMessage: boolean;
-  lastDiffHeight: number | null;
-  scrollToBottom: () => void;
-};
-
-const ChatbotItemWrapper = ({
-  children,
-  isLastMessage,
-  lastDiffHeight,
-  scrollToBottom,
-}: ChatbotItemWrapperProps) => {
-  const [expanded, setExpanded] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // console.log('lastDiffHeight', lastDiffHeight)
-
-  useEffect(() => {
-    if (isLastMessage) {
-      setExpanded(true);
-      scrollToBottom();
-    }
-  }, [isLastMessage]);
-
-  useEffect(() => {
-    if (!ref.current || !isLastMessage) return;
-    const el = ref.current;
-
-    const handleTransitionEnd = () => {
-      scrollToBottom();
-    };
-
-    el.addEventListener('transitionend', handleTransitionEnd);
-    return () => el.removeEventListener('transitionend', handleTransitionEnd);
-  }, [isLastMessage, scrollToBottom]);
-
-  return (
-    <Box
-      ref={ref}
-      component="section"
-      sx={{
-        // background: 'lightgreen',
-        minHeight: isLastMessage ? (expanded ? (lastDiffHeight ?? 0) : 0) : 0,
-        transition: 'min-height .5s ease',
-      }}
-    >
-      {children}
-    </Box>
-  );
-};
+const AdaptiveCardContainer = styled(Box)({
+  '& input, & select': { border: '1px solid black' },
+  '& button': { background: 'black', color: '#fff' },
+  '& table': { width: '100%', borderCollapse: 'collapse' },
+  '& td': { border: '1px solid #ddd' },
+  '& .ac-horizontal-separator': { display: 'none' },
+});
