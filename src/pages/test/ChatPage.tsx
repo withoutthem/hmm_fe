@@ -1,15 +1,9 @@
 import { Button, styled, Box } from '@mui/material';
 import Layout from '@shared/components/Layout';
-import {
-  HTML_TEST_1,
-  HTML_TEST_2,
-  WS_TEST_01,
-  WS_TEST_02,
-} from '@domains/common/components/testData';
+import { HTML_TEST_1, WS_TEST_01 } from '@domains/common/components/testData';
 import PublishFloating, { PublushButton } from '@pages/test/PublishFloating';
 import { FlexBox } from '@shared/ui/layoutUtilComponents';
 import useMessageStore, {
-  type ChatbotFallback,
   type ChatbotLoading,
   type ChatbotMessage,
   type ChatMessage,
@@ -19,17 +13,26 @@ import type { VirtuosoHandle } from 'react-virtuoso';
 import ChatbotMessageBubble from '@pages/test/components/ChatMessageBubble';
 import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble';
 import UserMessageBubble from '@pages/test/components/UserMessageBubble';
-import useDialogStore from '@domains/common/ui/store/dialog.store';
+// import useDialogStore from '@domains/common/ui/store/dialog.store';
 import LoadingBubble from '@pages/test/components/LoadingBubble';
 import { type ReactNode, useEffect, useRef, useState, useLayoutEffect, useCallback } from 'react';
+import type { JSX } from 'react/jsx-runtime';
+import AdaptiveCardRenderer from '@pages/test/components/AdaptiveCardRenderer';
 
 const ChatPage = () => {
   const messages = useMessageStore((s) => s.messages);
   const setMessages = useMessageStore((s) => s.setMessages);
   const messageContentRef = useRef<HTMLDivElement>(null);
   const virtuosoRef = useRef<VirtuosoHandle>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const openDialog = useDialogStore((s) => s.openDialog);
+  // const openDialog = useDialogStore((s) => s.openDialog);
+
+  // const renderMap: Record<MessageType, (props: { m: ChatMessage; index: number }) => JSX.Element> =
+  //   {
+  //     message: ({ m, index }) => <ChatbotMessageBubble tokens={m.tokens} index={index} />,
+  //     adaptiveCard: ({ m }) => <AdaptiveCardRenderer card={m.card} />,
+  //   };
 
   const [lastDiffHeight, setLastDiffHeight] = useState<number | null>(null);
 
@@ -81,15 +84,40 @@ const ChatPage = () => {
    * 스크롤영역
    */
 
-  // user 메시지 입력되면 chatbot 응답 시뮬레이션
+  /**
+   * 시뮬레이션
+   * user 메시지 입력되면 chatbot 응답시뮬레이션
+   * 시뮬레이션
+   */
   useEffect(() => {
     if (messages.length === 0) return;
     const last = messages[messages.length - 1] as ChatMessage;
+
     if (last.sender === 'user') {
-      // user 메세지가 추가되면 챗봇 답변 시뮬레이션
-      setMessages((prev) => [...prev, { sender: 'chatbot', type: 'message', tokens: WS_TEST_01 }]);
+      // 1) 로딩 메시지 추가
+      const loadingMsg = { sender: 'chatbot', type: 'loading' } as ChatbotLoading;
+      setMessages((prev) => [...prev, loadingMsg]);
+
+      // 2) 3초 후 로딩 제거 + 실제 응답 추가
+      const timer = setTimeout(() => {
+        setMessages((prev) => {
+          const newMsgs = [...prev];
+          const last = newMsgs[newMsgs.length - 1];
+          if (last?.type === 'loading') {
+            newMsgs.pop();
+          }
+          newMsgs.push({
+            sender: 'chatbot',
+            type: 'message',
+            tokens: WS_TEST_01,
+          });
+          return newMsgs;
+        });
+      }, 3000);
+
+      return () => clearTimeout(timer);
     }
-  }, [messages.length]);
+  }, [messages.length, setMessages]);
 
   // 마지막 user 버블의 높이 알아내는 로직
   useLayoutEffect(() => {
@@ -163,18 +191,28 @@ const ChatPage = () => {
             overscan={10}
             itemContent={(index, m) => {
               if (m.sender === 'chatbot') {
-                const isLastMessage = index === messages.length - 1;
+                const isLast = index === messages.length - 1;
+
+                let content: JSX.Element | null = null;
+
+                if (m.type === 'loading') {
+                  content = <LoadingBubble />;
+                } else if (m.type === 'message') {
+                  const msg = m as ChatbotMessage;
+                  content = <ChatbotMessageBubble tokens={msg.tokens} index={index} />;
+                } else if (m.type === 'adaptiveCard') {
+                  content = <AdaptiveCardRenderer />;
+                } else if (m.type === 'fallback') {
+                  content = <ChatbotFallbackBubble index={index} />;
+                }
+
                 return (
                   <ChatbotItemWrapper
-                    isLastMessage={isLastMessage}
+                    isLastMessage={isLast}
                     lastDiffHeight={lastDiffHeight}
                     scrollToBottom={scrollToBottomWithAnimation}
                   >
-                    {m.type === 'message' && (
-                      <ChatbotMessageBubble tokens={m.tokens} index={index} />
-                    )}
-                    {m.type === 'loading' && <LoadingBubble />}
-                    {m.type === 'fallback' && <ChatbotFallbackBubble index={index} />}
+                    {content}
                   </ChatbotItemWrapper>
                 );
               }

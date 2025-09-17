@@ -58,9 +58,18 @@ export default App;
 
 const TextBox = styled(Box)({
   position: 'fixed',
-  top: '0',
+  top: '5px',
   left: '50%',
   transform: 'translateX(-50%)',
   display: 'flex',
-  gap: '8px',
+  gap: '4px',
+  zIndex: '999',
+
+  '& button': {
+    padding: '4px',
+    height: 'auto',
+    background: 'black',
+    borderRadius: '4px',
+    color: 'white',
+  },
 });
