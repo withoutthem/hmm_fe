@@ -1,31 +1,31 @@
-import React from 'react'
-import Box from '@mui/material/Box'
-import Header from '@shared/components/Header'
-import Footer from '@shared/components/Footer'
-import { type BoxProps, styled } from '@mui/material'
+import React from 'react';
+import Box from '@mui/material/Box';
+import ChatHeader from '@shared/components/ChatHeader';
+import Composer from '@shared/components/Composer';
+import { type BoxProps, styled } from '@mui/material';
 
 interface LayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {
   return (
     <StyledLayout className={'layout'}>
-      <Header />
+      <ChatHeader />
       <StyledMain component="main">{children}</StyledMain>
-      <Footer />
+      <Composer />
     </StyledLayout>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
 
 const StyledLayout = styled(Box)<BoxProps>({
   width: '100%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-})
+});
 
 const StyledMain = styled(Box)<BoxProps>({
   width: '100%',
@@ -33,4 +33,4 @@ const StyledMain = styled(Box)<BoxProps>({
   background: '#fff',
   overflow: 'hidden',
   padding: '16px',
-})
+});

@@ -128,10 +128,53 @@ declare module '@mui/material/ButtonGroup' {
 
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
+    // 색상 관련
     secondary: true;
     tertiary: true;
     quaternary: true;
     disabled: true;
+
+    // Display
+    display1Bold: true;
+    display1: true;
+    display2Bold: true;
+    display2: true;
+
+    // Title
+    title1Bold: true;
+    title1: true;
+    title2Bold: true;
+    title2: true;
+
+    // Subtitle
+    subtitle1Bold: true;
+    subtitle1: true;
+    subtitle1Light: true;
+    subtitle2Bold: true;
+    subtitle2: true;
+    subtitle2Light: true;
+    subtitle3Bold: true;
+    subtitle3: true;
+    subtitle3Light: true;
+
+    // Body
+    body1Bold: true;
+    body1: true;
+    body1Light: true;
+    body2Bold: true;
+    body2: true;
+    body2Light: true;
+    body3Bold: true;
+    body3: true;
+    body3Light: true;
+
+    // Caption
+    caption1Bold: true;
+    caption1: true;
+    caption1Light: true;
+    caption2Bold: true;
+    caption2: true;
+    caption2Light: true;
   }
 }
 
@@ -177,44 +220,44 @@ const theme = createTheme({
     },
   },
   typography: {
-    allVariants: { lineHeight: 1.5 },
+    allVariants: { lineHeight: 1.4 },
 
-    display1Bold: { fontSize: '29px', fontWeight: 700 },
-    display1: { fontSize: '29px', fontWeight: 600 },
-    display2Bold: { fontSize: '24px', fontWeight: 700 },
-    display2: { fontSize: '24px', fontWeight: 600 },
+    display1Bold: { fontSize: '29px', fontWeight: 700 }, // Bold
+    display1: { fontSize: '29px', fontWeight: 600 }, // SemiBold
+    display2Bold: { fontSize: '24px', fontWeight: 700 }, // Bold
+    display2: { fontSize: '24px', fontWeight: 600 }, // SemiBold
 
-    title1Bold: { fontSize: '22px', fontWeight: 700 },
-    title1: { fontSize: '22px', fontWeight: 600 },
-    title2Bold: { fontSize: '20px', fontWeight: 700 },
-    title2: { fontSize: '20px', fontWeight: 600 },
+    title1Bold: { fontSize: '22px', fontWeight: 700 }, // Bold
+    title1: { fontSize: '22px', fontWeight: 600 }, // SemiBold
+    title2Bold: { fontSize: '20px', fontWeight: 700 }, // Bold
+    title2: { fontSize: '20px', fontWeight: 600 }, // SemiBold
 
-    subtitle1Bold: { fontSize: '18px', fontWeight: 700 },
-    subtitle1: { fontSize: '18px', fontWeight: 600 },
-    subtitle1Light: { fontSize: '18px', fontWeight: 500 },
-    subtitle2Bold: { fontSize: '17px', fontWeight: 700 },
-    subtitle2: { fontSize: '17px', fontWeight: 600 },
-    subtitle2Light: { fontSize: '17px', fontWeight: 500 },
-    subtitle3Bold: { fontSize: '16px', fontWeight: 700 },
-    subtitle3: { fontSize: '16px', fontWeight: 600 },
-    subtitle3Light: { fontSize: '16px', fontWeight: 500 },
+    subtitle1Bold: { fontSize: '18px', fontWeight: 700 }, // Bold
+    subtitle1: { fontSize: '18px', fontWeight: 600 }, // SemiBold
+    subtitle1Light: { fontSize: '18px', fontWeight: 500 }, //Medium
+    subtitle2Bold: { fontSize: '17px', fontWeight: 700 }, // Bold
+    subtitle2: { fontSize: '17px', fontWeight: 600 }, // SemiBold
+    subtitle2Light: { fontSize: '17px', fontWeight: 500 }, //Medium
+    subtitle3Bold: { fontSize: '16px', fontWeight: 700 }, // Bold
+    subtitle3: { fontSize: '16px', fontWeight: 600 }, // SemiBold
+    subtitle3Light: { fontSize: '16px', fontWeight: 500 }, //Medium
 
-    body1Bold: { fontSize: '15px', fontWeight: 700 },
-    body1: { fontSize: '15px', fontWeight: 600 },
-    body1Light: { fontSize: '15px', fontWeight: 500 },
-    body2Bold: { fontSize: '14px', fontWeight: 700 },
-    body2: { fontSize: '14px', fontWeight: 600 },
-    body2Light: { fontSize: '14px', fontWeight: 500 },
-    body3Bold: { fontSize: '13px', fontWeight: 700 },
-    body3: { fontSize: '13px', fontWeight: 600 },
-    body3Light: { fontSize: '13px', fontWeight: 500 },
+    body1Bold: { fontSize: '15px', fontWeight: 600 }, // SemiBold
+    body1: { fontSize: '15px', fontWeight: 500 }, //Medium
+    body1Light: { fontSize: '15px', fontWeight: 400 }, //Regular
+    body2Bold: { fontSize: '14px', fontWeight: 600 }, // SemiBold
+    body2: { fontSize: '14px', fontWeight: 500 }, //Medium
+    body2Light: { fontSize: '14px', fontWeight: 400 }, //Regular
+    body3Bold: { fontSize: '13px', fontWeight: 600 }, // SemiBold
+    body3: { fontSize: '13px', fontWeight: 500 }, //Medium
+    body3Light: { fontSize: '13px', fontWeight: 400 }, //Regular
 
-    caption1Bold: { fontSize: '12px', fontWeight: 700 },
-    caption1: { fontSize: '12px', fontWeight: 600 },
-    caption1Light: { fontSize: '12px', fontWeight: 500 },
-    caption2Bold: { fontSize: '11px', fontWeight: 700 },
-    caption2: { fontSize: '11px', fontWeight: 600 },
-    caption2Light: { fontSize: '11px', fontWeight: 500 },
+    caption1Bold: { fontSize: '12px', fontWeight: 600 }, // SemiBold
+    caption1: { fontSize: '12px', fontWeight: 500 }, //Medium
+    caption1Light: { fontSize: '12px', fontWeight: 400 }, //Regular
+    caption2Bold: { fontSize: '11px', fontWeight: 600 }, // SemiBold
+    caption2: { fontSize: '11px', fontWeight: 500 }, //Medium
+    caption2Light: { fontSize: '11px', fontWeight: 400 }, //Regular
     // button: {
     //   textTransform: 'none',
     // },
@@ -225,7 +268,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         '*': {
-          fontFamily: `"Pretendard", "Noto Sans JP", "Noto Sans SC", "Noto Sans TC", -apple-system, "Segoe UI", Roboto, sans-serif`,
+          fontFamily: `"Pretendard", -apple-system, "Segoe UI", Roboto, sans-serif`,
           boxSizing: 'border-box',
           margin: '0px',
           padding: '0px',
@@ -414,6 +457,14 @@ const theme = createTheme({
               maxWidth: 'none',
             },
           },
+        },
+      },
+    },
+
+    MuiList: {
+      styleOverrides: {
+        root: {
+          padding: 0,
         },
       },
     },

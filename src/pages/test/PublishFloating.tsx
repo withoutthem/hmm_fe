@@ -1,15 +1,16 @@
-import { Autocomplete, Box, Button, ButtonGroup, styled, TextField } from '@mui/material'
+import { Autocomplete, Box, Button, ButtonGroup, styled, TextField, useTheme } from '@mui/material';
 
 const PublishFloating = () => {
-  const options = ['가나다', '나다라', '마바사', '아자']
+  const theme = useTheme();
+  const options = ['가나다', '나다라', '마바사', '아자'];
 
   return (
     <StyledPublishFloating id={'publish'}>
       <PublushButton
         onClick={() => {
-          const el = document.getElementById('publish')
+          const el = document.getElementById('publish');
           if (el) {
-            el.style.display = 'none'
+            el.style.display = 'none';
           }
         }}
       >
@@ -93,20 +94,20 @@ const PublishFloating = () => {
         <TestBubble sx={{ height: '500px' }} />
       </StyledPublishContainer>
     </StyledPublishFloating>
-  )
-}
+  );
+};
 
-export default PublishFloating
+export default PublishFloating;
 
-export const PublushButton = styled(Button)({
+export const PublushButton = styled(Button)(({ theme }) => ({
   position: 'absolute',
   top: '10px',
   right: '10px',
-  background: 'lightcoral',
+  background: theme.palette.primary.dark, // theme 바로 사용
   padding: '5px 10px',
   height: 'auto',
   color: '#fff',
-})
+}));
 
 const StyledPublishFloating = styled(Box)({
   position: 'fixed',
@@ -120,13 +121,13 @@ const StyledPublishFloating = styled(Box)({
   background: '#fff',
   display: 'none',
   zIndex: 999,
-})
+});
 
 const StyledPublishContainer = styled(Box)({
   width: '100%',
   height: '100%',
   padding: '16px',
-})
+});
 
 const TestBubble = styled(Box)({
   background: '#fff',
@@ -137,7 +138,7 @@ const TestBubble = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   gap: '8px',
-})
+});
 
 const TestCodeBox = styled('pre')({
   borderRadius: '8px',
@@ -149,4 +150,4 @@ const TestCodeBox = styled('pre')({
   lineHeight: 1.4,
   margin: 0,
   whiteSpace: 'pre-wrap', // 줄바꿈 반영
-})
+});

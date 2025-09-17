@@ -6,6 +6,8 @@ import HighlighterTestPage from '@pages/test/HighlighterTestPage';
 import TestPageV2 from '@pages/test/TestPageV2';
 import GlobalDialog from '@domains/chatbot/components/dialog/GlobalDialog';
 import { connectOnce } from '@shared/platform/stomp';
+import SideBar from '@domains/common/components/sideBar/SideBar';
+import GlobalMenu from '@domains/common/components/menu/GlobalMenu';
 
 const testPageMapper = {
   test: <ChatPage />,
@@ -46,6 +48,8 @@ function App() {
       {testPageMapper[page]}
 
       <GlobalDialog />
+      <SideBar />
+      <GlobalMenu />
     </ApplicationProvider>
   );
 }
