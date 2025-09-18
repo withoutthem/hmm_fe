@@ -12,71 +12,85 @@ import { Sercharge } from '@shared/icons/Sercharge';
 import { WarningAmber } from '@shared/icons/WarningAmber';
 import React, { type ReactNode } from 'react';
 
+enum MenuGroup {
+  BOT = 'bot',
+  MANUAL = 'manual',
+}
+
 interface MenuItem {
   id: string;
   title: string;
   icon: ReactNode;
-  group: 'bot' | 'manual';
+  group: MenuGroup;
 }
 
-const MenuList: MenuItem[] = [
-  {
-    id: 'sercharge',
-    title: 'Sercharge',
-    icon: <Sercharge />,
-    group: 'bot',
-  },
-  {
-    id: 'invoice',
-    title: 'Invoice',
-    icon: <Invoice />,
-    group: 'bot',
-  },
-  {
-    id: 'booking',
-    title: 'Booking/BL',
-    icon: <Booking />,
-    group: 'bot',
-  },
-  {
-    id: 'schedule',
-    title: 'Schedule',
-    icon: <Schedule />,
-    group: 'bot',
-  },
-  {
-    id: 'cargo-tracking',
-    title: 'Cargo tracking',
-    icon: <Location />,
-    group: 'bot',
-  },
-  {
-    id: 'find-manager',
-    title: 'Find a Manager',
-    icon: <PersonSerach />,
-    group: 'bot',
-  },
-  {
-    id: 'hi-quote',
-    title: 'Hi quote',
-    icon: <RequestQuote />,
-    group: 'manual',
-  },
-  {
-    id: 'dg-oog',
-    title: 'DG/OOG',
-    icon: <WarningAmber />,
-    group: 'manual',
-  },
-  {
-    id: 'manual-booking',
-    title: 'Booking/BL',
-    icon: <Booking />,
-    group: 'manual',
-  },
-];
+interface Menu {
+  BOT: MenuItem[];
+  MANUAL: MenuItem[];
+}
 
 const SideBar = () => {
+  const MenuInfo: Menu = {
+    BOT: [
+      {
+        id: 'sercharge',
+        title: 'Sercharge',
+        icon: <Sercharge />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'invoice',
+        title: 'Invoice',
+        icon: <Invoice />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'booking',
+        title: 'Booking/BL',
+        icon: <Booking />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'schedule',
+        title: 'Schedule',
+        icon: <Schedule />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'cargo-tracking',
+        title: 'Cargo tracking',
+        icon: <Location />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'find-manager',
+        title: 'Find a Manager',
+        icon: <PersonSerach />,
+        group: MenuGroup.BOT,
+      },
+    ],
+    MANUAL: [
+      {
+        id: 'hi-quote',
+        title: 'Hi quote',
+        icon: <RequestQuote />,
+        group: MenuGroup.MANUAL,
+      },
+      {
+        id: 'dg-oog',
+        title: 'DG/OOG',
+        icon: <WarningAmber />,
+        group: MenuGroup.MANUAL,
+      },
+      {
+        id: 'manual-booking',
+        title: 'Booking/BL',
+        icon: <Booking />,
+        group: MenuGroup.MANUAL,
+      },
+    ],
+  };
+
   const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
   const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
 
@@ -116,7 +130,7 @@ const SideBar = () => {
             HMM Bot
           </SideBarSectionTitle>
           <SidebarNav>
-            {MenuList.filter((item) => item.group === 'bot').map((item) => (
+            {MenuInfo.BOT.map((item) => (
               <SidebarNavItem key={item.id}>
                 <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
                   {item.icon}
@@ -133,7 +147,7 @@ const SideBar = () => {
             Manual
           </SideBarSectionTitle>
           <SidebarNav>
-            {MenuList.filter((item) => item.group === 'manual').map((item) => (
+            {MenuInfo.MANUAL.map((item) => (
               <SidebarNavItem key={item.id}>
                 <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
                   {item.icon}

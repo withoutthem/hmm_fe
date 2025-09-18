@@ -36,6 +36,7 @@
     "framer-motion": "^12.23.12",
     "html-to-plaintext": "^0.1.1",
     "i18next": "^25.4.1",
+    "i18next-browser-languagedetector": "^8.2.0",
     "marked-react": "^3.0.1",
     "openapi-typescript": "^7.0.1",
     "react": "^19.1.1",
@@ -51,6 +52,7 @@
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@jest/globals": "^30.0.5",
+    "@types/i18next": "^12.1.0",
     "@types/jest": "^29.5.14",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",

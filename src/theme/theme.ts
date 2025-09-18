@@ -1,5 +1,6 @@
 // src/styles/theme.ts
 import { createTheme } from '@mui/material/styles';
+import type { CSSProperties } from 'react';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -31,73 +32,73 @@ declare module '@mui/material/styles' {
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
-    display1Bold: React.CSSProperties;
-    display1: React.CSSProperties;
-    display2Bold: React.CSSProperties;
-    display2: React.CSSProperties;
-    title1Bold: React.CSSProperties;
-    title1: React.CSSProperties;
-    title2Bold: React.CSSProperties;
-    title2: React.CSSProperties;
-    subtitle1Bold: React.CSSProperties;
-    subtitle1: React.CSSProperties;
-    subtitle1Light: React.CSSProperties;
-    subtitle2Bold: React.CSSProperties;
-    subtitle2: React.CSSProperties;
-    subtitle2Light: React.CSSProperties;
-    subtitle3Bold: React.CSSProperties;
-    subtitle3: React.CSSProperties;
-    subtitle3Light: React.CSSProperties;
-    body1Bold: React.CSSProperties;
-    body1: React.CSSProperties;
-    body1Light: React.CSSProperties;
-    body2Bold: React.CSSProperties;
-    body2: React.CSSProperties;
-    body2Light: React.CSSProperties;
-    body3Bold: React.CSSProperties;
-    body3: React.CSSProperties;
-    body3Light: React.CSSProperties;
-    caption1Bold: React.CSSProperties;
-    caption1: React.CSSProperties;
-    caption1Light: React.CSSProperties;
-    caption2Bold: React.CSSProperties;
-    caption2: React.CSSProperties;
-    caption2Light: React.CSSProperties;
+    display1Bold: CSSProperties;
+    display1: CSSProperties;
+    display2Bold: CSSProperties;
+    display2: CSSProperties;
+    title1Bold: CSSProperties;
+    title1: CSSProperties;
+    title2Bold: CSSProperties;
+    title2: CSSProperties;
+    subtitle1Bold: CSSProperties;
+    subtitle1: CSSProperties;
+    subtitle1Light: CSSProperties;
+    subtitle2Bold: CSSProperties;
+    subtitle2: CSSProperties;
+    subtitle2Light: CSSProperties;
+    subtitle3Bold: CSSProperties;
+    subtitle3: CSSProperties;
+    subtitle3Light: CSSProperties;
+    body1Bold: CSSProperties;
+    body1: CSSProperties;
+    body1Light: CSSProperties;
+    body2Bold: CSSProperties;
+    body2: CSSProperties;
+    body2Light: CSSProperties;
+    body3Bold: CSSProperties;
+    body3: CSSProperties;
+    body3Light: CSSProperties;
+    caption1Bold: CSSProperties;
+    caption1: CSSProperties;
+    caption1Light: CSSProperties;
+    caption2Bold: CSSProperties;
+    caption2: CSSProperties;
+    caption2Light: CSSProperties;
   }
 
   interface TypographyVariantsOptions {
-    display1Bold?: React.CSSProperties;
-    display1?: React.CSSProperties;
-    display2Bold?: React.CSSProperties;
-    display2?: React.CSSProperties;
-    title1Bold?: React.CSSProperties;
-    title1?: React.CSSProperties;
-    title2Bold?: React.CSSProperties;
-    title2?: React.CSSProperties;
-    subtitle1Bold?: React.CSSProperties;
-    subtitle1?: React.CSSProperties;
-    subtitle1Light?: React.CSSProperties;
-    subtitle2Bold?: React.CSSProperties;
-    subtitle2?: React.CSSProperties;
-    subtitle2Light?: React.CSSProperties;
-    subtitle3Bold?: React.CSSProperties;
-    subtitle3?: React.CSSProperties;
-    subtitle3Light?: React.CSSProperties;
-    body1Bold?: React.CSSProperties;
-    body1?: React.CSSProperties;
-    body1Light?: React.CSSProperties;
-    body2Bold?: React.CSSProperties;
-    body2?: React.CSSProperties;
-    body2Light?: React.CSSProperties;
-    body3Bold?: React.CSSProperties;
-    body3?: React.CSSProperties;
-    body3Light?: React.CSSProperties;
-    caption1Bold?: React.CSSProperties;
-    caption1?: React.CSSProperties;
-    caption1Light?: React.CSSProperties;
-    caption2Bold?: React.CSSProperties;
-    caption2?: React.CSSProperties;
-    caption2Light?: React.CSSProperties;
+    display1Bold?: CSSProperties;
+    display1?: CSSProperties;
+    display2Bold?: CSSProperties;
+    display2?: CSSProperties;
+    title1Bold?: CSSProperties;
+    title1?: CSSProperties;
+    title2Bold?: CSSProperties;
+    title2?: CSSProperties;
+    subtitle1Bold?: CSSProperties;
+    subtitle1?: CSSProperties;
+    subtitle1Light?: CSSProperties;
+    subtitle2Bold?: CSSProperties;
+    subtitle2?: CSSProperties;
+    subtitle2Light?: CSSProperties;
+    subtitle3Bold?: CSSProperties;
+    subtitle3?: CSSProperties;
+    subtitle3Light?: CSSProperties;
+    body1Bold?: CSSProperties;
+    body1?: CSSProperties;
+    body1Light?: CSSProperties;
+    body2Bold?: CSSProperties;
+    body2?: CSSProperties;
+    body2Light?: CSSProperties;
+    body3Bold?: CSSProperties;
+    body3?: CSSProperties;
+    body3Light?: CSSProperties;
+    caption1Bold?: CSSProperties;
+    caption1?: CSSProperties;
+    caption1Light?: CSSProperties;
+    caption2Bold?: CSSProperties;
+    caption2?: CSSProperties;
+    caption2Light?: CSSProperties;
   }
 }
 
