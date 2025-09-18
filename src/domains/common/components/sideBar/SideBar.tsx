@@ -10,16 +10,16 @@ import { RequestQuote } from '@shared/icons/RequestQuote';
 import { Schedule } from '@shared/icons/Schedule';
 import { Sercharge } from '@shared/icons/Sercharge';
 import { WarningAmber } from '@shared/icons/WarningAmber';
-import React from 'react';
+import React, { type ReactNode } from 'react';
 
 interface MenuItem {
   id: string;
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   group: 'bot' | 'manual';
 }
 
-const MenuData: MenuItem[] = [
+const MenuList: MenuItem[] = [
   {
     id: 'sercharge',
     title: 'Sercharge',
@@ -116,7 +116,7 @@ const SideBar = () => {
             HMM Bot
           </SideBarSectionTitle>
           <SidebarNav>
-            {MenuData.filter((item) => item.group === 'bot').map((item) => (
+            {MenuList.filter((item) => item.group === 'bot').map((item) => (
               <SidebarNavItem key={item.id}>
                 <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
                   {item.icon}
@@ -133,7 +133,7 @@ const SideBar = () => {
             Manual
           </SideBarSectionTitle>
           <SidebarNav>
-            {MenuData.filter((item) => item.group === 'manual').map((item) => (
+            {MenuList.filter((item) => item.group === 'manual').map((item) => (
               <SidebarNavItem key={item.id}>
                 <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
                   {item.icon}
