@@ -7,6 +7,11 @@ interface AdaptiveCardRendererProps {
   onSubmit?: (data: Record<string, unknown>) => void;
 }
 
+AdaptiveCards.AdaptiveCard.onProcessMarkdown = (text, result) => {
+  result.outputHtml = text;
+  result.didProcess = true;
+};
+
 const AdaptiveCardRenderer = ({ card, onSubmit }: AdaptiveCardRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 

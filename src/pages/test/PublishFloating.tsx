@@ -1,4 +1,12 @@
-import { Autocomplete, Box, Button, ButtonGroup, styled, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  Box,
+  Button,
+  ButtonGroup,
+  keyframes,
+  styled,
+  TextField,
+} from '@mui/material';
 
 const PublishFloating = () => {
   const options = ['가나다', '나다라', '마바사', '아자'];
@@ -108,7 +116,14 @@ const PublishFloating = () => {
           </TestCodeBox>
         </TestBubble>
 
-        <TestBubble />
+        <TestBubble>
+          <ClipBackground>변하는 글씨 만들기</ClipBackground>
+          <TestCodeBox>
+            {`
+            <ClipBackground>변하는 글씨 만들기</ClipBackground>
+            `}
+          </TestCodeBox>
+        </TestBubble>
       </StPublishContainer>
     </StPublishFloating>
   );
@@ -167,4 +182,26 @@ const TestCodeBox = styled('pre')({
   lineHeight: 1.4,
   margin: 0,
   whiteSpace: 'pre-wrap', // 줄바꿈 반영
+});
+
+const gradientFlow = keyframes`
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+`;
+
+const ClipBackground = styled(Box)({
+  background: 'linear-gradient(90deg, red, black)',
+  backgroundSize: '300% 300%',
+  WebkitBackgroundClip: 'text' /* 배경을 글자 영역으로 잘라냄 */,
+  WebkitTextFillColor: 'transparent' /* 글자 색을 투명하게 */,
+  fontSize: '25px',
+  fontWeight: 'bold',
+  animation: `${gradientFlow} 5s ease infinite`,
 });

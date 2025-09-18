@@ -1,7 +1,7 @@
 // src/domains/common/ui/ui.store.ts
 import { create } from 'zustand';
 
-export type ChatMessage = UserMessage | ChatbotMessage | ChatbotAdaptiveCard | ChatbotLoading;
+export type ChatMessage = UserMessage | ChatbotMessage | ChatbotAdaptiveCard;
 
 // user 메세지
 export interface UserMessage {
@@ -16,22 +16,19 @@ export interface ChatbotMessage {
   sender: 'chatbot';
   type: 'message';
   tokens: string;
-  fallback?: false;
+  fallback?: boolean;
+  isLoading?: boolean;
 }
 
 export interface ChatbotAdaptiveCard {
   sender: 'chatbot';
   type: 'adaptiveCard';
   fallback?: false;
+  isLoading?: boolean;
   card: {
     title: string;
     description?: string;
   };
-}
-
-export interface ChatbotLoading {
-  sender: 'chatbot';
-  type: 'loading';
 }
 
 // 1. 스토어의 전체 상태와 액션 타입을 한 번에 정의합니다.
