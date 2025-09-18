@@ -3,7 +3,6 @@ import { ResetIcon } from '@shared/icons/ResetIcon';
 import { ChatIcon } from '@shared/icons/ChatIcon';
 import { HistoryIcon } from '@shared/icons/HistoryIcon';
 import { FAQIcon } from '@shared/icons/FAQIcon';
-import { useState } from 'react';
 import useUiStore from '@domains/common/ui/store/ui.store';
 
 const GlobalMenu = () => {
@@ -15,30 +14,30 @@ const GlobalMenu = () => {
   };
 
   return (
-    <StyledMenu anchorEl={isMenuOpen} open={Boolean(isMenuOpen)} onClose={onClose}>
-      <StyledMenuItem onClick={onClose}>
+    <StMenu anchorEl={isMenuOpen} open={Boolean(isMenuOpen)} onClose={onClose}>
+      <StMenuItem onClick={onClose}>
         <ResetIcon />
         <Typography variant={'subtitle3Light'}>처음으로</Typography>
-      </StyledMenuItem>
-      <StyledMenuItem onClick={onClose}>
+      </StMenuItem>
+      <StMenuItem onClick={onClose}>
         <ChatIcon />
         <Typography variant={'subtitle3Light'}>상담사연결 (라이브챗)</Typography>
-      </StyledMenuItem>
-      <StyledMenuItem onClick={onClose}>
+      </StMenuItem>
+      <StMenuItem onClick={onClose}>
         <HistoryIcon />
         <Typography variant={'subtitle3Light'}>상담이력</Typography>
-      </StyledMenuItem>
-      <StyledMenuItem onClick={onClose}>
+      </StMenuItem>
+      <StMenuItem onClick={onClose}>
         <FAQIcon />
         <Typography variant={'subtitle3Light'}>FAQ 바로가기</Typography>
-      </StyledMenuItem>
-    </StyledMenu>
+      </StMenuItem>
+    </StMenu>
   );
 };
 
 export default GlobalMenu;
 
-const StyledMenu = styled(Menu)({
+const StMenu = styled(Menu)({
   '& .MuiPaper-root': {
     transform: 'translate(0px, -60px) !important',
     background: '#fff',
@@ -49,7 +48,7 @@ const StyledMenu = styled(Menu)({
   },
 });
 
-const StyledMenuItem = styled(MenuItem)({
+const StMenuItem = styled(MenuItem)({
   display: 'flex',
   alignItems: 'center',
   padding: '12px 16px',

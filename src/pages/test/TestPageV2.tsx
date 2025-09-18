@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { Button, styled, TextField, Typography, Divider, Box } from '@mui/material';
+import { Button, styled, TextField, Typography } from '@mui/material';
 import { ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { publish, subscribe, stomp } from '@shared/platform/stomp';
 
 // 단일 메시지 타입 정의

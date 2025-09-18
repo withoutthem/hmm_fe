@@ -1,6 +1,6 @@
 export const FAQIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_938_14536)">
+    <g clipPath="url(#clip0_938_14536)">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
