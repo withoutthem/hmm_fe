@@ -88,9 +88,27 @@ const PublishFloating = () => {
               />
             )}
           />
+          <TestCodeBox>
+            {`
+            <Autocomplete
+            disablePortal
+            id="autocomplete-example"
+            options={options}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Choose an option"
+                size="small"
+                fullWidth
+                InputLabelProps={{ className: '' }}
+              />
+            )}
+          />
+            `}
+          </TestCodeBox>
         </TestBubble>
 
-        <TestBubble sx={{ height: '500px' }} />
+        <TestBubble />
       </StPublishContainer>
     </StPublishFloating>
   );
