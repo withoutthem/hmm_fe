@@ -1,5 +1,5 @@
 import { Drawer, List, ListItem, styled, Typography, Button, IconButton } from '@mui/material';
-import useUiStore from '@domains/common/ui/store/ui.store';
+import useUIStore from '@domains/common/ui/store/ui.store';
 import { ColumnBox } from '@shared/ui/layoutUtilComponents';
 import { CloseW } from '@shared/icons/CloseW';
 import { Booking } from '@shared/icons/Booking';
@@ -77,8 +77,8 @@ const MenuList: MenuItem[] = [
 ];
 
 const SideBar = () => {
-  const isSidebarOpen = useUiStore((s) => s.isSidebarOpen);
-  const setIsSidebarOpen = useUiStore((s) => s.setIsSidebarOpen);
+  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
+  const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
 
   const onClose = () => {
     setIsSidebarOpen(false);
@@ -104,7 +104,7 @@ const SideBar = () => {
   };
 
   return (
-    <StyledSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
+    <StSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
       <CloseButton onClick={onClose}>
         <CloseW />
       </CloseButton>
@@ -149,13 +149,13 @@ const SideBar = () => {
         2025 HMM All
         <br /> Rights Reserved
       </SideBarFooterTypo>
-    </StyledSideBar>
+    </StSideBar>
   );
 };
 
 export default SideBar;
 
-const StyledSideBar = styled(Drawer)({
+const StSideBar = styled(Drawer)({
   '& .MuiBackdrop-root': {
     background: 'transparent',
   },

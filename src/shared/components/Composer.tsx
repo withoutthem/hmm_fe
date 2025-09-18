@@ -10,13 +10,19 @@ import {
   keyframes,
 } from '@mui/material';
 import useMessageStore, { type UserMessage } from '@domains/common/ui/store/message.store';
-import { useState } from 'react';
-import { AlignCenter, ColumnBox, FlexBox } from '@shared/ui/layoutUtilComponents';
+import { AlignCenter, ColumnBox } from '@shared/ui/layoutUtilComponents';
 import DOMPurify from 'dompurify';
 import { useInfiniteScroll } from '@domains/common/hooks/useInfiniteScroll';
 import { SendIcon } from '@shared/icons/SendIcon';
 import { AddIcon } from '@shared/icons/AddIcon';
-import useUiStore from '@domains/common/ui/store/ui.store';
+import useUIStore from '@domains/common/ui/store/ui.store';
+import {
+  type MouseEvent,
+  type ClipboardEvent,
+  type KeyboardEvent,
+  useState,
+  type ChangeEvent,
+} from 'react';
 
 interface MockData {
   userId: number;
@@ -27,22 +33,24 @@ interface MockData {
 const Composer = () => {
   const message = useMessageStore((s) => s.message);
   const setMessage = useMessageStore((s) => s.setMessage);
+
   const images = useMessageStore((s) => s.images);
   const setImages = useMessageStore((s) => s.setImages);
+
   const messages = useMessageStore((s) => s.messages);
   const setMessages = useMessageStore((s) => s.setMessages);
-  const setIsMenuOpen = useUiStore((s) => s.setIsMenuOpen);
+  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
 
   const [allSuggestions, setAllSuggestions] = useState<string[]>([]); // 모든 검색어
 
   const { items: visibleSuggestions, onScroll, reset } = useInfiniteScroll(allSuggestions, 10); // 자동스크롤
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
     setIsMenuOpen(event.currentTarget); // 버튼 기준으로 메뉴 위치 잡음
   };
 
   // Ctrl + V로 이미지 붙여넣기
-  const onPaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+  const onPaste = (e: ClipboardEvent<HTMLDivElement>) => {
     if (e.clipboardData.files.length > 0) {
       const pastedFiles = Array.from(e.clipboardData.files).filter((file) =>
         file.type.startsWith('image/')
@@ -77,7 +85,7 @@ const Composer = () => {
   };
 
   // 엔터키 전송
-  const onMessageKeyDown = (e: React.KeyboardEvent) => {
+  const onMessageKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
 
@@ -100,7 +108,7 @@ const Composer = () => {
   };
 
   // 자동완성 갱신
-  const onMessageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onMessageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setMessage(value);
 
@@ -149,14 +157,14 @@ const Composer = () => {
 
   return (
     <ClickAwayListener onClickAway={() => setAllSuggestions([])}>
-      <StyledComposer component={'footer'}>
+      <StComposer component={'footer'}>
         <InputContainer>
           <ImgTextField>
             {/* 붙여넣은 이미지 미리보기 */}
             {images.length > 0 && (
               <ImagePreview>
                 {images.map((file, idx) => (
-                  <ImagePreviewItem key={idx}>
+                  <ImagePreviewItem key={file.name + idx}>
                     <img src={URL.createObjectURL(file)} alt={`pasted-${idx}`} />
                     <DeleteButton onClick={() => onRemoveImage(idx)}>×</DeleteButton>
                   </ImagePreviewItem>
@@ -170,7 +178,7 @@ const Composer = () => {
                 <SuggestionBox>
                   <SuggestionList onScroll={onScroll}>
                     {visibleSuggestions.map((s, idx) => (
-                      <SuggestionListItem key={idx} onClick={() => onSuggestionClick(s)}>
+                      <SuggestionListItem key={s + idx} onClick={() => onSuggestionClick(s)}>
                         <span dangerouslySetInnerHTML={{ __html: highlightMatch(s, message) }} />
                       </SuggestionListItem>
                     ))}
@@ -204,14 +212,14 @@ const Composer = () => {
             </ColumnBox>
           </ImgTextField>
         </InputContainer>
-      </StyledComposer>
+      </StComposer>
     </ClickAwayListener>
   );
 };
 
 export default Composer;
 
-const StyledComposer = styled(Box)<BoxProps>({
+const StComposer = styled(Box)<BoxProps>({
   width: '100%',
   background: '#fff',
   boxSizing: 'border-box',

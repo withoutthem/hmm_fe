@@ -3,11 +3,11 @@ import { ResetIcon } from '@shared/icons/ResetIcon';
 import { ChatIcon } from '@shared/icons/ChatIcon';
 import { HistoryIcon } from '@shared/icons/HistoryIcon';
 import { FAQIcon } from '@shared/icons/FAQIcon';
-import useUiStore from '@domains/common/ui/store/ui.store';
+import useUIStore from '@domains/common/ui/store/ui.store';
 
 const GlobalMenu = () => {
-  const isMenuOpen = useUiStore((s) => s.isMenuOpen);
-  const setIsMenuOpen = useUiStore((s) => s.setIsMenuOpen);
+  const isMenuOpen = useUIStore((s) => s.isMenuOpen);
+  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
 
   const onClose = () => {
     setIsMenuOpen(null);

@@ -10,24 +10,24 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <StyledLayout className={'layout'}>
+    <StLayout className={'layout'}>
       <ChatHeader />
-      <StyledMain component="main">{children}</StyledMain>
+      <StMain component="main">{children}</StMain>
       <Composer />
-    </StyledLayout>
+    </StLayout>
   );
 };
 
 export default Layout;
 
-const StyledLayout = styled(Box)<BoxProps>({
+const StLayout = styled(Box)<BoxProps>({
   width: '100%',
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
 });
 
-const StyledMain = styled(Box)<BoxProps>({
+const StMain = styled(Box)<BoxProps>({
   width: '100%',
   flex: 1,
   background: '#fff',

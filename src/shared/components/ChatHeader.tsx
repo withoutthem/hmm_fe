@@ -2,13 +2,13 @@ import { Box, type BoxProps, IconButton, styled } from '@mui/material';
 import { MenuIcon } from '@shared/icons/MenuIcon';
 import { AlignCenter } from '@shared/ui/layoutUtilComponents';
 import LogoImg from '@assets/img/logo.svg';
-import useUiStore from '@domains/common/ui/store/ui.store';
+import useUIStore from '@domains/common/ui/store/ui.store';
 
 const ChatHeader = () => {
-  const setIsSidebarOpen = useUiStore((s) => s.setIsSidebarOpen);
+  const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
 
   return (
-    <StyledChatHeader component={'header'}>
+    <StHeader component={'header'}>
       <HeaderIconButton onClick={() => setIsSidebarOpen(true)}>
         <MenuIcon />
       </HeaderIconButton>
@@ -25,13 +25,13 @@ const ChatHeader = () => {
           <MenuIcon />
         </HeaderIconButton>
       </AlignCenter>
-    </StyledChatHeader>
+    </StHeader>
   );
 };
 
 export default ChatHeader;
 
-const StyledChatHeader = styled(AlignCenter)<BoxProps>({
+const StHeader = styled(AlignCenter)<BoxProps>({
   width: '100%',
   height: '48px',
   background: '#fff',

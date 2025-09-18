@@ -1,11 +1,10 @@
-import { Autocomplete, Box, Button, ButtonGroup, styled, TextField, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, ButtonGroup, styled, TextField } from '@mui/material';
 
 const PublishFloating = () => {
-  const theme = useTheme();
   const options = ['가나다', '나다라', '마바사', '아자'];
 
   return (
-    <StyledPublishFloating id={'publish'}>
+    <StPublishFloating id={'publish'}>
       <PublushButton
         onClick={() => {
           const el = document.getElementById('publish');
@@ -17,7 +16,7 @@ const PublishFloating = () => {
         X
       </PublushButton>
 
-      <StyledPublishContainer>
+      <StPublishContainer>
         <TestBubble>
           <ButtonGroup variant={'symmetry'}>
             <Button variant={'secondary'} disabled>
@@ -92,8 +91,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble sx={{ height: '500px' }} />
-      </StyledPublishContainer>
-    </StyledPublishFloating>
+      </StPublishContainer>
+    </StPublishFloating>
   );
 };
 
@@ -109,7 +108,7 @@ export const PublushButton = styled(Button)(({ theme }) => ({
   color: '#fff',
 }));
 
-const StyledPublishFloating = styled(Box)({
+const StPublishFloating = styled(Box)({
   position: 'fixed',
   top: 0,
   left: 0,
@@ -123,7 +122,7 @@ const StyledPublishFloating = styled(Box)({
   zIndex: 999,
 });
 
-const StyledPublishContainer = styled(Box)({
+const StPublishContainer = styled(Box)({
   width: '100%',
   height: '100%',
   padding: '16px',
