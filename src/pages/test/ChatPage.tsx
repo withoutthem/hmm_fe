@@ -18,179 +18,8 @@ import { useEffect, useRef, useState, useLayoutEffect, useCallback } from 'react
 import type { JSX } from 'react/jsx-runtime';
 import AdaptiveCardRenderer from '@pages/test/components/AdaptiveCardRenderer';
 import ChatbotItemWrapper from '@pages/test/components/ChatbotItemWrapper';
-
-const AdaptiveCardData = {
-  type: 'AdaptiveCard',
-  version: '1.3',
-  body: [
-    // 1. 기본 텍스트
-    {
-      type: 'TextBlock',
-      text: '1. 기본 텍스트',
-      size: 'large',
-      weight: 'bolder',
-      separator: false,
-    },
-    {
-      type: 'TextBlock',
-      id: 'hello',
-      text: '안녕하세요! 👋 AdaptiveCard 테스트 카드입니다.',
-      size: 'large',
-      weight: 'bolder',
-      separator: false,
-    },
-    { type: 'TextBlock', text: 'AdaptiveCard 테스트 카드입니다.' },
-
-    // 2. 입력폼
-    { type: 'TextBlock', text: '2. 입력폼', size: 'large', weight: 'bolder' },
-    { type: 'TextBlock', text: '회원가입 폼', weight: 'bolder', size: 'medium' },
-    { type: 'Input.Text', id: 'name', placeholder: '이름' },
-    { type: 'Input.Text', id: 'email', placeholder: '이메일', style: 'Email' },
-
-    // 3. 이미지 갤러리
-    { type: 'TextBlock', text: '3. 이미지 갤러리', size: 'large', weight: 'bolder' },
-    { type: 'TextBlock', text: '추천 여행지 🌏', weight: 'bolder', size: 'medium' },
-    {
-      type: 'ImageSet',
-      imagesize: 'medium',
-      images: [
-        { type: 'Image', url: 'https://picsum.photos/200/150?1' },
-        { type: 'Image', url: 'https://picsum.photos/200/150?2' },
-        { type: 'Image', url: 'https://picsum.photos/200/150?3' },
-      ],
-    },
-
-    // 4. 체크리스트
-    { type: 'TextBlock', text: '4. 체크리스트', size: 'large', weight: 'bolder' },
-    { type: 'TextBlock', text: '오늘의 할 일 ✅', weight: 'bolder', size: 'medium' },
-    {
-      type: 'Input.Toggle',
-      id: 'task1',
-      title: 'React 공부하기',
-      valueOn: 'true',
-      valueOff: 'false',
-    },
-    {
-      type: 'Input.Toggle',
-      id: 'task2',
-      title: '운동 30분 하기',
-      valueOn: 'true',
-      valueOff: 'false',
-    },
-    {
-      type: 'Input.Toggle',
-      id: 'task3',
-      title: '책 10페이지 읽기',
-      valueOn: 'true',
-      valueOff: 'false',
-    },
-
-    // 5. 날짜 선택
-    { type: 'TextBlock', text: '5. 날짜 선택', size: 'large', weight: 'bolder' },
-    { type: 'TextBlock', text: '예약 날짜와 시간을 선택하세요 📅', weight: 'bolder' },
-    { type: 'Input.Date', id: 'date', title: '날짜 선택' },
-
-    {
-      type: 'Container',
-      items: [
-        {
-          type: 'ColumnSet',
-          columns: [
-            {
-              type: 'Column',
-              width: 'stretch',
-              items: [
-                {
-                  type: 'ColumnSet',
-                  columns: [
-                    {
-                      type: 'Column',
-                      width: 'auto',
-                      items: [
-                        { type: 'TextBlock', text: '입차시간', weight: 'Bolder', wrap: true },
-                      ],
-                    },
-                    {
-                      type: 'Column',
-                      width: 'stretch',
-                      items: [
-                        {
-                          type: 'Input.ChoiceSet',
-                          id: 'startTime',
-                          style: 'compact',
-                          choices: [
-                            { title: '09:00', value: '09:00' },
-                            { title: '09:30', value: '09:30' },
-                            { title: '10:00', value: '10:00' },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              type: 'Column',
-              width: 'stretch',
-              items: [
-                {
-                  type: 'ColumnSet',
-                  columns: [
-                    {
-                      type: 'Column',
-                      width: 'auto',
-                      items: [
-                        { type: 'TextBlock', text: '출차시간', weight: 'Bolder', wrap: true },
-                      ],
-                    },
-                    {
-                      type: 'Column',
-                      width: 'stretch',
-                      items: [
-                        {
-                          type: 'Input.ChoiceSet',
-                          id: 'endTime',
-                          style: 'compact',
-                          choices: [
-                            { title: '09:00', value: '09:00' },
-                            { title: '09:30', value: '09:30' },
-                            { title: '10:00', value: '10:00' },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-
-    // 6. FactSet (테이블 느낌)
-    { type: 'TextBlock', text: '6. FactSet (테이블 느낌)', size: 'large', weight: 'bolder' },
-    { type: 'TextBlock', text: '주문 내역 🛒', weight: 'bolder', size: 'medium' },
-    {
-      type: 'FactSet',
-      facts: [
-        { title: '상품', value: '노트북' },
-        { title: '수량', value: '1' },
-        { title: '가격', value: '₩1,500,000' },
-      ],
-    },
-
-    // 7. Hero 이미지
-    { type: 'TextBlock', text: '7. Hero 이미지', size: 'large', weight: 'bolder' },
-    { type: 'Image', url: 'https://picsum.photos/400/200', size: 'Stretch' },
-    { type: 'TextBlock', text: '이 상품을 구매하시겠습니까?', weight: 'bolder', wrap: true },
-  ],
-  actions: [
-    { type: 'Action.Submit', title: '확인' },
-    { type: 'Action.OpenUrl', title: '자세히 보기', url: 'https://example.com' },
-  ],
-} as unknown as AdaptiveCards.IAdaptiveCard;
+import { adaptiveCardData, type SignupFormData } from '@pages/test/components/AdaptiveCardData';
+import { HTML_TEST_1 } from '@domains/common/components/testData';
 
 const ChatPage = () => {
   const messages = useMessageStore((s) => s.messages);
@@ -292,6 +121,7 @@ const ChatPage = () => {
           //   type: 'message',
           //   tokens: HTML_TEST_1,
           // });
+
           return newMsgs;
         });
       }, 2000);
@@ -387,8 +217,71 @@ const ChatPage = () => {
                   content = (
                     <AdaptiveCardContainer>
                       <AdaptiveCardRenderer
-                        card={AdaptiveCardData}
-                        onSubmit={(data) => console.log('제출된 데이터:', data)}
+                        card={adaptiveCardData}
+                        onSubmit={(data) => {
+                          const formData = data as Record<string, string>;
+
+                          console.log('data', formData);
+
+                          const startKeys = Object.keys(formData).filter((key) =>
+                            key.startsWith('startTime')
+                          );
+
+                          for (const startKey of startKeys) {
+                            const match = startKey.match(/^startTime(\d+)$/); // 끝의 숫자만 추출
+                            if (!match) continue;
+
+                            const num = match[1]; // ex) "1", "2"
+                            const endKey = `endTime${num}`;
+
+                            // 3. endTimeN이 존재할 때만 비교
+                            if (endKey in formData) {
+                              const startVal = formData[startKey];
+                              const endVal = formData[endKey];
+
+                              console.log(`👉 비교: ${startKey}=${startVal}, ${endKey}=${endVal}`);
+
+                              // 4. 값이 다르더라도 같은 문구 출력
+                              if (startVal && endVal) {
+                                if (startVal >= endVal) {
+                                  alert('출차시간은 입차시간보다 뒤입니다.'); // 같은 경우
+                                }
+                                // startVal < endVal 인 경우는 정상이라 그냥 통과
+                              }
+                            }
+                          }
+
+                          console.log('✅ 최종 formData:', formData);
+
+                          // // 이름 필수 검사
+                          // if (!data.name || formData.name.trim() === '') {
+                          //   alert('⚠️ 이름은 필수 입력 항목입니다.');
+                          //   return;
+                          // }
+                          //
+                          // // 이메일 형식 검사
+                          // const emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+                          // if (!data.email || !emailRegex.test(formData.email)) {
+                          //   alert('⚠️ 올바른 이메일 주소를 입력해주세요.');
+                          //   return;
+                          // }
+                          //
+                          // // 전화번호 형식 검사 (010으로 시작, 11자리)
+                          // const phoneRegex = /^01[0-9]{9}$/;
+                          // if (!data.phone || !phoneRegex.test(formData.phone)) {
+                          //   alert('⚠️ 올바른 휴대전화번호(예: 01012345678)를 입력해주세요.');
+                          //   return;
+                          // }
+                          // 체크박스 검사
+                          // if (data.task1 !== "true" || data.task2 !== "true" || data.task3 !== "true") {
+                          //   alert("⚠️ 모든 체크박스를 선택해야 제출할 수 있습니다.");
+                          //   return;
+                          // }
+                          //
+                          // // 통과하면 실제 제출 처리
+                          // console.log('✅ 유효성 검증 통과:', formData);
+                          // 여기서 API 호출 등 실제 로직 실행
+                        }}
                       />
                     </AdaptiveCardContainer>
                   );
@@ -438,9 +331,13 @@ export const ChatbotBubbleWrap = styled(Box)({
 });
 
 const AdaptiveCardContainer = styled(Box)({
-  '& input, & select': { border: '1px solid black' },
+  '& input, & select': {
+    border: '1px solid black',
+    '&.ac-input-validation-failed': { borderColor: 'red', color: 'red' },
+  },
   '& button': { background: 'black', color: '#fff' },
   '& table': { width: '100%', borderCollapse: 'collapse' },
   '& td': { border: '1px solid #ddd' },
-  '& .ac-horizontal-separator': { display: 'none' },
+  '& .ac-horizontal-separator': { display: 'none !important' },
+  '& #timeBox': { flexDirection: 'row !important', '& > div': { flex: '1 !important' } },
 });

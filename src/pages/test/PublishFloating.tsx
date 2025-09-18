@@ -1,7 +1,6 @@
-import { Autocomplete, Box, Button, ButtonGroup, styled, TextField, useTheme } from '@mui/material';
+import { Autocomplete, Box, Button, ButtonGroup, styled, TextField } from '@mui/material';
 
 const PublishFloating = () => {
-  const theme = useTheme();
   const options = ['가나다', '나다라', '마바사', '아자'];
 
   return (
@@ -89,9 +88,27 @@ const PublishFloating = () => {
               />
             )}
           />
+          <TestCodeBox>
+            {`
+            <Autocomplete
+            disablePortal
+            id="autocomplete-example"
+            options={options}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Choose an option"
+                size="small"
+                fullWidth
+                InputLabelProps={{ className: '' }}
+              />
+            )}
+          />
+            `}
+          </TestCodeBox>
         </TestBubble>
 
-        <TestBubble sx={{ height: '500px' }} />
+        <TestBubble></TestBubble>
       </StyledPublishContainer>
     </StyledPublishFloating>
   );
