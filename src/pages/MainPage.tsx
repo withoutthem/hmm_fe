@@ -1,10 +1,11 @@
 import { Box, styled } from '@mui/material';
 import { Virtuoso } from 'react-virtuoso';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useMessageStore, { type TalkMessage } from '@domains/common/ui/store/message.store';
 import ChatMessageItem from '@pages/test/ChatMessageItem';
 import useAutoScroll from '@domains/common/hooks/useAutoScroll';
 import { scrollToBottomWithAnimation } from '@domains/common/utils/utils';
+import PublishFloating from '@pages/test/PublishFloating';
 
 const renderChatMessage =
   (messages: TalkMessage[], lastDiffHeight: number | null, scrollToBottom: () => void) =>
@@ -29,22 +30,30 @@ const MainPage = () => {
   const messageContentRef = useRef<HTMLDivElement>(null);
   const virtuosoRef = useRef(null);
 
-  // ┣━━━━━━━━━━━━━━━━ CustomHooks ━━━━━━━━━━━━━━┫
+  // ┣━━━━━━━━━━━━━━━━ CustomHooks ━━━━━━━━━━━━━━━━━━━━┫
   useAutoScroll({
     messageContentRef,
     setLastDiffHeight,
   });
 
+  useEffect(() => {
+    console.log('messages', messages);
+  }, [messages]);
+
   return (
     <Box className={'main_page'}>
       <MessagesContainer ref={messageContentRef}>
         <Virtuoso
+          className={'virtuoso'}
           data={messages}
           ref={virtuosoRef}
           overscan={10}
           itemContent={renderChatMessage(messages, lastDiffHeight, scrollToBottomWithAnimation)}
         />
       </MessagesContainer>
+
+      {/*TEST*/}
+      <PublishFloating />
     </Box>
   );
 };

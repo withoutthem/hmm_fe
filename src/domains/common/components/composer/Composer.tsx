@@ -46,10 +46,9 @@ const Composer = () => {
    */
   const { images, onPaste, removeAt, previewUrls, clearImages } = useClipboardImages();
 
-  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━┫
-  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
-
-  // ┣━━━━━━━━━━━━━━━━ Send Message ━━━━━━━━┫
+  /**
+   * 메시지 전송
+   */
   const { send, sendPicked, onKeyDownEnterToSend } = useSendMessage({
     getMessage: () => message,
     images,
@@ -57,6 +56,9 @@ const Composer = () => {
     clearImages,
     afterSend: clear,
   });
+
+  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━┫
+  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
 
   // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━┫
   const onPlusIconClick = useCallback(
@@ -66,7 +68,6 @@ const Composer = () => {
     [setIsMenuOpen]
   );
 
-  // ┣━━━━━━━━━━━━━━━━ Render ━━━━━━━━━━━━━━┫
   return (
     <ClickAwayListener onClickAway={clear}>
       <StComposer component={'footer'}>

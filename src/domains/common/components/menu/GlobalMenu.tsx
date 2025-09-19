@@ -4,13 +4,26 @@ import { ChatIcon } from '@shared/icons/ChatIcon';
 import { HistoryIcon } from '@shared/icons/HistoryIcon';
 import { FAQIcon } from '@shared/icons/FAQIcon';
 import useUIStore from '@domains/common/ui/store/ui.store';
+import useDialogStore, { DialogType } from '@domains/common/ui/store/dialog.store';
 
 const GlobalMenu = () => {
   const isMenuOpen = useUIStore((s) => s.isMenuOpen);
   const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
+  const openDialog = useDialogStore((s) => s.openDialog);
 
   const onClose = () => {
     setIsMenuOpen(null);
+  };
+
+  const onHistoryClick = () => {
+    openDialog(DialogType.HISTORY);
+    onClose();
+  };
+
+  const onPublisherCheck = () => {
+    const el = document.getElementById('publish');
+    if (el) el.style.display = 'flex';
+    onClose();
   };
 
   return (
@@ -23,13 +36,17 @@ const GlobalMenu = () => {
         <ChatIcon />
         <Typography variant={'subtitle3Light'}>상담사연결 (라이브챗)</Typography>
       </StMenuItem>
-      <StMenuItem onClick={onClose}>
+      <StMenuItem onClick={onHistoryClick}>
         <HistoryIcon />
         <Typography variant={'subtitle3Light'}>상담이력</Typography>
       </StMenuItem>
       <StMenuItem onClick={onClose}>
         <FAQIcon />
         <Typography variant={'subtitle3Light'}>FAQ 바로가기</Typography>
+      </StMenuItem>
+      <StMenuItem onClick={onPublisherCheck}>
+        <FAQIcon />
+        <Typography variant={'subtitle3Light'}>퍼블리싱테스트보기</Typography>
       </StMenuItem>
     </StMenu>
   );

@@ -10,28 +10,21 @@ export enum Sender {
 export enum MessageType {
   MESSAGE = 'message',
   ADAPTIVE_CARD = 'adaptiveCard',
+  FALLBACK = 'fallback',
 }
 
 export interface TalkMessage {
+  messageId?: string; // 서버 할당 ID
   sender: Sender;
   type: MessageType;
-  message?: string;
+  message: string;
   images?: File[];
   streamingToken?: string;
-  fallback?: boolean;
+  // fallback?: boolean;
   isLoading?: boolean;
   adaptiveCardInfo?: IAdaptiveCard;
 }
 
-// user 메세지
-export interface UserMessage {
-  sender: 'user';
-  type: 'message';
-  message?: string;
-  images?: File[];
-}
-
-// 1. 스토어의 전체 상태와 액션 타입을 한 번에 정의합니다.
 interface MessageState {
   // Message
   images: File[] /** 입력한 이미지들 */;
@@ -42,7 +35,6 @@ interface MessageState {
   setMessages: (updater: (prev: TalkMessage[]) => TalkMessage[]) => void;
 }
 
-// 2. create 함수 안에 모든 초기 상태와 액션을 정의합니다.
 const useMessageStore = create<MessageState>((set) => ({
   // 초기 상태
   images: [],

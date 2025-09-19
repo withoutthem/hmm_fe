@@ -23,11 +23,13 @@ export const useSendMessage = ({
   const setMessages = useMessageStore((s) => s.setMessages);
 
   const pushUserMessage = useCallback(
-    (payload: { message?: string; images?: File[] }) => {
+    (payload: { message: string; images?: File[] }) => {
+      if (payload.message.length === 0) return; // 빈 메시지 방지
+
       const userMsg: TalkMessage = {
         sender: Sender.USER,
         type: MessageType.MESSAGE,
-        ...(payload.message ? { message: payload.message } : {}),
+        message: payload.message,
         ...(payload.images?.length ? { images: payload.images } : {}),
       };
       setMessages((prev: TalkMessage[]) => [...prev, userMsg]);
