@@ -184,24 +184,42 @@ const TestCodeBox = styled('pre')({
   whiteSpace: 'pre-wrap', // 줄바꿈 반영
 });
 
-const gradientFlow = keyframes`
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+// 하이라이트 왕복 애니메이션
+const shimmer = keyframes`
+    0% { background-position: 0 0; }
+    50% { background-position: 100% 0; }
+    100% { background-position: 0 0; }
+`;
+
+// 배경색 전환 애니메이션
+const colorShift = keyframes`
+  0% { background-color: #0037EB; }
+  45% { background-color: #0037EB; }
+  50% { background-color: #6D1AFE; }
+  95% { background-color: #6D1AFE; }
+  100% { background-color: #0037EB; }
 `;
 
 const ClipBackground = styled(Box)({
-  background: 'linear-gradient(90deg, red, black)',
-  backgroundSize: '300% 300%',
-  WebkitBackgroundClip: 'text' /* 배경을 글자 영역으로 잘라냄 */,
-  WebkitTextFillColor: 'transparent' /* 글자 색을 투명하게 */,
-  fontSize: '25px',
+  fontSize: '14px',
   fontWeight: 'bold',
-  animation: `${gradientFlow} 5s ease infinite`,
+  // 기본 배경 (퍼플 시작)
+  backgroundColor: 'purple',
+
+  // 하얀 빛줄기
+  backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
+  backgroundSize: '200% 100%',
+  backgroundRepeat: 'no-repeat',
+
+  // 텍스트 클리핑
+  backgroundClip: 'text',
+  WebkitBackgroundClip: 'text',
+  color: 'transparent',
+  WebkitTextFillColor: 'transparent',
+
+  // 두 애니메이션 동시 실행
+  animation: `
+    ${shimmer} 5s ease-in-out infinite,
+    ${colorShift} 10s linear infinite
+  `,
 });

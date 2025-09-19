@@ -5,6 +5,12 @@ export const AlignCenter = styled(Box)({
   alignItems: 'center',
 });
 
+export const CenterBox = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
 export const FlexBox = styled(Box)({
   display: 'flex',
 });
@@ -12,10 +18,4 @@ export const FlexBox = styled(Box)({
 export const ColumnBox = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-});
-
-export const CenterBox = styled(Box)({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
 });
