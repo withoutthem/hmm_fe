@@ -1,4 +1,5 @@
 import { keyframes } from '@mui/material';
+import DOMPurify from 'dompurify';
 
 /**
  * 스크롤 애니메이션
@@ -45,3 +46,20 @@ export const popIn = keyframes`
     transform: scale(1);
   }
 `;
+
+/**
+ * 텍스트에서 쿼리와 일치하는 부분을 하이라이트 처리
+ */
+
+export const highlightMatch = (text: string, query: string): string => {
+  if (!query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+
+  const before = text.substring(0, idx);
+  const match = text.substring(idx, idx + query.length);
+  const after = text.substring(idx + query.length);
+
+  const highlighted = `${before}<span>${match}</span>${after}`;
+  return DOMPurify.sanitize(highlighted);
+};

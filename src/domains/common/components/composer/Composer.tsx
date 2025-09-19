@@ -1,3 +1,4 @@
+// src/domains/common/components/composer/Composer.tsx
 import {
   Box,
   type BoxProps,
@@ -9,74 +10,55 @@ import {
   ClickAwayListener,
   keyframes,
 } from '@mui/material';
-import useMessageStore, {
-  MessageType,
-  Sender,
-  type TalkMessage,
-  type UserMessage,
-} from '@domains/common/ui/store/message.store';
 import { AlignCenter, ColumnBox } from '@shared/ui/layoutUtilComponents';
-import DOMPurify from 'dompurify';
-import { SendIcon } from '@shared/icons/SendIcon';
-import { AddIcon } from '@shared/icons/AddIcon';
 import useUIStore from '@domains/common/ui/store/ui.store';
-import { type MouseEvent, type ClipboardEvent, useCallback, type KeyboardEvent } from 'react';
+import { useCallback, type MouseEvent } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useSuggestions } from '@domains/common/components/composer/hooks/useSuggestions';
+import { useClipboardImages } from '@domains/common/components/composer/hooks/useClipboardImages';
+import { useSendMessage } from '@domains/common/components/composer/hooks/useSendMessage';
+import { SendIcon } from '@shared/icons/SendIcon';
+import { AddIcon } from '@shared/icons/AddIcon';
+import { highlightMatch } from '@domains/common/utils/utils';
 
 interface ComposerFormValues {
   message: string;
 }
 
 const Composer = () => {
-  // =================================================================================
   // ┣━━━━━━━━━━━━━━━━ Hooks ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
-
-  /*
-   * React Hook Form
-   */
-  const {
-    control,
-    handleSubmit,
-    reset: resetForm,
-  } = useForm<ComposerFormValues>({
+  const { control, reset: resetForm } = useForm<ComposerFormValues>({
     mode: 'onChange',
     defaultValues: { message: '' },
   });
   const message = useWatch({ control, name: 'message' }) ?? '';
 
-  /*
-   * 자동완성 훅
+  /**
+   * 자동완성
    */
   const { isOpen, visibleSuggestions, onScroll, clear, onSuggestionClick } = useSuggestions(
     message,
     { minChars: 2, debounceMs: 180 }
   );
 
-  // =================================================================================
-  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
-  const images = useMessageStore((s) => s.images);
-  const setImages = useMessageStore((s) => s.setImages);
-  const setMessages = useMessageStore((s) => s.setMessages);
+  /**
+   * 클립보드
+   */
+  const { images, onPaste, removeAt, previewUrls, clearImages } = useClipboardImages();
+
+  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━┫
   const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
 
-  // =================================================================================
-  // ┣━━━━━━━━━━━━━━━━ States ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
+  // ┣━━━━━━━━━━━━━━━━ Send Message ━━━━━━━━┫
+  const { send, sendPicked, onKeyDownEnterToSend } = useSendMessage({
+    getMessage: () => message,
+    images,
+    clearForm: () => resetForm({ message: '' }),
+    clearImages,
+    afterSend: clear,
+  });
 
-  // =================================================================================
-  // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
-
-  // =================================================================================
-  // ┣━━━━━━━━━━━━━━━━ Effects ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
-
-  // =================================================================================
-  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
+  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━┫
   const onPlusIconClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       setIsMenuOpen(event.currentTarget);
@@ -84,83 +66,7 @@ const Composer = () => {
     [setIsMenuOpen]
   );
 
-  // Ctrl + V로 이미지 붙여넣기
-  const onPaste = useCallback(
-    (e: ClipboardEvent<HTMLDivElement>) => {
-      if (e.clipboardData.files.length > 0) {
-        const pastedFiles = Array.from(e.clipboardData.files).filter((file) =>
-          file.type.startsWith('image/')
-        );
-        if (pastedFiles.length > 0) {
-          setImages([...images, ...pastedFiles]);
-        }
-      }
-    },
-    [images, setImages]
-  );
-
-  // 이미지 삭제
-  const onRemoveImage = useCallback(
-    (idx: number) => {
-      setImages(images.filter((_, i) => i !== idx));
-    },
-    [images, setImages]
-  );
-
-  const pushUserMessage = useCallback(
-    (payload: Partial<UserMessage>) => {
-      const userMsg: TalkMessage = {
-        sender: Sender.USER,
-        type: MessageType.MESSAGE,
-        ...(payload.message ? { message: payload.message } : {}),
-        ...(payload.images?.length ? { images: payload.images } : {}),
-      };
-      setMessages((prev: TalkMessage[]) => [...prev, userMsg]);
-    },
-    [setMessages]
-  );
-
-  const clearComposer = useCallback(() => {
-    resetForm({ message: '' });
-    setImages([]);
-  }, [resetForm, setImages]);
-
-  const onSubmit = useCallback(
-    (data: ComposerFormValues) => {
-      const trimmed = data.message?.trim() ?? '';
-      if (!trimmed && images.length === 0) return;
-      pushUserMessage({ message: trimmed, images });
-      clearComposer();
-    },
-    [images, pushUserMessage, clearComposer]
-  );
-
-  const onMessageKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        void handleSubmit(onSubmit)();
-      }
-    },
-    [handleSubmit, onSubmit]
-  );
-
-  // =================================================================================
-  // ┣━━━━━━━━━━━━━━━━ Suggestions Hook ━━━━━━━━━━━━━━━━┫
-  // =================================================================================
-
-  // 자동완성 텍스트 하이라이트
-  const highlightMatch = useCallback((text: string, query: string) => {
-    if (!query) return text;
-    const idx = text.toLowerCase().indexOf(query.toLowerCase());
-    if (idx === -1) return text;
-    const before = text.substring(0, idx);
-    const match = text.substring(idx, idx + query.length);
-    const after = text.substring(idx + query.length);
-    const highlighted = `${before}<span>${match}</span>${after}`;
-    return DOMPurify.sanitize(highlighted);
-  }, []);
-
+  // ┣━━━━━━━━━━━━━━━━ Render ━━━━━━━━━━━━━━┫
   return (
     <ClickAwayListener onClickAway={clear}>
       <StComposer component={'footer'}>
@@ -169,10 +75,10 @@ const Composer = () => {
             {/* 붙여넣은 이미지 미리보기 */}
             {images.length > 0 && (
               <ImagePreview>
-                {images.map((file, idx) => (
-                  <ImagePreviewItem key={file.name + idx}>
-                    <img src={URL.createObjectURL(file)} alt={`pasted-${idx}`} />
-                    <DeleteButton onClick={() => onRemoveImage(idx)}>×</DeleteButton>
+                {previewUrls.map((url, idx) => (
+                  <ImagePreviewItem key={url + idx}>
+                    <img src={url} alt={`pasted-${idx}`} />
+                    <DeleteButton onClick={() => removeAt(idx)}>×</DeleteButton>
                   </ImagePreviewItem>
                 ))}
               </ImagePreview>
@@ -183,16 +89,19 @@ const Composer = () => {
               {isOpen && visibleSuggestions.length > 0 && (
                 <SuggestionBox>
                   <SuggestionList onScroll={onScroll}>
-                    {visibleSuggestions.map((s, idx) => (
+                    {visibleSuggestions.map((suggestion, idx) => (
                       <SuggestionListItem
-                        key={s + idx}
+                        key={suggestion.body + idx}
                         onClick={() => {
-                          const picked = onSuggestionClick(s);
-                          pushUserMessage({ message: picked });
-                          clearComposer();
+                          const picked = onSuggestionClick(suggestion.body);
+                          sendPicked(picked); // 선택 즉시 전송
                         }}
                       >
-                        <span dangerouslySetInnerHTML={{ __html: highlightMatch(s, message) }} />
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: highlightMatch(suggestion.body, message),
+                          }}
+                        />
                       </SuggestionListItem>
                     ))}
                   </SuggestionList>
@@ -205,7 +114,7 @@ const Composer = () => {
                   <AddIcon />
                 </AddIconButton>
 
-                {/* 메시지 입력 영역 (RHF Controller) */}
+                {/* 메시지 입력 영역 */}
                 <Controller
                   name="message"
                   control={control}
@@ -219,13 +128,13 @@ const Composer = () => {
                       onPaste={onPaste}
                       variant="outlined"
                       fullWidth
-                      onKeyDown={onMessageKeyDown}
+                      onKeyDown={onKeyDownEnterToSend}
                     />
                   )}
                 />
 
                 {/* 보내기 버튼 */}
-                <SendButton onClick={() => void handleSubmit(onSubmit)()}>
+                <SendButton onClick={send}>
                   <SendIcon />
                 </SendButton>
               </ChatInputBar>
@@ -238,6 +147,8 @@ const Composer = () => {
 };
 
 export default Composer;
+
+/* ====================== styles ====================== */
 
 const StComposer = styled(Box)<BoxProps>({
   width: '100%',

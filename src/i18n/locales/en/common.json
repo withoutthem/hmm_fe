@@ -1,3 +1,4 @@
 {
-  "test": "This is a test"
+  "test": "This is a test",
+  "welcome": "Welcome to our application!"
 }
