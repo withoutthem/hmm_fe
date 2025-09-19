@@ -22,35 +22,29 @@ import { SendIcon } from '@shared/icons/SendIcon';
 import { AddIcon } from '@shared/icons/AddIcon';
 import { highlightMatch } from '@domains/common/utils/utils';
 import { ClearIcon } from '@shared/icons/ClearIcon';
-
-interface ComposerFormValues {
+export interface ComposerFormValues {
   message: string;
 }
 
 const Composer = () => {
   // ┣━━━━━━━━━━━━━━━━ GlobalHooks ━━━━━━━━━━━━━━━━┫
+  // useForm
   const { control, reset: resetForm } = useForm<ComposerFormValues>({
     mode: 'onChange',
     defaultValues: { message: '' },
   });
   const message = useWatch({ control, name: 'message' }) ?? '';
 
-  /**
-   * 자동완성
-   */
+  // 자동완성
   const { isOpen, visibleSuggestions, onScroll, clear, onSuggestionClick } = useSuggestions(
     message,
     { minChars: 2, debounceMs: 180 }
   );
 
-  /**
-   * 클립보드
-   */
+  // 이미지 붙여넣기
   const { images, onPaste, removeAt, previewUrls, clearImages } = useClipboardImages();
 
-  /**
-   * 메시지 전송
-   */
+  // 메시지 전송
   const { send, sendPicked, onKeyDownEnterToSend } = useSendMessage({
     getMessage: () => message,
     images,
@@ -59,10 +53,10 @@ const Composer = () => {
     afterSend: clear,
   });
 
-  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━┫
+  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━━━┫
   const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
 
-  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━┫
+  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━━━━┫
   const onPlusIconClick = useCallback(
     (event: MouseEvent<HTMLButtonElement>) => {
       setIsMenuOpen(event.currentTarget);
@@ -70,12 +64,15 @@ const Composer = () => {
     [setIsMenuOpen]
   );
 
+  // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━━━┫
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const disableSend = message.trim().length === 0 && images.length === 0;
+
   return (
     <ClickAwayListener onClickAway={clear}>
       <StComposer component={'footer'}>
         <InputContainer>
           <ImgTextField>
-            {/* 붙여넣은 이미지 미리보기 */}
             {images.length > 0 && (
               <ImagePreview>
                 {previewUrls.map((url, idx) => (
@@ -88,7 +85,6 @@ const Composer = () => {
             )}
 
             <ColumnBox sx={{ position: 'relative' }}>
-              {/* 자동완성 */}
               {isOpen && visibleSuggestions.length > 0 && (
                 <SuggestionBox>
                   <SuggestionList onScroll={onScroll}>
@@ -97,7 +93,7 @@ const Composer = () => {
                         key={suggestion.body + idx}
                         onClick={() => {
                           const picked = onSuggestionClick(suggestion.body);
-                          sendPicked(picked); // 선택 즉시 전송
+                          sendPicked(picked);
                         }}
                       >
                         <span
@@ -112,18 +108,15 @@ const Composer = () => {
               )}
 
               <ChatInputBar className={'chat-input-bar'}>
-                {/* Add 영역 */}
                 <AddIconButton onClick={onPlusIconClick}>
                   <AddIcon />
                 </AddIconButton>
 
-                {/* 메시지 입력 영역 */}
                 <Controller
                   name="message"
                   control={control}
                   render={({ field }) => (
                     <StTextField
-                      className={'st-text-field'}
                       multiline
                       maxRows={3}
                       placeholder="궁금한 내용을 입력해주세요."
@@ -133,18 +126,18 @@ const Composer = () => {
                       variant="outlined"
                       fullWidth
                       onKeyDown={onKeyDownEnterToSend}
+                      inputRef={(el) => {
+                        // MUI multiline → textarea ref
+                        inputRef.current = (el as unknown as HTMLTextAreaElement) ?? null;
+                      }}
                       slotProps={{
                         input: {
                           endAdornment: field.value && (
                             <TextFieldAdornment position="end">
                               <ClearIconButton
                                 onClick={() => {
-                                  const textField = document.querySelector(
-                                    '.st-text-field textarea'
-                                  ) as HTMLTextAreaElement;
-
                                   field.onChange('');
-                                  textField?.focus();
+                                  inputRef.current?.focus();
                                 }}
                               >
                                 <ClearIcon />
@@ -157,8 +150,7 @@ const Composer = () => {
                   )}
                 />
 
-                {/* 보내기 버튼 */}
-                <SendButton onClick={send} disabled={message.length === 0}>
+                <SendButton onClick={send} disabled={disableSend}>
                   <SendIconWrap>
                     <SendIcon />
                   </SendIconWrap>
