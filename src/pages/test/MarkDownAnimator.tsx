@@ -6,8 +6,8 @@ import { ColumnBox } from '@shared/ui/layoutUtilComponents';
 import DOMPurify from 'dompurify';
 import { stripHtml } from 'string-strip-html';
 import { useOnceAnimation } from '@domains/common/hooks/useOnceAnimation';
-import { popIn } from '@domains/common/hooks/animations';
 import { CopyIcon } from '@shared/icons/CopyIcon';
+import { popIn } from '@domains/common/utils/utils';
 
 /* ===== marked 전역 설정 (모듈 스코프에서 1회) ===== */
 const renderer: RendererObject = {

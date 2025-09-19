@@ -1,7 +1,27 @@
 // src/domains/common/ui/ui.store.ts
 import { create } from 'zustand';
+import type { IAdaptiveCard } from 'adaptivecards';
 
-export type ChatMessage = UserMessage | ChatbotMessage | ChatbotAdaptiveCard;
+export enum Sender {
+  USER = 'user',
+  CHATBOT = 'chatbot',
+}
+
+export enum MessageType {
+  MESSAGE = 'message',
+  ADAPTIVE_CARD = 'adaptiveCard',
+}
+
+export interface TalkMessage {
+  sender: Sender;
+  type: MessageType;
+  message?: string;
+  images?: File[];
+  streamingToken?: string;
+  fallback?: boolean;
+  isLoading?: boolean;
+  adaptiveCardInfo?: IAdaptiveCard;
+}
 
 // user 메세지
 export interface UserMessage {
@@ -11,48 +31,24 @@ export interface UserMessage {
   images?: File[];
 }
 
-// chatbot 정상 메시지
-export interface ChatbotMessage {
-  sender: 'chatbot';
-  type: 'message';
-  tokens: string;
-  fallback?: boolean;
-  isLoading?: boolean;
-}
-
-export interface ChatbotAdaptiveCard {
-  sender: 'chatbot';
-  type: 'adaptiveCard';
-  fallback?: false;
-  isLoading?: boolean;
-  card: {
-    title: string;
-    description?: string;
-  };
-}
-
 // 1. 스토어의 전체 상태와 액션 타입을 한 번에 정의합니다.
 interface MessageState {
   // Message
-  message: string /** 입력한 message들 */;
   images: File[] /** 입력한 이미지들 */;
-  messages: ChatMessage[] /** 타임라인 (전체 교체만) */;
+  messages: TalkMessage[] /** 타임라인 (전체 교체만) */;
 
   // Actions
-  setMessage: (msg: string) => void;
   setImages: (images: File[]) => void;
-  setMessages: (updater: ((prev: ChatMessage[]) => ChatMessage[]) | ChatMessage[]) => void;
+  setMessages: (updater: (prev: TalkMessage[]) => TalkMessage[]) => void;
 }
 
 // 2. create 함수 안에 모든 초기 상태와 액션을 정의합니다.
 const useMessageStore = create<MessageState>((set) => ({
   // 초기 상태
-  message: '',
   images: [],
   messages: [],
 
   // 액션
-  setMessage: (msg) => set({ message: msg }),
   setImages: (images) => set({ images }),
   setMessages: (updater) =>
     set((state) => ({

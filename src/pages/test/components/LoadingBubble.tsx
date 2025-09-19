@@ -1,6 +1,6 @@
-import { Box, CircularProgress, styled } from '@mui/material'
-import { AlignCenter } from '@shared/ui/layoutUtilComponents'
-import { popIn } from '@domains/common/hooks/animations'
+import { Box, CircularProgress, styled } from '@mui/material';
+import { AlignCenter } from '@shared/ui/layoutUtilComponents';
+import { popIn } from '@domains/common/utils/utils';
 
 export const LoadingBubble = () => (
   <LoadingBubbleWrap>
@@ -11,14 +11,14 @@ export const LoadingBubble = () => (
       </AlignCenter>
     </LoadingBubbleCon>
   </LoadingBubbleWrap>
-)
+);
 
-export default LoadingBubble
+export default LoadingBubble;
 
 const LoadingBubbleWrap = styled(Box)({
   display: 'flex',
   justifyContent: 'flex-start',
-})
+});
 
 const LoadingBubbleCon = styled(Box)({
   width: 'auto',
@@ -28,4 +28,4 @@ const LoadingBubbleCon = styled(Box)({
   padding: '10px 12px',
   transformOrigin: 'top left',
   animation: `${popIn} 0.4s cubic-bezier(0.22, 1, 0.36, 1) both`,
-})
+});

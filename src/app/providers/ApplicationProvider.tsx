@@ -14,6 +14,7 @@ import 'dayjs/locale/zh-cn';
 import useUserStore from '@domains/user/store/user.store';
 import { setupI18n } from '@/i18n';
 import i18n from 'i18next';
+import { connectOnce } from '@shared/platform/stomp';
 
 interface ApplicationProvidersProps {
   children: ReactNode;
@@ -42,6 +43,9 @@ const ApplicationProvider = ({ children }: ApplicationProvidersProps) => {
   const globalLocale = useUserStore((s) => s.globalLocale);
   const initializedRef = useRef(false);
   const [i18nReady, setI18nReady] = useState(false); // 게이트
+
+  // WebSocket 연결 (StompProvider)
+  connectOnce();
 
   // 최초 1회: i18n 초기화 + dayjs 로캘
   useEffect(() => {

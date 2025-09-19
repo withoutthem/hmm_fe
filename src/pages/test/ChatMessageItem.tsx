@@ -1,4 +1,4 @@
-import { type ChatMessage } from '@domains/common/ui/store/message.store';
+import { MessageType, Sender, type TalkMessage } from '@domains/common/ui/store/message.store';
 import ChatbotMessageBubble from '@pages/test/components/ChatMessageBubble';
 import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble';
 import UserMessageBubble from '@pages/test/components/UserMessageBubble';
@@ -10,7 +10,7 @@ import { Box, styled } from '@mui/material';
 import type { JSX } from 'react';
 
 interface ChatMessageItemProps {
-  m: ChatMessage;
+  talkMessage: TalkMessage;
   index: number;
   messagesLength: number;
   lastDiffHeight: number | null;
@@ -18,23 +18,26 @@ interface ChatMessageItemProps {
 }
 
 const ChatMessageItem = ({
-  m,
+  talkMessage,
   index,
   messagesLength,
   lastDiffHeight,
   scrollToBottom,
 }: ChatMessageItemProps) => {
-  if (m.sender === 'chatbot') {
+  if (talkMessage.sender === Sender.CHATBOT) {
     const isLast = index === messagesLength - 1;
     let content: JSX.Element | null = null;
 
-    if (m.sender === 'chatbot' && m.isLoading) {
+    if (talkMessage.sender === Sender.CHATBOT && talkMessage.isLoading) {
       content = <LoadingBubble />;
-    } else if ((m.type === 'message' && m.fallback) || (m.type === 'adaptiveCard' && m.fallback)) {
+    } else if (
+      (talkMessage.type === MessageType.MESSAGE && talkMessage.fallback) ||
+      (talkMessage.type === MessageType.ADAPTIVE_CARD && talkMessage.fallback)
+    ) {
       content = <ChatbotFallbackBubble index={index} />;
-    } else if (m.type === 'message') {
-      content = <ChatbotMessageBubble tokens={m.tokens} index={index} />;
-    } else if (m.type === 'adaptiveCard') {
+    } else if (talkMessage.type === MessageType.MESSAGE) {
+      content = <ChatbotMessageBubble tokens={talkMessage.streamingToken ?? ''} index={index} />;
+    } else if (talkMessage.type === MessageType.ADAPTIVE_CARD) {
       content = (
         <AdaptiveCardContainer>
           <AdaptiveCardRenderer
@@ -116,8 +119,8 @@ const ChatMessageItem = ({
     );
   }
 
-  if (m.sender === 'user') {
-    return <UserMessageBubble m={m} index={index} />;
+  if (talkMessage.sender === Sender.USER) {
+    return <UserMessageBubble m={talkMessage} index={index} />;
   }
 
   return null;
