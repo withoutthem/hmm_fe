@@ -1,15 +1,15 @@
 import { Drawer, List, ListItem, styled, Typography, Button, IconButton } from '@mui/material';
 import useUiStore from '@domains/common/ui/store/ui.store';
 import { ColumnBox } from '@shared/ui/layoutUtilComponents';
-import { CloseW } from '@shared/icons/CloseW';
-import { Booking } from '@shared/icons/Booking';
-import { Invoice } from '@shared/icons/Invoice';
-import { Location } from '@shared/icons/Location';
-import { PersonSerach } from '@shared/icons/PersonSerach';
-import { RequestQuote } from '@shared/icons/RequestQuote';
-import { Schedule } from '@shared/icons/Schedule';
-import { Sercharge } from '@shared/icons/Sercharge';
-import { WarningAmber } from '@shared/icons/WarningAmber';
+import { CloseWIcon } from '@shared/icons/CloseWIcon';
+import { BookingIcon } from '@shared/icons/BookingIcon';
+import { InvoiceIcon } from '@shared/icons/InvoiceIcon';
+import { LocationIcon } from '@shared/icons/LocationIcon';
+import { PersonSerachIcon } from '@shared/icons/PersonSerachIcon';
+import { RequestQuoteIcon } from '@shared/icons/RequestQuoteIcon';
+import { ScheduleIcon } from '@shared/icons/ScheduleIcon';
+import { SerchargeIcon } from '@shared/icons/SerchargeIcon';
+import { WarningAmberIcon } from '@shared/icons/WarningAmberIcon';
 import React, { type ReactNode } from 'react';
 
 interface MenuItem {
@@ -23,55 +23,55 @@ const MenuList: MenuItem[] = [
   {
     id: 'sercharge',
     title: 'Sercharge',
-    icon: <Sercharge />,
+    icon: <SerchargeIcon />,
     group: 'bot',
   },
   {
     id: 'invoice',
     title: 'Invoice',
-    icon: <Invoice />,
+    icon: <InvoiceIcon />,
     group: 'bot',
   },
   {
     id: 'booking',
     title: 'Booking/BL',
-    icon: <Booking />,
+    icon: <BookingIcon />,
     group: 'bot',
   },
   {
     id: 'schedule',
     title: 'Schedule',
-    icon: <Schedule />,
+    icon: <ScheduleIcon />,
     group: 'bot',
   },
   {
     id: 'cargo-tracking',
     title: 'Cargo tracking',
-    icon: <Location />,
+    icon: <LocationIcon />,
     group: 'bot',
   },
   {
     id: 'find-manager',
     title: 'Find a Manager',
-    icon: <PersonSerach />,
+    icon: <PersonSerachIcon />,
     group: 'bot',
   },
   {
     id: 'hi-quote',
     title: 'Hi quote',
-    icon: <RequestQuote />,
+    icon: <RequestQuoteIcon />,
     group: 'manual',
   },
   {
     id: 'dg-oog',
     title: 'DG/OOG',
-    icon: <WarningAmber />,
+    icon: <WarningAmberIcon />,
     group: 'manual',
   },
   {
     id: 'manual-booking',
     title: 'Booking/BL',
-    icon: <Booking />,
+    icon: <BookingIcon />,
     group: 'manual',
   },
 ];
@@ -106,7 +106,7 @@ const SideBar = () => {
   return (
     <StyledSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
       <CloseButton onClick={onClose}>
-        <CloseW />
+        <CloseWIcon />
       </CloseButton>
 
       <SideBarNav>

@@ -1,8 +1,10 @@
-import { Box, type BoxProps, IconButton, styled } from '@mui/material';
+import { type BoxProps, IconButton, styled } from '@mui/material';
 import { MenuIcon } from '@shared/icons/MenuIcon';
 import { AlignCenter } from '@shared/ui/layoutUtilComponents';
-import LogoImg from '@assets/img/logo.svg';
 import useUiStore from '@domains/common/ui/store/ui.store';
+import { LogoIcon } from '@shared/icons/LogoIcon';
+import { CloseIcon } from '@shared/icons/CloseIcon';
+import { MinimizeIcon } from '@shared/icons/MinimizeIcon';
 
 const ChatHeader = () => {
   const setIsSidebarOpen = useUiStore((s) => s.setIsSidebarOpen);
@@ -14,15 +16,15 @@ const ChatHeader = () => {
       </HeaderIconButton>
 
       <Logo>
-        <Box component={'img'} src={LogoImg} alt={'hmm_logo'} />
+        <LogoIcon />
       </Logo>
 
       <AlignCenter>
         <HeaderIconButton>
-          <MenuIcon />
+          <MinimizeIcon />
         </HeaderIconButton>
         <HeaderIconButton>
-          <MenuIcon />
+          <CloseIcon />
         </HeaderIconButton>
       </AlignCenter>
     </StyledChatHeader>
@@ -45,15 +47,11 @@ const HeaderIconButton = styled(IconButton)({
   height: '48px',
 });
 
-const Logo = styled(Box)({
+const Logo = styled(AlignCenter)({
   width: '48px',
+  height: '48px',
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-
-  '& img': {
-    width: '100%',
-    objectFit: 'none',
-  },
 });
