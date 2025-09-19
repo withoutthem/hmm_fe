@@ -17,7 +17,7 @@ export interface TalkMessage {
   messageId?: string; // 서버 할당 ID
   sender: Sender;
   type: MessageType;
-  message: string;
+  message?: string;
   images?: File[];
   streamingToken?: string;
   // fallback?: boolean;
