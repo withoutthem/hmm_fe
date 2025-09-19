@@ -33,9 +33,7 @@ const chatbotRules: Array<{ when: (message: TalkMessage) => boolean; render: Ren
   },
   {
     when: (message) => message.type === MessageType.MESSAGE,
-    render: (message, { index }) => (
-      <ChatbotMessageBubble tokens={message.streamingToken ?? ''} index={index} />
-    ),
+    render: (message) => <ChatbotMessageBubble tokens={message.streamingToken ?? ''} />,
   },
   {
     when: (message) => message.type === MessageType.ADAPTIVE_CARD,
