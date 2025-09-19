@@ -1,7 +1,7 @@
 // src/domains/common/ui/ui.store.ts
 import { create } from 'zustand';
 
-interface MessageState {
+interface UIState {
   isSidebarOpen: boolean;
   isMenuOpen: null | HTMLElement;
 
@@ -10,7 +10,7 @@ interface MessageState {
 }
 
 // 2. create 함수 안에 모든 초기 상태와 액션을 정의합니다.
-const useUiStore = create<MessageState>((set) => ({
+const useUIStore = create<UIState>((set) => ({
   // 초기 상태
   isSidebarOpen: false,
   isMenuOpen: null,
@@ -20,4 +20,4 @@ const useUiStore = create<MessageState>((set) => ({
   setIsMenuOpen: (el) => set({ isMenuOpen: el }),
 }));
 
-export default useUiStore;
+export default useUIStore;

@@ -1,14 +1,14 @@
-import { Box, styled } from '@mui/material'
-import { ChatbotBubbleWrap } from '@pages/test/ChatPage'
-import { useOnceAnimation } from '@domains/common/hooks/useOnceAnimation'
-import { popIn } from '@domains/common/hooks/animations'
+import { Box, styled } from '@mui/material';
+import { ChatbotBubbleWrap } from '@pages/test/ChatPage';
+import { useOnceAnimation } from '@domains/common/hooks/useOnceAnimation';
+import { popIn } from '@domains/common/utils/utils';
 
 interface ChatbotFallbackBubbleProps {
-  index: number
+  index: number;
 }
 
 const ChatbotFallbackBubble = ({ index }: ChatbotFallbackBubbleProps) => {
-  const animated = useOnceAnimation(index)
+  const animated = useOnceAnimation(index);
 
   return (
     <ChatbotBubbleWrap>
@@ -16,10 +16,10 @@ const ChatbotFallbackBubble = ({ index }: ChatbotFallbackBubbleProps) => {
         🤖 Fallback 응답입니다.
       </FallbackBubbleCon>
     </ChatbotBubbleWrap>
-  )
-}
+  );
+};
 
-export default ChatbotFallbackBubble
+export default ChatbotFallbackBubble;
 
 const FallbackBubbleCon = styled(Box)({
   background: '#fff',
@@ -30,4 +30,4 @@ const FallbackBubbleCon = styled(Box)({
   '&.pop-in': {
     animation: `${popIn} 0.4s cubic-bezier(0.22, 1, 0.36, 1) both`,
   },
-})
+});

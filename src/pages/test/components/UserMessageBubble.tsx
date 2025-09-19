@@ -1,12 +1,12 @@
 import { Box, styled } from '@mui/material';
-import type { UserMessage } from '@domains/common/ui/store/message.store';
+import type { TalkMessage } from '@domains/common/ui/store/message.store';
 import DOMPurify from 'dompurify';
 import { useOnceAnimation } from '@domains/common/hooks/useOnceAnimation';
-import { popIn } from '@domains/common/hooks/animations';
 import { forwardRef } from 'react';
+import { popIn } from '@domains/common/utils/utils';
 
 interface UserMessageBubbleProps {
-  m: UserMessage;
+  m: TalkMessage;
   index: number;
 }
 

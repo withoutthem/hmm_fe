@@ -1,5 +1,5 @@
 import { Drawer, List, ListItem, styled, Typography, Button, IconButton } from '@mui/material';
-import useUiStore from '@domains/common/ui/store/ui.store';
+import useUIStore from '@domains/common/ui/store/ui.store';
 import { ColumnBox } from '@shared/ui/layoutUtilComponents';
 import { CloseWIcon } from '@shared/icons/CloseWIcon';
 import { BookingIcon } from '@shared/icons/BookingIcon';
@@ -12,73 +12,87 @@ import { SerchargeIcon } from '@shared/icons/SerchargeIcon';
 import { WarningAmberIcon } from '@shared/icons/WarningAmberIcon';
 import React, { type ReactNode } from 'react';
 
+enum MenuGroup {
+  BOT = 'bot',
+  MANUAL = 'manual',
+}
+
 interface MenuItem {
   id: string;
   title: string;
   icon: ReactNode;
-  group: 'bot' | 'manual';
+  group: MenuGroup;
 }
 
-const MenuList: MenuItem[] = [
-  {
-    id: 'sercharge',
-    title: 'Sercharge',
-    icon: <SerchargeIcon />,
-    group: 'bot',
-  },
-  {
-    id: 'invoice',
-    title: 'Invoice',
-    icon: <InvoiceIcon />,
-    group: 'bot',
-  },
-  {
-    id: 'booking',
-    title: 'Booking/BL',
-    icon: <BookingIcon />,
-    group: 'bot',
-  },
-  {
-    id: 'schedule',
-    title: 'Schedule',
-    icon: <ScheduleIcon />,
-    group: 'bot',
-  },
-  {
-    id: 'cargo-tracking',
-    title: 'Cargo tracking',
-    icon: <LocationIcon />,
-    group: 'bot',
-  },
-  {
-    id: 'find-manager',
-    title: 'Find a Manager',
-    icon: <PersonSerachIcon />,
-    group: 'bot',
-  },
-  {
-    id: 'hi-quote',
-    title: 'Hi quote',
-    icon: <RequestQuoteIcon />,
-    group: 'manual',
-  },
-  {
-    id: 'dg-oog',
-    title: 'DG/OOG',
-    icon: <WarningAmberIcon />,
-    group: 'manual',
-  },
-  {
-    id: 'manual-booking',
-    title: 'Booking/BL',
-    icon: <BookingIcon />,
-    group: 'manual',
-  },
-];
+interface Menu {
+  BOT: MenuItem[];
+  MANUAL: MenuItem[];
+}
 
 const SideBar = () => {
-  const isSidebarOpen = useUiStore((s) => s.isSidebarOpen);
-  const setIsSidebarOpen = useUiStore((s) => s.setIsSidebarOpen);
+  const MenuInfo: Menu = {
+    BOT: [
+      {
+        id: 'sercharge',
+        title: 'Sercharge',
+        icon: <SerchargeIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'invoice',
+        title: 'Invoice',
+        icon: <InvoiceIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'booking',
+        title: 'Booking/BL',
+        icon: <BookingIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'schedule',
+        title: 'Schedule',
+        icon: <ScheduleIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'cargo-tracking',
+        title: 'Cargo tracking',
+        icon: <LocationIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'find-manager',
+        title: 'Find a Manager',
+        icon: <PersonSerachIcon />,
+        group: MenuGroup.BOT,
+      },
+    ],
+    MANUAL: [
+      {
+        id: 'hi-quote',
+        title: 'Hi quote',
+        icon: <RequestQuoteIcon />,
+        group: MenuGroup.MANUAL,
+      },
+      {
+        id: 'dg-oog',
+        title: 'DG/OOG',
+        icon: <WarningAmberIcon />,
+        group: MenuGroup.MANUAL,
+      },
+      {
+        id: 'manual-booking',
+        title: 'Booking/BL',
+        icon: <BookingIcon />,
+        group: MenuGroup.MANUAL,
+      },
+    ],
+  };
+
+  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
+  const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
 
   const onClose = () => {
     setIsSidebarOpen(false);
@@ -104,7 +118,7 @@ const SideBar = () => {
   };
 
   return (
-    <StyledSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
+    <StSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
       <CloseButton onClick={onClose}>
         <CloseWIcon />
       </CloseButton>
@@ -116,7 +130,7 @@ const SideBar = () => {
             HMM Bot
           </SideBarSectionTitle>
           <SidebarNav>
-            {MenuList.filter((item) => item.group === 'bot').map((item) => (
+            {MenuInfo.BOT.map((item) => (
               <SidebarNavItem key={item.id}>
                 <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
                   {item.icon}
@@ -133,7 +147,7 @@ const SideBar = () => {
             Manual
           </SideBarSectionTitle>
           <SidebarNav>
-            {MenuList.filter((item) => item.group === 'manual').map((item) => (
+            {MenuInfo.MANUAL.map((item) => (
               <SidebarNavItem key={item.id}>
                 <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
                   {item.icon}
@@ -149,13 +163,13 @@ const SideBar = () => {
         2025 HMM All
         <br /> Rights Reserved
       </SideBarFooterTypo>
-    </StyledSideBar>
+    </StSideBar>
   );
 };
 
 export default SideBar;
 
-const StyledSideBar = styled(Drawer)({
+const StSideBar = styled(Drawer)({
   '& .MuiBackdrop-root': {
     background: 'transparent',
   },
