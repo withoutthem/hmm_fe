@@ -1,15 +1,12 @@
-// import MarkDownAnimator from '@pages/test/MarkDownAnimator';
-import { ChatbotBubbleWrap } from '@pages/test/ChatPage';
+import { ChatbotBubbleWrap } from '@shared/ui/layoutUtilComponents';
 
 interface ChatbotMessageBubbleProps {
   tokens: string;
-  index: number;
 }
 
-const ChatbotMessageBubble = ({ tokens, index }: ChatbotMessageBubbleProps) => {
+const ChatbotMessageBubble = ({ tokens }: ChatbotMessageBubbleProps) => {
   return (
     <ChatbotBubbleWrap>
-      {/*<MarkDownAnimator tokens={tokens} speed={20} index={index} />*/}
       <div dangerouslySetInnerHTML={{ __html: tokens }} />
     </ChatbotBubbleWrap>
   );

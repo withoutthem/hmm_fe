@@ -19,3 +19,8 @@ export const ColumnBox = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
 });
+
+export const ChatbotBubbleWrap = styled(Box)({
+  display: 'flex',
+  justifyContent: 'flex-start',
+});

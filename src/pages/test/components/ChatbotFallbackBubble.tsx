@@ -1,7 +1,7 @@
 import { Box, styled } from '@mui/material';
-import { ChatbotBubbleWrap } from '@pages/test/ChatPage';
 import { useOnceAnimation } from '@domains/common/hooks/useOnceAnimation';
 import { popIn } from '@domains/common/utils/utils';
+import { ChatbotBubbleWrap } from '@shared/ui/layoutUtilComponents';
 
 interface ChatbotFallbackBubbleProps {
   index: number;
