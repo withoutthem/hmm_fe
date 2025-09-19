@@ -9,10 +9,11 @@ import {
   TextField,
   ClickAwayListener,
   keyframes,
+  InputAdornment,
 } from '@mui/material';
-import { AlignCenter, ColumnBox } from '@shared/ui/layoutUtilComponents';
+import { AlignCenter, CenterBox, ColumnBox } from '@shared/ui/layoutUtilComponents';
 import useUIStore from '@domains/common/ui/store/ui.store';
-import { useCallback, type MouseEvent } from 'react';
+import { useCallback, type MouseEvent, useRef } from 'react';
 import { useForm, Controller, useWatch } from 'react-hook-form';
 import { useSuggestions } from '@domains/common/components/composer/hooks/useSuggestions';
 import { useClipboardImages } from '@domains/common/components/composer/hooks/useClipboardImages';
@@ -20,13 +21,14 @@ import { useSendMessage } from '@domains/common/components/composer/hooks/useSen
 import { SendIcon } from '@shared/icons/SendIcon';
 import { AddIcon } from '@shared/icons/AddIcon';
 import { highlightMatch } from '@domains/common/utils/utils';
+import { ClearIcon } from '@shared/icons/ClearIcon';
 
 interface ComposerFormValues {
   message: string;
 }
 
 const Composer = () => {
-  // ┣━━━━━━━━━━━━━━━━ Hooks ━━━━━━━━━━━━━━━━┫
+  // ┣━━━━━━━━━━━━━━━━ GlobalHooks ━━━━━━━━━━━━━━━━┫
   const { control, reset: resetForm } = useForm<ComposerFormValues>({
     mode: 'onChange',
     defaultValues: { message: '' },
@@ -121,6 +123,7 @@ const Composer = () => {
                   control={control}
                   render={({ field }) => (
                     <StTextField
+                      className={'st-text-field'}
                       multiline
                       maxRows={3}
                       placeholder="궁금한 내용을 입력해주세요."
@@ -130,13 +133,35 @@ const Composer = () => {
                       variant="outlined"
                       fullWidth
                       onKeyDown={onKeyDownEnterToSend}
+                      slotProps={{
+                        input: {
+                          endAdornment: field.value && (
+                            <TextFieldAdornment position="end">
+                              <ClearIconButton
+                                onClick={() => {
+                                  const textField = document.querySelector(
+                                    '.st-text-field textarea'
+                                  ) as HTMLTextAreaElement;
+
+                                  field.onChange('');
+                                  textField?.focus();
+                                }}
+                              >
+                                <ClearIcon />
+                              </ClearIconButton>
+                            </TextFieldAdornment>
+                          ),
+                        },
+                      }}
                     />
                   )}
                 />
 
                 {/* 보내기 버튼 */}
-                <SendButton onClick={send}>
-                  <SendIcon />
+                <SendButton onClick={send} disabled={message.length === 0}>
+                  <SendIconWrap>
+                    <SendIcon />
+                  </SendIconWrap>
                 </SendButton>
               </ChatInputBar>
             </ColumnBox>
@@ -274,20 +299,21 @@ const SuggestionListItem = styled(ListItem)({
 });
 
 const ChatInputBar = styled(AlignCenter)({
-  gap: '12px',
   position: 'relative',
-  padding: '8px 20px',
+  padding: '8px 12px 8px 8px',
   background: '#fff',
   zIndex: '1',
 });
 
 const AddIconButton = styled(IconButton)({
-  width: '22px',
-  height: '22px',
+  width: '48px',
+  height: '48px',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   padding: 0,
+
+  '&:active svg path': { fill: 'red' },
 });
 
 const StTextField = styled(TextField)({
@@ -325,8 +351,21 @@ const SendButton = styled(IconButton)({
   width: '34px',
   height: '34px',
   background: '#1C2681',
+});
 
-  '&:disabled': {
-    background: '#B2BBC3',
-  },
+const TextFieldAdornment = styled(InputAdornment)({
+  marginLeft: '10px',
+});
+
+const ClearIconButton = styled(IconButton)({
+  width: '20px',
+  height: '20px',
+  padding: 0,
+});
+
+const SendIconWrap = styled(CenterBox)({
+  width: '38px',
+  height: '38px',
+  borderRadius: '50%',
+  background: '#1C2681',
 });
