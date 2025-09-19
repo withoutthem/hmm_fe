@@ -1,7 +1,8 @@
-import { Drawer, List, ListItem, styled, Typography, Button, IconButton } from '@mui/material';
+import { Drawer, List, ListItem, styled, Typography, Button } from '@mui/material';
 import useUIStore from '@domains/common/ui/store/ui.store';
 import { ColumnBox } from '@shared/ui/layoutUtilComponents';
-import { CloseWIcon } from '@shared/icons/CloseWIcon';
+// eslint-disable no-warning-comments - 화면이 넓이지면 필요할수도 있어서 주석처리
+// import { CloseWIcon } from '@shared/icons/CloseWIcon';
 import { BookingIcon } from '@shared/icons/BookingIcon';
 import { InvoiceIcon } from '@shared/icons/InvoiceIcon';
 import { LocationIcon } from '@shared/icons/LocationIcon';
@@ -119,9 +120,9 @@ const SideBar = () => {
 
   return (
     <StSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
-      <CloseButton onClick={onClose}>
-        <CloseWIcon />
-      </CloseButton>
+      {/*<CloseButton onClick={onClose}>*/}
+      {/*  <CloseWIcon />*/}
+      {/*</CloseButton>*/}
 
       <SideBarNav>
         {/* HMM Bot 메뉴 */}
@@ -185,13 +186,14 @@ const StSideBar = styled(Drawer)({
   },
 });
 
-const CloseButton = styled(IconButton)({
-  position: 'absolute',
-  top: '19px',
-  right: '8px',
-  width: '48px',
-  height: '48px',
-});
+// eslint-disable no-warning-comments - 화면이 넓이지면 필요할수도 있어서 주석처리
+// const CloseButton = styled(IconButton)({
+//   position: 'absolute',
+//   top: '19px',
+//   right: '8px',
+//   width: '48px',
+//   height: '48px',
+// });
 
 const SideBarNav = styled(ColumnBox)({
   gap: '48px',
