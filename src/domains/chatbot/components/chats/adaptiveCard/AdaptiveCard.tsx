@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as AdaptiveCards from 'adaptivecards';
 import { Action } from 'adaptivecards';
+import { Box, styled } from '@mui/material';
 
 interface AdaptiveCardRendererProps {
   card: AdaptiveCards.IAdaptiveCard;
@@ -12,7 +13,7 @@ AdaptiveCards.AdaptiveCard.onProcessMarkdown = (text, result) => {
   result.didProcess = true;
 };
 
-const AdaptiveCardRenderer = ({ card, onSubmit }: AdaptiveCardRendererProps) => {
+const AdaptiveCard = ({ card, onSubmit }: AdaptiveCardRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,7 +35,24 @@ const AdaptiveCardRenderer = ({ card, onSubmit }: AdaptiveCardRendererProps) => 
     }
   }, [card, onSubmit]);
 
-  return <div ref={containerRef} />;
+  return (
+    <AdaptiveCardStyleProvider>
+      <Box ref={containerRef} />
+    </AdaptiveCardStyleProvider>
+  );
 };
 
-export default AdaptiveCardRenderer;
+export default AdaptiveCard;
+
+/** AdaptiveCard 스타일 */
+const AdaptiveCardStyleProvider = styled(Box)({
+  '& input, & select': {
+    border: '1px solid black',
+    '&.ac-input-validation-failed': { borderColor: 'red', color: 'red' },
+  },
+  '& button': { background: 'black', color: '#fff' },
+  '& table': { width: '100%', borderCollapse: 'collapse' },
+  '& td': { border: '1px solid #ddd' },
+  '& .ac-horizontal-separator': { display: 'none !important' },
+  '& #timeBox': { flexDirection: 'row !important', '& > div': { flex: '1 !important' } },
+});

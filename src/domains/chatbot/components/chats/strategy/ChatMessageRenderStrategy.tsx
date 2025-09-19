@@ -1,14 +1,13 @@
 import { MessageType, Sender, type TalkMessage } from '@domains/common/ui/store/message.store';
-import ChatbotMessageBubble from '@pages/test/components/ChatMessageBubble';
-import ChatbotFallbackBubble from '@pages/test/components/ChatbotFallbackBubble';
-import UserMessageBubble from '@pages/test/components/UserMessageBubble';
-import LoadingBubble from '@pages/test/components/LoadingBubble';
-import AdaptiveCardRenderer from '@pages/test/components/AdaptiveCardRenderer';
-import ChatbotItemWrapper from '@pages/test/components/ChatbotItemWrapper';
-import { adaptiveCardData } from '@pages/test/components/AdaptiveCardData';
-import { Box, styled } from '@mui/material';
+import ChatbotMessageBubble from '@domains/chatbot/components/chats/bubble/ChatMessageBubble';
+import ChatbotFallbackBubble from '@domains/chatbot/components/chats/etc/ChatbotFallbackBubble';
+import UserMessageBubble from '@domains/chatbot/components/chats/bubble/UserMessageBubble';
+import ChatbotItemWrapper from '@domains/chatbot/components/chats/strategy/ChatbotItemWrapper';
 import type { JSX } from 'react';
 import { onAdaptiveCardSubmit } from '@domains/common/utils/utils';
+import LoadingBubble from '@domains/chatbot/components/chats/etc/LoadingBubble';
+import AdaptiveCard from '@domains/chatbot/components/chats/adaptiveCard/AdaptiveCard';
+import { adaptiveCardData } from '@domains/chatbot/components/chats/adaptiveCard/adaptiveCardData';
 
 interface ChatMessageItemProps {
   talkMessage: TalkMessage;
@@ -37,11 +36,7 @@ const chatbotRules: Array<{ when: (message: TalkMessage) => boolean; render: Ren
   },
   {
     when: (message) => message.type === MessageType.ADAPTIVE_CARD,
-    render: () => (
-      <AdaptiveCardStyleProvider>
-        <AdaptiveCardRenderer card={adaptiveCardData} onSubmit={onAdaptiveCardSubmit} />
-      </AdaptiveCardStyleProvider>
-    ),
+    render: () => <AdaptiveCard card={adaptiveCardData} onSubmit={onAdaptiveCardSubmit} />,
   },
 ];
 
@@ -54,7 +49,7 @@ const renderBySender: Record<Sender, Renderer> = {
   },
 };
 
-const ChatMessageItem = ({
+const ChatMessageRenderStrategy = ({
   talkMessage,
   index,
   messagesLength,
@@ -79,17 +74,4 @@ const ChatMessageItem = ({
   return content;
 };
 
-export default ChatMessageItem;
-
-/** AdaptiveCard 스타일 */
-const AdaptiveCardStyleProvider = styled(Box)({
-  '& input, & select': {
-    border: '1px solid black',
-    '&.ac-input-validation-failed': { borderColor: 'red', color: 'red' },
-  },
-  '& button': { background: 'black', color: '#fff' },
-  '& table': { width: '100%', borderCollapse: 'collapse' },
-  '& td': { border: '1px solid #ddd' },
-  '& .ac-horizontal-separator': { display: 'none !important' },
-  '& #timeBox': { flexDirection: 'row !important', '& > div': { flex: '1 !important' } },
-});
+export default ChatMessageRenderStrategy;

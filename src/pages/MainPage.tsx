@@ -2,7 +2,7 @@ import { Box, styled } from '@mui/material';
 import { Virtuoso } from 'react-virtuoso';
 import { useEffect, useRef, useState } from 'react';
 import useMessageStore, { type TalkMessage } from '@domains/common/ui/store/message.store';
-import ChatMessageItem from '@pages/test/ChatMessageItem';
+import ChatMessageRenderStrategy from '@domains/chatbot/components/chats/strategy/ChatMessageRenderStrategy';
 import useAutoScroll from '@domains/common/hooks/useAutoScroll';
 import { scrollToBottomWithAnimation } from '@domains/common/utils/utils';
 import PublishFloating from '@pages/test/PublishFloating';
@@ -10,7 +10,7 @@ import PublishFloating from '@pages/test/PublishFloating';
 const renderChatMessage =
   (messages: TalkMessage[], lastDiffHeight: number | null, scrollToBottom: () => void) =>
   (index: number, message: TalkMessage) => (
-    <ChatMessageItem
+    <ChatMessageRenderStrategy
       talkMessage={message}
       index={index}
       messagesLength={messages.length}

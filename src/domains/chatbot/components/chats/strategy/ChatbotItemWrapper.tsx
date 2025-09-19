@@ -17,14 +17,12 @@ const ChatbotItemWrapper = ({
   const [expanded, setExpanded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // console.log('lastDiffHeight', lastDiffHeight)
-
   useEffect(() => {
     if (isLastMessage) {
       setExpanded(true);
       scrollToBottom();
     }
-  }, [isLastMessage]);
+  }, [isLastMessage, scrollToBottom]);
 
   useEffect(() => {
     if (!ref.current || !isLastMessage) return;
@@ -43,7 +41,6 @@ const ChatbotItemWrapper = ({
       ref={ref}
       component="section"
       sx={{
-        // background: 'lightgreen',
         minHeight: isLastMessage ? (expanded ? (lastDiffHeight ?? 0) : 0) : 0,
         transition: 'min-height .5s ease',
       }}
