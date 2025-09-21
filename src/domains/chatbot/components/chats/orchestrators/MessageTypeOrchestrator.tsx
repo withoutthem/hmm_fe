@@ -1,7 +1,7 @@
 // src/domains/chatbot/components/chats/orchestrators/MessageTypeOrchestrator.tsx
 
-import MarkDownAnimator from '../renderers/formats/MarkdownAnimator';
-import AdaptiveCard from '../renderers/formats/AdaptiveCard';
+import MarkDownAnimator from '../renderers/formats/MarkdownRenderer';
+import AdaptiveCardRenderer from '../renderers/formats/AdaptiveCardRenderer';
 import BusinessTypeOrchestrator from './BusinessTypeOrchestrator';
 
 // (테스트용 샘플 데이터) 실제 메시지에 adaptiveCardInfo 있으면 그걸 사용
@@ -12,6 +12,7 @@ import {
   BUSINESS_TYPE,
   type BusinessPayload,
 } from '@domains/chatbot/components/chats/apiCaseBusinesses/types/businessType';
+import HtmlRenderer from '@domains/chatbot/components/chats/renderers/formats/HtmlRenderer';
 
 interface MessageTypeOrchestratorProps {
   talkMessage: TalkMessage;
@@ -26,7 +27,7 @@ interface MessageTypeOrchestratorProps {
 const MessageTypeOrchestrator = (props: MessageTypeOrchestratorProps) => {
   switch (props.talkMessage.messageType) {
     case MessageType.HTML:
-      return;
+      return <HtmlRenderer />;
     case MessageType.MARKDOWN: {
       const tokens = props.talkMessage.streamingToken ?? props.talkMessage.message ?? '';
       return <MarkDownAnimator tokens={tokens} />;
@@ -34,7 +35,7 @@ const MessageTypeOrchestrator = (props: MessageTypeOrchestratorProps) => {
 
     case MessageType.ADAPTIVE_CARD: {
       const card = props.talkMessage.adaptiveCardInfo ?? adaptiveCardData;
-      return <AdaptiveCard card={card} onSubmit={onAdaptiveCardSubmit} />;
+      return <AdaptiveCardRenderer card={card} onSubmit={onAdaptiveCardSubmit} />;
     }
 
     case MessageType.JSON:

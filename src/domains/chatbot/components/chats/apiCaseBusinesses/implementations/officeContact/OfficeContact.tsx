@@ -6,7 +6,9 @@ interface OfficeContactProps {
   data?: BusinessPayload; // data는 optional
 }
 
-export default function OfficeContact(props: Readonly<OfficeContactProps>) {
+const OfficeContact = (props: Readonly<OfficeContactProps>) => {
   const { data } = props;
   return <Box>{data && <pre>{JSON.stringify(data, null, 2)}</pre>}</Box>;
-}
+};
+
+export default OfficeContact;

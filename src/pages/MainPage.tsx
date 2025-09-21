@@ -8,19 +8,13 @@ import RenderTypeOrchestrator from '@domains/chatbot/components/chats/orchestrat
 import { scrollLastMessageUserThenBottom } from '@domains/common/utils/utils';
 
 const renderChatMessage =
-  (
-    messages: TalkMessage[],
-    lastDiffHeight: number | null,
-    atBottom: boolean,
-    scrollUserThenBottom: () => void
-  ) =>
+  (messages: TalkMessage[], lastDiffHeight: number | null, atBottom: boolean) =>
   (index: number, message: TalkMessage) => (
     <RenderTypeOrchestrator
       talkMessage={message}
       index={index}
       messagesLength={messages.length}
       lastDiffHeight={lastDiffHeight}
-      scrollToBottom={scrollUserThenBottom}
       atBottom={atBottom}
     />
   );
@@ -68,7 +62,7 @@ const MainPage = () => {
           data={messages}
           ref={virtuosoRef}
           overscan={10}
-          itemContent={renderChatMessage(messages, lastDiffHeight, atBottom, scrollUserThenBottom)}
+          itemContent={renderChatMessage(messages, lastDiffHeight, atBottom)}
           followOutput={false} // ✅ Virtuoso 자동 스크롤 OFF (충돌 방지)
           atBottomStateChange={setAtBottom}
           computeItemKey={(index, item) => item.messageId ?? `${item.sender}-${index}`}

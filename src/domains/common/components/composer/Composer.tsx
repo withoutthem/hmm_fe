@@ -210,7 +210,7 @@ const ImagePreviewItem = styled(Box)({
   },
 });
 
-const DeleteButton = styled('button')(({ theme }) => ({
+const DeleteButton = styled('button')(() => ({
   position: 'absolute',
   top: '4px',
   right: '4px',

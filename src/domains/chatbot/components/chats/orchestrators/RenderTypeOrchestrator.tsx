@@ -11,7 +11,6 @@ interface RenderTypeOrchestratorProps {
   index: number;
   messagesLength: number;
   lastDiffHeight: number | null;
-  scrollToBottom: () => void;
   atBottom: boolean;
 }
 

@@ -4,7 +4,7 @@ interface MarkdownAnimatorProps {
   tokens: string;
 }
 
-const MarkdownAnimator = ({ tokens }: MarkdownAnimatorProps) => {
+const MarkdownRenderer = ({ tokens }: MarkdownAnimatorProps) => {
   return (
     <ChatbotBubbleWrap>
       <div dangerouslySetInnerHTML={{ __html: tokens }} />
@@ -12,4 +12,4 @@ const MarkdownAnimator = ({ tokens }: MarkdownAnimatorProps) => {
   );
 };
 
-export default MarkdownAnimator;
+export default MarkdownRenderer;

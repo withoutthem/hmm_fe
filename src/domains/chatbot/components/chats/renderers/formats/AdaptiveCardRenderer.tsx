@@ -13,7 +13,7 @@ AdaptiveCards.AdaptiveCard.onProcessMarkdown = (text, result) => {
   result.didProcess = true;
 };
 
-const AdaptiveCard = ({ card, onSubmit }: AdaptiveCardRendererProps) => {
+const AdaptiveCardRenderer = ({ card, onSubmit }: AdaptiveCardRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const AdaptiveCard = ({ card, onSubmit }: AdaptiveCardRendererProps) => {
   );
 };
 
-export default AdaptiveCard;
+export default AdaptiveCardRenderer;
 
 /** AdaptiveCard 스타일 */
 const AdaptiveCardStyleProvider = styled(Box)({

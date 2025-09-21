@@ -49,7 +49,7 @@ const UserBubbleCon = styled(Box)({
   transformOrigin: 'top right',
 
   '&.pop-in': {
-    animation: `${popIn} .4s cubic-bezier(0.6, 1, 0.36, 1) both`,
+    animation: `${popIn} 1s cubic-bezier(0.6, 1, 0.36, 1) both`,
   },
 });
 
