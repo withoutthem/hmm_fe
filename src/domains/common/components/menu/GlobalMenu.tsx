@@ -3,13 +3,14 @@ import { ResetIcon } from '@shared/icons/ResetIcon';
 import { ChatIcon } from '@shared/icons/ChatIcon';
 import { HistoryIcon } from '@shared/icons/HistoryIcon';
 import { FAQIcon } from '@shared/icons/FAQIcon';
-import useUIStore from '@domains/common/ui/store/ui.store';
+import useUIStore, { BottomSheetType } from '@domains/common/ui/store/ui.store';
 import useDialogStore, { DialogType } from '@domains/common/ui/store/dialog.store';
 
 const GlobalMenu = () => {
   const isMenuOpen = useUIStore((s) => s.isMenuOpen);
   const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
   const openDialog = useDialogStore((s) => s.openDialog);
+  const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
 
   const onClose = () => {
     setIsMenuOpen(null);
@@ -24,6 +25,11 @@ const GlobalMenu = () => {
     const el = document.getElementById('publish');
     if (el) el.style.display = 'flex';
     onClose();
+  };
+
+  const onOpenBottomSheet = () => {
+    onClose();
+    setBottomSheetOpen(BottomSheetType.LANGUAGE);
   };
 
   return (
@@ -48,6 +54,7 @@ const GlobalMenu = () => {
         <FAQIcon />
         <Typography variant={'subtitle3Light'}>퍼블리싱테스트보기</Typography>
       </StMenuItem>
+      <StMenuItem onClick={onOpenBottomSheet}>bottomSheet.LANGUAGE</StMenuItem>
     </StMenu>
   );
 };

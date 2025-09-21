@@ -6,6 +6,7 @@ import GlobalDialog from '@domains/chatbot/components/dialog/GlobalDialog';
 import SideBar from '@domains/common/components/sideBar/SideBar';
 import GlobalMenu from '@domains/common/components/menu/GlobalMenu';
 import type { ReactNode } from 'react';
+import GlobalBottomSheet from '@domains/common/components/bottomSheet/GlobalBottomSheet';
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +21,7 @@ const Layout = ({ children }: LayoutProps) => {
       <GlobalDialog />
       <SideBar />
       <GlobalMenu />
+      <GlobalBottomSheet />
     </StLayout>
   );
 };

@@ -5,6 +5,7 @@ import { LogoIcon } from '@shared/icons/LogoIcon';
 import useUIStore from '@domains/common/ui/store/ui.store';
 import { MinimizeIcon } from '@shared/icons/MinimizeIcon';
 import { CloseIcon } from '@shared/icons/CloseIcon';
+import { LiveCloseIcon } from '@shared/icons/LiveCloseIcon';
 
 const ChatHeader = () => {
   const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
@@ -25,6 +26,8 @@ const ChatHeader = () => {
         </HeaderIconButton>
         <HeaderIconButton>
           <CloseIcon />
+          {/* liveChat일때 끄기 아이콘 */}
+          {/*<LiveCloseIcon />*/}
         </HeaderIconButton>
       </AlignCenter>
     </StHeader>

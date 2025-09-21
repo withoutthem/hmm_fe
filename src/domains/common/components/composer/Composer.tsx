@@ -22,6 +22,7 @@ import { SendIcon } from '@shared/icons/SendIcon';
 import { AddIcon } from '@shared/icons/AddIcon';
 import { highlightMatch } from '@domains/common/utils/utils';
 import { ClearIcon } from '@shared/icons/ClearIcon';
+import { StopIcon } from '@shared/icons/StopIcon';
 
 interface ComposerFormValues {
   message: string;
@@ -160,7 +161,11 @@ const Composer = () => {
                 {/* 보내기 버튼 */}
                 <SendButton onClick={send} disabled={message.length === 0}>
                   <SendIconWrap>
+                    {/* Send */}
                     <SendIcon />
+
+                    {/* Stop */}
+                    {/*<StopIcon />*/}
                   </SendIconWrap>
                 </SendButton>
               </ChatInputBar>
@@ -348,11 +353,10 @@ const StTextField = styled(TextField)({
 
 const SendButton = styled(IconButton)({
   padding: '0',
-  width: '34px',
-  height: '34px',
-  background: '#1C2681',
+  width: '48px',
+  height: '48px',
+  marginLeft: '8px',
 });
-
 const TextFieldAdornment = styled(InputAdornment)({
   marginLeft: '10px',
 });
