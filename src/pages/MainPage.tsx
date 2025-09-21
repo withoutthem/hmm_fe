@@ -41,7 +41,7 @@ const MainPage = () => {
   }, [messages]);
 
   return (
-    <Box className={'main_page'}>
+    <MainPageContainer className={'main_page'}>
       <MessagesContainer ref={messageContentRef}>
         <Virtuoso
           className={'virtuoso'}
@@ -54,11 +54,16 @@ const MainPage = () => {
 
       {/*TEST*/}
       <PublishFloating />
-    </Box>
+    </MainPageContainer>
   );
 };
 
 export default MainPage;
+
+const MainPageContainer = styled(Box)({
+  width: '100%',
+  height: '100%',
+});
 
 const MessagesContainer = styled(Box)({
   width: '100%',

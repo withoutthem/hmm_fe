@@ -112,36 +112,36 @@ export const adaptiveCardData: IAdaptiveCard = {
     //     },
     //   ],
     // },
-    // {
-    //   type: 'Container',
-    //   id: 'timeBox',
-    //   items: [
-    //     { type: 'TextBlock', text: '입차시간2', weight: 'Bolder', wrap: true },
-    //     {
-    //       type: 'Input.ChoiceSet',
-    //       id: 'startTime2',
-    //       isRequired: true,
-    //       style: 'compact',
-    //       choices: [
-    //         { title: '09:00', value: '09:00' },
-    //         { title: '09:30', value: '09:30' },
-    //         { title: '10:00', value: '10:00' },
-    //       ],
-    //     },
-    //     { type: 'TextBlock', text: '출차시간2', weight: 'Bolder', wrap: true },
-    //     {
-    //       type: 'Input.ChoiceSet',
-    //       id: 'endTime2',
-    //       isRequired: true,
-    //       style: 'compact',
-    //       choices: [
-    //         { title: '09:00', value: '09:00' },
-    //         { title: '09:30', value: '09:30' },
-    //         { title: '10:00', value: '10:00' },
-    //       ],
-    //     },
-    //   ],
-    // },
+    {
+      type: 'Container',
+      id: 'timeBox',
+      items: [
+        { type: 'TextBlock', text: '입차시간2', weight: 'Bolder', wrap: true },
+        {
+          type: 'Input.ChoiceSet',
+          id: 'startTime2',
+          isRequired: true,
+          style: 'compact',
+          choices: [
+            { title: '09:00', value: '09:00' },
+            { title: '09:30', value: '09:30' },
+            { title: '10:00', value: '10:00' },
+          ],
+        },
+        { type: 'TextBlock', text: '출차시간2', weight: 'Bolder', wrap: true },
+        {
+          type: 'Input.ChoiceSet',
+          id: 'endTime2',
+          isRequired: true,
+          style: 'compact',
+          choices: [
+            { title: '09:00', value: '09:00' },
+            { title: '09:30', value: '09:30' },
+            { title: '10:00', value: '10:00' },
+          ],
+        },
+      ],
+    },
     //
     // // 5. 이미지 + 이미지 그룹
     // { type: 'Image', url: 'https://picsum.photos/400/200', size: 'Stretch' },
@@ -167,6 +167,7 @@ export const adaptiveCardData: IAdaptiveCard = {
   ],
   actions: [
     { type: 'Action.Submit', title: '확인' },
+    { type: 'Action.Execute', title: '취소' },
     { type: 'Action.OpenUrl', title: '자세히 보기', url: 'https://example.com' },
   ],
 } as unknown as AdaptiveCards.IAdaptiveCard;

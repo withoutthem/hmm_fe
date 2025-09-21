@@ -1,38 +1,40 @@
 // src/domains/common/components/composer/hooks/useClipboardImages.ts
-import { useCallback, useEffect, useMemo, type ClipboardEvent } from 'react';
-import useMessageStore from '@domains/common/ui/store/message.store';
+import { useCallback, useEffect, useMemo, useRef, useState, type ClipboardEvent } from 'react';
 
 export const useClipboardImages = () => {
-  const images = useMessageStore((s) => s.images);
-  const setImages = useMessageStore((s) => s.setImages);
+  const [images, setImages] = useState<File[]>([]);
+  const urlsRef = useRef<string[]>([]);
 
-  const onPaste = useCallback(
-    (e: ClipboardEvent<HTMLDivElement>) => {
-      if (e.clipboardData.files.length === 0) return;
-      const pasted = Array.from(e.clipboardData.files).filter((f) => f.type.startsWith('image/'));
-      if (pasted.length === 0) return;
-      // 값 전달형 setter 시그니처일 경우
-      setImages([...images, ...pasted]);
-    },
-    [images, setImages]
-  );
+  const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
+    const files = Array.from(e.clipboardData?.files ?? []).filter((f) =>
+      f.type.startsWith('image/')
+    );
+    if (files.length === 0) return;
+    setImages((prev) => [...prev, ...files]);
+  }, []);
 
-  const removeAt = useCallback(
-    (idx: number) => {
-      setImages(images.filter((_, i) => i !== idx));
-    },
-    [images, setImages]
-  );
+  const removeAt = useCallback((idx: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== idx));
+  }, []);
 
-  // 미리보기 URL 생성/해제
-  const previewUrls = useMemo(() => images.map((f) => URL.createObjectURL(f)), [images]);
+  const clearImages = useCallback(() => {
+    setImages([]);
+  }, []);
+
+  // 미리보기 URL 생성/해제 (메모리 누수 방지)
+  const previewUrls = useMemo(() => {
+    // 기존 revoke
+    for (const u of urlsRef.current) URL.revokeObjectURL(u);
+    urlsRef.current = images.map((f) => URL.createObjectURL(f));
+    return urlsRef.current;
+  }, [images]);
+
   useEffect(() => {
     return () => {
-      previewUrls.forEach((u) => URL.revokeObjectURL(u));
+      for (const u of urlsRef.current) URL.revokeObjectURL(u);
+      urlsRef.current = [];
     };
-  }, [previewUrls]);
+  }, []);
 
-  const clearImages = useCallback(() => setImages([]), [setImages]);
-
-  return { images, onPaste, removeAt, previewUrls, clearImages };
+  return { images, onPaste, removeAt, clearImages, previewUrls };
 };
