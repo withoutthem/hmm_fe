@@ -10,12 +10,19 @@ import {
   TextField,
 } from '@mui/material';
 import { type SyntheticEvent, useState } from 'react';
+import BsSelect from '@domains/common/components/select/BsSelect';
+import { BottomSheetType } from '@domains/common/ui/store/ui.store';
+import useUserStore from '@domains/user/store/user.store';
+import BasicInput from '@domains/common/components/input/BasicInput';
+import { useForm } from 'react-hook-form';
 
 const PublishFloating = () => {
   const options = ['가나다', '나다라', '마바사', '아자'];
   const [tabValue, setTabValue] = useState(0);
+  const globalLocale = useUserStore((s) => s.globalLocale);
+  const { control } = useForm();
 
-  const handleChange = (event: SyntheticEvent, newValue: number) => {
+  const onTabValueChange = (event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -134,7 +141,7 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
-          <Tabs value={tabValue} onChange={handleChange}>
+          <Tabs value={tabValue} onChange={onTabValueChange}>
             <Tab value={0} label={'첫번째'} />
             <Tab value={1} label={'두번째'} />
             <Tab value={2} label={'세번째'} />
@@ -149,6 +156,62 @@ const PublishFloating = () => {
             `}
           </TestCodeBox>
         </TestBubble>
+
+        <TestBubble>
+          <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} />
+          <TestCodeBox>
+            {`
+            <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <BasicInput
+            control={control}
+            name={'email'}
+            placeholder={'이메일을 입력해 주세요.'}
+            type={'email'}
+          />
+          <BasicInput
+            control={control}
+            name={'email'}
+            placeholder={'이메일을 입력해 주세요.'}
+            type={'email'}
+            error
+          />
+          <BasicInput
+            control={control}
+            name={'email'}
+            placeholder={'이메일을 입력해 주세요.'}
+            type={'email'}
+            disabled
+          />
+          <TestCodeBox>
+            {`
+            <BasicInput
+              control={control}
+              name={'email'}
+              placeholder={'이메일을 입력해 주세요.'}
+              type={'email'}
+            />
+            <BasicInput
+              control={control}
+              name={'email'}
+              placeholder={'이메일을 입력해 주세요.'}
+              type={'email'}
+              error
+            />
+            <BasicInput
+              control={control}
+              name={'email'}
+              placeholder={'이메일을 입력해 주세요.'}
+              type={'email'}
+              disabled
+            />
+            `}
+          </TestCodeBox>
+        </TestBubble>
       </StPublishContainer>
     </StPublishFloating>
   );
@@ -157,13 +220,14 @@ const PublishFloating = () => {
 export default PublishFloating;
 
 export const PublushButton = styled(Button)(({ theme }) => ({
-  position: 'absolute',
+  position: 'fixed',
   top: '10px',
   right: '10px',
   background: theme.palette.primary.dark, // theme 바로 사용
   padding: '5px 10px',
   height: 'auto',
   color: '#fff',
+  zIndex: 1000,
 }));
 
 const StPublishFloating = styled(Box)({
