@@ -1,28 +1,49 @@
 // src/domains/common/ui/ui.store.ts
 import { create } from 'zustand';
 import type { IAdaptiveCard } from 'adaptivecards';
+import type {
+  BUSINESS_TYPE,
+  BusinessPayload,
+} from '@domains/chatbot/components/chats/apiCaseBusinesses/types/businessType';
 
 export enum Sender {
   USER = 'user',
   CHATBOT = 'chatbot',
 }
 
-export enum MessageType {
-  MESSAGE = 'message',
-  ADAPTIVE_CARD = 'adaptiveCard',
+// 1. RenderType (최상위 분기)
+export enum RenderType {
+  LOADING = 'loading',
   FALLBACK = 'fallback',
+  NORMAL = 'normal',
+}
+
+// 2. MessageType
+export enum MessageType {
+  HTML = 'html',
+  MARKDOWN = 'markdown',
+  ADAPTIVE_CARD = 'adaptiveCard',
+  JSON = 'json',
 }
 
 export interface TalkMessage {
+  // 공통
   messageId?: string; // 서버 할당 ID
-  sender: Sender;
-  type: MessageType;
+  sender: Sender; // USER / CHATBOT
+  renderType?: RenderType; // UI 렌더링 타입 (LOADING, FALLBACK, NORMAL)
+  messageType: MessageType; // 메시지 포맷
+
+  // 일반 메시지
   message?: string;
-  images?: File[];
   streamingToken?: string;
-  // fallback?: boolean;
-  isLoading?: boolean;
+  images?: File[];
+
+  // AdaptiveCard
   adaptiveCardInfo?: IAdaptiveCard;
+
+  // JSON 기반 비즈니스 메시지
+  businessType?: BUSINESS_TYPE;
+  payload?: BusinessPayload; // businessType에 따라 구조 달라짐
 }
 
 interface MessageState {

@@ -5,12 +5,13 @@ import { HistoryIcon } from '@shared/icons/HistoryIcon';
 import { FAQIcon } from '@shared/icons/FAQIcon';
 import useUIStore from '@domains/common/ui/store/ui.store';
 import useDialogStore, { DialogType } from '@domains/common/ui/store/dialog.store';
+import { useTranslation } from 'react-i18next';
 
 const GlobalMenu = () => {
-  const isMenuOpen = useUIStore((s) => s.isMenuOpen);
-  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
-  const openDialog = useDialogStore((s) => s.openDialog);
+  // ┣━━━━━━━━━━━━━━━━ GlobalHooks ━━━━━━━━━━━━━━━━┫
+  const { t } = useTranslation();
 
+  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━━━━┫
   const onClose = () => {
     setIsMenuOpen(null);
   };
@@ -26,28 +27,48 @@ const GlobalMenu = () => {
     onClose();
   };
 
+  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━━━┫
+  const isMenuOpen = useUIStore((s) => s.isMenuOpen);
+  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
+  const openDialog = useDialogStore((s) => s.openDialog);
+
+  // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━━━┫
+  const menuMap = [
+    {
+      icon: <ResetIcon />,
+      label: t('globalMenu.toStart'),
+      onClick: onClose,
+    },
+    {
+      icon: <ChatIcon />,
+      label: t('globalMenu.connectToAgent'),
+      onClick: onClose,
+    },
+    {
+      icon: <HistoryIcon />,
+      label: t('globalMenu.chatHistory'),
+      onClick: onHistoryClick,
+    },
+    {
+      icon: <FAQIcon />,
+      label: t('globalMenu.goToFAQ'),
+      onClick: onClose,
+    },
+    {
+      icon: <FAQIcon />,
+      label: '퍼블리싱테스트보기',
+      onClick: onPublisherCheck,
+    },
+  ];
+
   return (
     <StMenu anchorEl={isMenuOpen} open={Boolean(isMenuOpen)} onClose={onClose}>
-      <StMenuItem onClick={onClose}>
-        <ResetIcon />
-        <Typography variant={'subtitle3Light'}>처음으로</Typography>
-      </StMenuItem>
-      <StMenuItem onClick={onClose}>
-        <ChatIcon />
-        <Typography variant={'subtitle3Light'}>상담사연결 (라이브챗)</Typography>
-      </StMenuItem>
-      <StMenuItem onClick={onHistoryClick}>
-        <HistoryIcon />
-        <Typography variant={'subtitle3Light'}>상담이력</Typography>
-      </StMenuItem>
-      <StMenuItem onClick={onClose}>
-        <FAQIcon />
-        <Typography variant={'subtitle3Light'}>FAQ 바로가기</Typography>
-      </StMenuItem>
-      <StMenuItem onClick={onPublisherCheck}>
-        <FAQIcon />
-        <Typography variant={'subtitle3Light'}>퍼블리싱테스트보기</Typography>
-      </StMenuItem>
+      {menuMap.map((menu) => (
+        <StMenuItem key={menu.label} onClick={menu.onClick}>
+          {menu.icon}
+          <Typography variant={'subtitle3Light'}>{menu.label}</Typography>
+        </StMenuItem>
+      ))}
     </StMenu>
   );
 };

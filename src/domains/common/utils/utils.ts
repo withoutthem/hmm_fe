@@ -4,30 +4,49 @@ import DOMPurify from 'dompurify';
 /**
  * ScrolltoBottom 애니메이션
  */
+let __scrollRaf: number | null = null;
+
+/** Virtuoso scroller를 항상 부드럽게 바닥으로 스크롤(바닥이어도 nudge 후 애니메이션) */
 export const scrollToBottomWithAnimation = () => {
-  const scrollerEl = document.querySelector('[data-testid="virtuoso-scroller"]');
+  const scrollerEl = document.querySelector(
+    '[data-testid="virtuoso-scroller"]'
+  ) as HTMLElement | null;
   if (!scrollerEl) return;
 
-  const start = scrollerEl.scrollTop;
   const end = scrollerEl.scrollHeight - scrollerEl.clientHeight;
-  const duration = 500;
-  let startTime: number | null = null;
+  let start = scrollerEl.scrollTop;
+  let distance = end - start;
 
-  const step = (timestamp: number) => {
-    startTime ??= timestamp;
-    const progress = Math.min((timestamp - startTime) / duration, 1);
+  // 이전 애니메이션 취소
+  if (__scrollRaf) {
+    cancelAnimationFrame(__scrollRaf);
+    __scrollRaf = null;
+  }
 
-    const ease =
-      progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+  // 이미(거의) 바닥이면 살짝 위로 당겼다가 내려오게 만들어 시각적 애니메이션 유지
+  if (Math.abs(distance) < 2) {
+    const nudge = Math.min(24, Math.max(8, Math.round(scrollerEl.clientHeight * 0.04)));
+    start = Math.max(0, end - nudge);
+    scrollerEl.scrollTop = start;
+    distance = end - start;
+  }
 
-    scrollerEl.scrollTop = start + (end - start) * ease;
+  const duration = 300;
+  const t0 = performance.now();
 
-    if (progress < 1) {
-      requestAnimationFrame(step);
+  const step = (now: number) => {
+    const t = Math.min((now - t0) / duration, 1);
+    const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    scrollerEl.scrollTop = start + distance * ease;
+
+    if (t < 1) {
+      __scrollRaf = requestAnimationFrame(step);
+    } else {
+      __scrollRaf = null;
     }
   };
 
-  requestAnimationFrame(step);
+  __scrollRaf = requestAnimationFrame(step);
 };
 
 /**

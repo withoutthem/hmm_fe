@@ -7,10 +7,12 @@ import {
 } from 'react';
 import useMessageStore, {
   MessageType,
+  RenderType,
   Sender,
   type TalkMessage,
 } from '@domains/common/ui/store/message.store';
 import { scrollToBottomWithAnimation } from '@domains/common/utils/utils';
+import { adaptiveCardData } from '@domains/test/testData/adaptiveCardData';
 
 interface UseAutoScrollProps {
   messageContentRef: RefObject<HTMLDivElement | null>;
@@ -36,39 +38,43 @@ const useAutoScroll = (props: UseAutoScrollProps) => {
 
   /**
    * 시뮬레이션: user 입력 → chatbot 응답
+   * - 이전: isLoading / MessageType.MESSAGE 사용
+   * - 변경: RenderType.LOADING / MessageType.MARKDOWN 사용
    */
   useEffect(() => {
     if (messages.length === 0) return;
     const last = messages[messages.length - 1] as TalkMessage;
 
     if (last.sender === Sender.USER) {
+      // 1) 챗봇 로딩 메시지 추가
       const loadingMsg: TalkMessage = {
         sender: Sender.CHATBOT,
-        type: MessageType.MESSAGE,
-        streamingToken: '',
-        isLoading: true,
+        renderType: RenderType.LOADING,
+        messageType: MessageType.MARKDOWN, // 필수 필드라 아무 포맷 하나 지정 (텍스트/토큰 없음)
+        // streamingToken: '', // 필요시 유지
       };
       setMessages((prev) => [...prev, loadingMsg]);
 
+      // TEST
+      // 2) 2초 뒤 로딩 → 실제 응답(예: Adaptive Card)으로 교체
       setTimeout(() => {
         setMessages((prev) => {
+          if (prev.length === 0) return prev;
           const newMsgs = [...prev];
           const lastIdx = newMsgs.length - 1;
-          const last = newMsgs[lastIdx];
+          const lastMsg = newMsgs[lastIdx] as TalkMessage;
 
           if (
-            last &&
-            last.sender === Sender.CHATBOT &&
-            last.type === MessageType.MESSAGE &&
-            last.isLoading
+            lastMsg &&
+            lastMsg.sender === Sender.CHATBOT &&
+            (lastMsg.renderType ?? RenderType.NORMAL) === RenderType.LOADING
           ) {
             newMsgs[lastIdx] = {
               sender: Sender.CHATBOT,
-              type: MessageType.ADAPTIVE_CARD,
-              isLoading: false,
-              adaptiveCardInfo: {
-                type: 'AdaptiveCard',
-              },
+              renderType: RenderType.NORMAL,
+              messageType: MessageType.ADAPTIVE_CARD,
+              message: '챗봇 응답: Adaptive Card 예시',
+              adaptiveCardInfo: adaptiveCardData,
             };
           }
 
@@ -87,13 +93,17 @@ const useAutoScroll = (props: UseAutoScrollProps) => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.sender !== Sender.USER) return;
 
-    const scrollerEl = document.querySelector('[data-testid="virtuoso-scroller"]') as HTMLElement;
+    const scrollerEl = document.querySelector(
+      '[data-testid="virtuoso-scroller"]'
+    ) as HTMLElement | null;
+    if (!scrollerEl) return;
+
     const targetIndex = messages.length - 1;
 
     const tryGetEl = () => {
       const targetEl = scrollerEl.querySelector(
         `[data-item-index="${targetIndex}"]`
-      ) as HTMLElement;
+      ) as HTMLElement | null;
 
       if (targetEl && props.messageContentRef.current) {
         const size = targetEl.clientHeight;

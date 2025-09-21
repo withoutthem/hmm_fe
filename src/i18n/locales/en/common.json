@@ -1,4 +1,20 @@
 {
   "test": "This is a test",
-  "welcome": "Welcome to our application!"
+  "globalMenu": {
+    "toStart": "Go To Start",
+    "connectToAgent": "Connect to Agent (Live Chat)",
+    "chatHistory": "Chat History",
+    "goToFAQ": "Go to FAQ"
+  },
+  "sideBar": {
+    "sercharge": "Sercharge",
+    "invoice": "Invoice",
+    "booking": "Booking",
+    "schedule": "Schedule",
+    "cargo-tracking": "Cargo Tracking",
+    "find-manager": "Find a Manager",
+    "hi-quote": "Hi Quote",
+    "dg-oog": "DG/OOG",
+    "manual-booking": "Booking/BL"
+  }
 }

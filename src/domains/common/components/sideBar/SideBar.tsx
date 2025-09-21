@@ -12,6 +12,7 @@ import { ScheduleIcon } from '@shared/icons/ScheduleIcon';
 import { SerchargeIcon } from '@shared/icons/SerchargeIcon';
 import { WarningAmberIcon } from '@shared/icons/WarningAmberIcon';
 import React, { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 enum MenuGroup {
   BOT = 'bot',
@@ -31,41 +32,44 @@ interface Menu {
 }
 
 const SideBar = () => {
+  // ┣━━━━━━━━━━━━━━━━ GlobalHooks ━━━━━━━━━━━━━━━━┫
+  const { t } = useTranslation();
+
   const MenuInfo: Menu = {
     BOT: [
       {
         id: 'sercharge',
-        title: 'Sercharge',
+        title: t('sideBar.sercharge'),
         icon: <SerchargeIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'invoice',
-        title: 'Invoice',
+        title: t('sideBar.invoice'),
         icon: <InvoiceIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'booking',
-        title: 'Booking/BL',
+        title: t('sideBar.booking'),
         icon: <BookingIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'schedule',
-        title: 'Schedule',
+        title: t('sideBar.schedule'),
         icon: <ScheduleIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'cargo-tracking',
-        title: 'Cargo tracking',
+        title: t('sideBar.cargo-tracking'),
         icon: <LocationIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'find-manager',
-        title: 'Find a Manager',
+        title: t('sideBar.find-manager'),
         icon: <PersonSerachIcon />,
         group: MenuGroup.BOT,
       },
@@ -73,19 +77,19 @@ const SideBar = () => {
     MANUAL: [
       {
         id: 'hi-quote',
-        title: 'Hi quote',
+        title: t('sideBar.hi-quote'),
         icon: <RequestQuoteIcon />,
         group: MenuGroup.MANUAL,
       },
       {
         id: 'dg-oog',
-        title: 'DG/OOG',
+        title: t('sideBar.dg-oog'),
         icon: <WarningAmberIcon />,
         group: MenuGroup.MANUAL,
       },
       {
         id: 'manual-booking',
-        title: 'Booking/BL',
+        title: t('sideBar.manual-booking'),
         icon: <BookingIcon />,
         group: MenuGroup.MANUAL,
       },

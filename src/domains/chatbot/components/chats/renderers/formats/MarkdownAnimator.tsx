@@ -1,10 +1,10 @@
 import { ChatbotBubbleWrap } from '@shared/ui/layoutUtilComponents';
 
-interface ChatbotMessageBubbleProps {
+interface MarkdownAnimatorProps {
   tokens: string;
 }
 
-const ChatbotMessageBubble = ({ tokens }: ChatbotMessageBubbleProps) => {
+const MarkdownAnimator = ({ tokens }: MarkdownAnimatorProps) => {
   return (
     <ChatbotBubbleWrap>
       <div dangerouslySetInnerHTML={{ __html: tokens }} />
@@ -12,4 +12,4 @@ const ChatbotMessageBubble = ({ tokens }: ChatbotMessageBubbleProps) => {
   );
 };
 
-export default ChatbotMessageBubble;
+export default MarkdownAnimator;

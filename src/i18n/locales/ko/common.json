@@ -1,3 +1,20 @@
 {
-  "test": "테스트입니다"
+  "test": "테스트입니다",
+  "globalMenu": {
+    "toStart": "처음으로",
+    "connectToAgent": "상담사연결 (라이브챗)",
+    "chatHistory": "상담이력",
+    "goToFAQ": "FAQ 바로가기"
+  },
+  "sideBar": {
+    "sercharge": "Sercharge",
+    "invoice": "Invoice",
+    "booking": "Booking",
+    "schedule": "Schedule",
+    "cargo-tracking": "Cargo Tracking",
+    "find-manager": "Find a Manager",
+    "hi-quote": "Hi quote",
+    "dg-oog": "DG/OOG",
+    "manual-booking": "Booking/BL"
+  }
 }

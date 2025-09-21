@@ -35,7 +35,7 @@ export const useSendMessage = ({
     (payload: { message?: string; images?: File[] }) => {
       const userMsg: TalkMessage = {
         sender: Sender.USER,
-        type: MessageType.MESSAGE,
+        messageType: MessageType.MARKDOWN,
         ...(payload.message ? { message: payload.message } : {}),
         ...(payload.images?.length ? { images: payload.images } : {}),
       };

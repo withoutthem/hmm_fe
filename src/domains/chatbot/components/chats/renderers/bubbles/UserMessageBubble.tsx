@@ -18,7 +18,7 @@ const UserMessageBubble = forwardRef<HTMLDivElement, UserMessageBubbleProps>(
     return (
       <UserBubbleWrap ref={ref}>
         <UserBubbleCon className={animated ? 'pop-in' : ''}>
-          {message.images?.length ? (
+          {message.images?.length && (
             <UserImgBubble>
               {message.images.map((file, idx) => (
                 <UserUpdateImgCon key={file.name + idx}>
@@ -26,7 +26,7 @@ const UserMessageBubble = forwardRef<HTMLDivElement, UserMessageBubbleProps>(
                 </UserUpdateImgCon>
               ))}
             </UserImgBubble>
-          ) : null}
+          )}
 
           {message.message && <UserTextBubble dangerouslySetInnerHTML={{ __html: safeMessage }} />}
         </UserBubbleCon>
