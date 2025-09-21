@@ -1,10 +1,11 @@
 import { Box, styled } from '@mui/material';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import useMessageStore, { type TalkMessage } from '@domains/common/ui/store/message.store';
+import useMessageStore, { Sender, type TalkMessage } from '@domains/common/ui/store/message.store';
 import useAutoScroll from '@domains/common/hooks/useAutoScroll';
 import PublishFloating from '@pages/test/PublishFloating';
 import RenderTypeOrchestrator from '@domains/chatbot/components/chats/orchestrators/RenderTypeOrchestrator';
+import { scrollLastMessageUserThenBottom } from '@domains/common/utils/utils';
 
 const renderChatMessage =
   (
@@ -32,43 +33,32 @@ const MainPage = () => {
   const [lastDiffHeight, setLastDiffHeight] = useState<number | null>(null);
   const [atBottom, setAtBottom] = useState(true);
 
-  // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━┫
-  const messageContentRef = useRef<HTMLDivElement>(null);
-  const virtuosoRef = useRef<VirtuosoHandle>(null);
+  // ┣━━━━━━━━━━━━━━━━ Refs ━━━━━━━━━━━━━━━━━━━┫
+  const messageContentRef = useRef<HTMLDivElement | null>(null);
+  const virtuosoRef = useRef<VirtuosoHandle | null>(null);
 
-  // ┣━━━━━━━━━━━━━━━━ CustomHooks ━━━━━━━━━━━━━━━━━━━━┫
+  // ┣━━━━━━━━━━━━━━━━ Hooks ━━━━━━━━━━━━━━━━━━━┫
+  // 높이 보정 계산만 담당시키세요. (강제 스크롤 금지)
   useAutoScroll({
     messageContentRef,
     setLastDiffHeight,
   });
 
-  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━━━━┫
-  // 2단계 스크롤: (1) 최상단 스냅 -> (2) 다음 프레임에서 바닥으로 smooth
-  const scrollUserThenBottom = useCallback(() => {
+  // ❶ 커스텀 애니메이션 트리거 (맨위/중간/맨아래 모두 동일하게 동작)
+  const scrollUserThenBottom = useCallback(async () => {
     const lastIndex = messages.length - 1;
     if (lastIndex < 0) return;
-
-    // 1) 스냅해서 내 메시지를 화면 최상단에 위치시킴 (instant)
-    virtuosoRef.current?.scrollToIndex({
-      index: lastIndex,
-      align: 'start',
-      behavior: 'auto',
-    });
-
-    // 2) 다음 프레임에서 바닥까지 부드럽게 이동
-    requestAnimationFrame(() => {
-      virtuosoRef.current?.scrollToIndex({
-        index: lastIndex,
-        align: 'end',
-        behavior: 'smooth',
-      });
-    });
+    await scrollLastMessageUserThenBottom(virtuosoRef.current, lastIndex);
   }, [messages.length]);
 
-  //TEST
+  // ❷ "사용자 메시지 추가" 시, 항상 트리거
   useEffect(() => {
-    console.log('messages', messages);
-  }, [messages]);
+    if (messages.length === 0) return;
+    const last = messages[messages.length - 1];
+    if (last?.sender === Sender.USER) {
+      void scrollUserThenBottom();
+    }
+  }, [messages.length, messages, scrollUserThenBottom]);
 
   return (
     <MainPageContainer className={'main_page'}>
@@ -79,14 +69,14 @@ const MainPage = () => {
           ref={virtuosoRef}
           overscan={10}
           itemContent={renderChatMessage(messages, lastDiffHeight, atBottom, scrollUserThenBottom)}
-          followOutput={false} // 우리가 직접 제어 (중복 충돌 방지)
+          followOutput={false} // ✅ Virtuoso 자동 스크롤 OFF (충돌 방지)
           atBottomStateChange={setAtBottom}
           computeItemKey={(index, item) => item.messageId ?? `${item.sender}-${index}`}
-          increaseViewportBy={{ top: 0, bottom: 600 }}
+          increaseViewportBy={{ top: 0, bottom: 600 }} // 하단 프리로딩
         />
       </MessagesContainer>
 
-      {/*TEST*/}
+      {/* TEST */}
       <PublishFloating />
     </MainPageContainer>
   );

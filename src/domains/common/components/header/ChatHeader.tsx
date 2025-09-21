@@ -25,6 +25,8 @@ const ChatHeader = () => {
         </HeaderIconButton>
         <HeaderIconButton>
           <CloseIcon />
+          {/* liveChat일때 끄기 아이콘 */}
+          {/*<LiveCloseIcon />*/}
         </HeaderIconButton>
       </AlignCenter>
     </StHeader>

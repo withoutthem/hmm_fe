@@ -3,13 +3,19 @@ import { ResetIcon } from '@shared/icons/ResetIcon';
 import { ChatIcon } from '@shared/icons/ChatIcon';
 import { HistoryIcon } from '@shared/icons/HistoryIcon';
 import { FAQIcon } from '@shared/icons/FAQIcon';
-import useUIStore from '@domains/common/ui/store/ui.store';
+import useUIStore, { BottomSheetType } from '@domains/common/ui/store/ui.store';
 import useDialogStore, { DialogType } from '@domains/common/ui/store/dialog.store';
 import { useTranslation } from 'react-i18next';
 
 const GlobalMenu = () => {
   // ┣━━━━━━━━━━━━━━━━ GlobalHooks ━━━━━━━━━━━━━━━━┫
   const { t } = useTranslation();
+
+  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━━━┫
+  const isMenuOpen = useUIStore((s) => s.isMenuOpen);
+  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
+  const openDialog = useDialogStore((s) => s.openDialog);
+  const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
 
   // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━━━━┫
   const onClose = () => {
@@ -27,10 +33,10 @@ const GlobalMenu = () => {
     onClose();
   };
 
-  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━━━┫
-  const isMenuOpen = useUIStore((s) => s.isMenuOpen);
-  const setIsMenuOpen = useUIStore((s) => s.setIsMenuOpen);
-  const openDialog = useDialogStore((s) => s.openDialog);
+  const onOpenBottomSheet = () => {
+    onClose();
+    setBottomSheetOpen(BottomSheetType.LANGUAGE);
+  };
 
   // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━━━┫
   const menuMap = [
@@ -58,6 +64,11 @@ const GlobalMenu = () => {
       icon: <FAQIcon />,
       label: '퍼블리싱테스트보기',
       onClick: onPublisherCheck,
+    },
+    {
+      icon: <FAQIcon />,
+      label: 'bottomSheet.LANGUAGE',
+      onClick: onOpenBottomSheet,
     },
   ];
 

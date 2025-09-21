@@ -13,26 +13,29 @@ const ChatbotItemWrapper = (props: ChatbotItemWrapperProps) => {
   const [expanded, setExpanded] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
-  // 마지막 메시지는 항상 '펼침' 상태로 전환 (스크롤 호출은 하지 않음)
+  // 마지막 메시지는 항상 '펼침' (높이 보정)
   useEffect(() => {
     if (!isLastMessage) return;
     setExpanded(true);
   }, [isLastMessage]);
 
-  // transitionend는 레이아웃 보정 용도이므로 로깅 정도만 허용
+  // transitionend는 레이아웃 완료 신호만 캡처(스크롤은 메인에서만)
   useEffect(() => {
     if (!ref.current || !isLastMessage) return;
     const el = ref.current;
 
     const handleTransitionEnd = () => {
-      // console.debug('ChatbotItemWrapper transitionend');
+      // console.debug('ChatbotItemWrapper: transition end');
+      // 여기서 스크롤 호출 금지. (메인에서 단일 제어)
     };
 
     el.addEventListener('transitionend', handleTransitionEnd);
     return () => el.removeEventListener('transitionend', handleTransitionEnd);
   }, [isLastMessage]);
 
+  // 바닥일 때만 transition을 켜서 재측정 튐 최소화
   const enableTransition = isLastMessage && atBottom;
+
   return (
     <Box
       ref={ref}

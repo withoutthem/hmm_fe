@@ -458,6 +458,14 @@ const theme = createTheme({
               maxWidth: 'none',
             },
           },
+
+          '& .MuiButtonBase-root.Mui-selected': {
+            color: '#343A40',
+            fontWeight: 700,
+          },
+          '& .MuiTabs-indicator': {
+            backgroundColor: '#343A40',
+          },
         },
       },
     },

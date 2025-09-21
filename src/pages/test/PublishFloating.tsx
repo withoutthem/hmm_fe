@@ -5,11 +5,19 @@ import {
   ButtonGroup,
   keyframes,
   styled,
+  Tab,
+  Tabs,
   TextField,
 } from '@mui/material';
+import { type SyntheticEvent, useState } from 'react';
 
 const PublishFloating = () => {
   const options = ['가나다', '나다라', '마바사', '아자'];
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   return (
     <StPublishFloating id={'publish'}>
@@ -121,6 +129,23 @@ const PublishFloating = () => {
           <TestCodeBox>
             {`
             <ClipBackground>변하는 글씨 만들기</ClipBackground>
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <Tabs value={tabValue} onChange={handleChange}>
+            <Tab value={0} label={'첫번째'} />
+            <Tab value={1} label={'두번째'} />
+            <Tab value={2} label={'세번째'} />
+          </Tabs>
+          <TestCodeBox>
+            {`
+            <Tabs value={tabValue} onChange={handleChange}>
+              <Tab value={0} label={'첫번째'} />
+              <Tab value={1} label={'두번째'} />
+              <Tab value={2} label={'세번째'} />
+            </Tabs>
             `}
           </TestCodeBox>
         </TestBubble>

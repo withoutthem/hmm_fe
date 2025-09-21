@@ -51,7 +51,6 @@ const RenderTypeOrchestrator = (props: RenderTypeOrchestratorProps) => {
     <ChatbotItemWrapper
       isLastMessage={isLast}
       lastDiffHeight={props.lastDiffHeight}
-      scrollToBottom={props.scrollToBottom}
       atBottom={props.atBottom}
     >
       {node}
