@@ -22,6 +22,7 @@ import { SendIcon } from '@shared/icons/SendIcon';
 import { AddIcon } from '@shared/icons/AddIcon';
 import { highlightMatch } from '@domains/common/utils/utils';
 import { ClearIcon } from '@shared/icons/ClearIcon';
+// import { StopIcon } from '@shared/icons/StopIcon';
 
 export interface ComposerFormValues {
   message: string;
@@ -173,9 +174,9 @@ export default Composer;
 
 /* ====================== styles ====================== */
 
-const StComposer = styled(Box)<BoxProps>({
+const StComposer = styled(Box)<BoxProps>(({ theme }) => ({
   width: '100%',
-  background: '#fff',
+  background: theme.palette.secondary.main,
   boxSizing: 'border-box',
   display: 'flex',
   fontSize: '16px',
@@ -190,7 +191,7 @@ const StComposer = styled(Box)<BoxProps>({
       boxShadow: '0px 0px .5px rgba(23, 74, 146, 0.16), 0px 2px 8px rgba(23, 74, 146, 0.12)',
     },
   },
-});
+}));
 
 const ImagePreviewItem = styled(Box)({
   position: 'relative',
@@ -209,7 +210,7 @@ const ImagePreviewItem = styled(Box)({
   },
 });
 
-const DeleteButton = styled('button')({
+const DeleteButton = styled('button')(({ theme }) => ({
   position: 'absolute',
   top: '4px',
   right: '4px',
@@ -223,7 +224,7 @@ const DeleteButton = styled('button')({
   cursor: 'pointer',
   lineHeight: 1,
   padding: 0,
-});
+}));
 
 const InputContainer = styled(Box)({
   display: 'flex',
@@ -259,12 +260,12 @@ const fadeInUp = keyframes`
   }
 `;
 
-const SuggestionBox = styled(Box)({
+const SuggestionBox = styled(Box)(({ theme }) => ({
   position: 'absolute',
   top: '0',
   left: '0',
   willChange: 'transform, opacity',
-  background: '#fff',
+  background: theme.palette.secondary.main,
   boxShadow: '0 -8px 26px #22222214',
   borderRadius: '24px 24px 0 0',
   margin: 0,
@@ -274,7 +275,7 @@ const SuggestionBox = styled(Box)({
   transform: 'translateY(0%)',
   animation: `${fadeInUp} .3s ease-out`,
   animationFillMode: 'forwards',
-});
+}));
 
 const SuggestionList = styled(List)({
   maxHeight: '102px',
@@ -282,25 +283,25 @@ const SuggestionList = styled(List)({
   padding: '0',
 });
 
-const SuggestionListItem = styled(ListItem)({
+const SuggestionListItem = styled(ListItem)(({ theme }) => ({
   padding: '6px 24px',
   cursor: 'pointer',
   fontSize: '16px',
   lineHeight: '1.4',
-  color: '#6D747B',
+  color: theme.palette.grey[600],
   fontWeight: '600',
 
   '& span>span': {
-    color: '#1C2681',
+    color: theme.palette.primary.light,
   },
-});
+}));
 
-const ChatInputBar = styled(AlignCenter)({
+const ChatInputBar = styled(AlignCenter)(({ theme }) => ({
   position: 'relative',
   padding: '8px 12px 8px 8px',
-  background: '#fff',
+  background: theme.palette.secondary.main,
   zIndex: '1',
-});
+}));
 
 const AddIconButton = styled(IconButton)({
   width: '48px',
@@ -313,9 +314,9 @@ const AddIconButton = styled(IconButton)({
   '&:active svg path': { fill: 'red' },
 });
 
-const StTextField = styled(TextField)({
+const StTextField = styled(TextField)(({ theme }) => ({
   padding: '8px 12px',
-  backgroundColor: '#F1F3F5',
+  backgroundColor: theme.palette.grey[50],
   borderRadius: '8px',
   flex: 1,
 
@@ -330,18 +331,18 @@ const StTextField = styled(TextField)({
 
   '& textarea': {
     resize: 'none',
-    color: '#343A40',
+    color: theme.palette.grey[800],
     fontWeight: 500,
     fontSize: '15px',
     lineHeight: '140%',
     margin: '3.5px 0',
 
     '&::placeholder': {
-      color: '#797C7B',
+      color: theme.palette.grey[400],
       opacity: '.5',
     },
   },
-});
+}));
 
 const SendButton = styled(IconButton)({
   padding: '0',
@@ -359,9 +360,9 @@ const ClearIconButton = styled(IconButton)({
   padding: 0,
 });
 
-const SendIconWrap = styled(CenterBox)({
+const SendIconWrap = styled(CenterBox)(({ theme }) => ({
   width: '38px',
   height: '38px',
   borderRadius: '50%',
-  background: '#1C2681',
-});
+  background: theme.palette.primary.light,
+}));

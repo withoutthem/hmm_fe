@@ -4,11 +4,15 @@ import LanguageBottomSheet from '@domains/common/components/bottomSheet/componen
 
 const GlobalBottomSheet = () => {
   const isBottomSheetOpen = useUIStore((s) => s.isBottomSheetOpen);
+  const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
   const bottomSheetType = useUIStore((s) => s.bottomSheetType);
-  const closeBottomSheet = useUIStore((s) => s.closeBottomSheet);
 
   return (
-    <StBottomSheet anchor="bottom" open={isBottomSheetOpen} onClose={closeBottomSheet}>
+    <StBottomSheet
+      anchor="bottom"
+      open={isBottomSheetOpen}
+      onClose={() => setBottomSheetOpen(null)}
+    >
       {bottomSheetType === BottomSheetType.LANGUAGE && <LanguageBottomSheet />}
     </StBottomSheet>
   );
@@ -23,6 +27,7 @@ const StBottomSheet = styled(Drawer)({
     width: '100%',
     minHeight: '80vh',
     maxHeight: '80vh',
+    height: '80vh',
     borderRadius: '24px 24px 0 0',
   },
 });

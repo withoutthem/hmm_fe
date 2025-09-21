@@ -28,9 +28,17 @@ const useUIStore = create<UIState>((set) => ({
   // 액션
   setIsSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
   setIsMenuOpen: (el) => set({ isMenuOpen: el }),
-  setBottomSheetOpen: (type) => set({ isBottomSheetOpen: !!type, bottomSheetType: type }),
+  setBottomSheetOpen: (type) =>
+    set({
+      isBottomSheetOpen: !!type,
+      bottomSheetType: type,
+    }),
 
-  closeBottomSheet: () => set({ isBottomSheetOpen: false, bottomSheetType: null }),
+  closeBottomSheet: () =>
+    set({
+      isBottomSheetOpen: false,
+      bottomSheetType: null,
+    }),
 }));
 
 export default useUIStore;
