@@ -6,21 +6,21 @@ import { forwardRef } from 'react';
 import { popIn } from '@domains/common/utils/utils';
 
 interface UserMessageBubbleProps {
-  m: TalkMessage;
+  message: TalkMessage;
   index: number;
 }
 
 const UserMessageBubble = forwardRef<HTMLDivElement, UserMessageBubbleProps>(
-  ({ m, index }, ref) => {
+  ({ message, index }, ref) => {
     const animated = useOnceAnimation(index);
-    const safeMessage = m.message ? DOMPurify.sanitize(m.message) : '';
+    const safeMessage = message.message ? DOMPurify.sanitize(message.message) : '';
 
     return (
       <UserBubbleWrap ref={ref}>
         <UserBubbleCon className={animated ? 'pop-in' : ''}>
-          {m.images?.length ? (
+          {message.images?.length ? (
             <UserImgBubble>
-              {m.images.map((file, idx) => (
+              {message.images.map((file, idx) => (
                 <UserUpdateImgCon key={file.name + idx}>
                   <UserUpdateImg src={URL.createObjectURL(file)} alt={`user-${index}-${idx}`} />
                 </UserUpdateImgCon>
@@ -28,7 +28,7 @@ const UserMessageBubble = forwardRef<HTMLDivElement, UserMessageBubbleProps>(
             </UserImgBubble>
           ) : null}
 
-          {m.message && <UserTextBubble dangerouslySetInnerHTML={{ __html: safeMessage }} />}
+          {message.message && <UserTextBubble dangerouslySetInnerHTML={{ __html: safeMessage }} />}
         </UserBubbleCon>
       </UserBubbleWrap>
     );

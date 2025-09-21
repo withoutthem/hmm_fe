@@ -42,10 +42,10 @@ const chatbotRules: Array<{ when: (message: TalkMessage) => boolean; render: Ren
 
 /** sender 별 매핑 */
 const renderBySender: Record<Sender, Renderer> = {
-  [Sender.USER]: (m, { index }) => <UserMessageBubble m={m} index={index} />,
-  [Sender.CHATBOT]: (m, ctx) => {
-    const matched = chatbotRules.find((r) => r.when(m));
-    return matched ? matched.render(m, ctx) : null;
+  [Sender.USER]: (message, { index }) => <UserMessageBubble message={message} index={index} />,
+  [Sender.CHATBOT]: (message, ctx) => {
+    const matched = chatbotRules.find((r) => r.when(message));
+    return matched ? matched.render(message, ctx) : null;
   },
 };
 
