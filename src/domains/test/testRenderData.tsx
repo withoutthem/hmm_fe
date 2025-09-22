@@ -9,20 +9,6 @@ import {
 /** 공통 생성기 타입: 항상 CHATBOT/NORMAL 로 생성 */
 export type TestMessageBuilder = () => TalkMessage;
 
-/** HTML */
-const buildHtml: TestMessageBuilder = () => ({
-  sender: Sender.CHATBOT,
-  renderType: RenderType.NORMAL,
-  messageType: MessageType.HTML,
-  message: `
-    <div>
-      <h3 style="margin:0 0 8px 0;">HTML 응답 샘플</h3>
-      <p>이것은 <strong>HTML</strong> 형식의 테스트 메시지입니다.</p>
-      <ul><li>리스트 1</li><li>리스트 2</li></ul>
-    </div>
-  `,
-});
-
 /** Markdown */
 const buildMarkdown: TestMessageBuilder = () => ({
   sender: Sender.CHATBOT,
@@ -99,7 +85,6 @@ const buildJsonPointToPoint: TestMessageBuilder = () => {
 
 export const TEST_CASES: TestMessageBuilder[] = [
   buildMarkdown,
-  buildHtml,
   buildAdaptiveCard,
   buildJsonRetrieveBookingNumber,
   buildJsonOfficeContact,

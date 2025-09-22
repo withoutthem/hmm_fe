@@ -11,6 +11,12 @@ export enum Sender {
   CHATBOT = 'chatbot',
 }
 
+export enum NodeType {
+  CAROUSEL = 'carousel', // QuickButton 등 카드형 메시지
+  SLOT = 'slot', // Custom Slot Payload 산출
+  SPEAK = 'speak', // 한 대화 종료
+}
+
 // 1. RenderType (최상위 분기)
 export enum RenderType {
   LOADING = 'loading',
@@ -20,7 +26,6 @@ export enum RenderType {
 
 // 2. MessageType
 export enum MessageType {
-  HTML = 'html',
   MARKDOWN = 'markdown',
   ADAPTIVE_CARD = 'adaptiveCard',
   JSON = 'json',
@@ -31,6 +36,7 @@ export interface TalkMessage {
   messageId?: string; // 서버 할당 ID
   sender: Sender; // USER / CHATBOT
   renderType?: RenderType; // UI 렌더링 타입 (LOADING, FALLBACK, NORMAL)
+  nodeType?: NodeType; // 메시지 노드 타입 (CAROUSEL, SLOT, SPEAK)
   messageType: MessageType; // 메시지 포맷
 
   // 일반 메시지

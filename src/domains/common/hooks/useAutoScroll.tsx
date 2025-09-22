@@ -59,7 +59,7 @@ const useAutoScroll = (props: UseAutoScrollProps) => {
       // 2) 일정 시간 뒤 LOADING → 다양한 테스트 케이스로 교체
       simulateChatbotReply(setMessages, {
         delayMs: 1000, // 필요 시 조정
-        pickMode: 'all', // 'all', 'random', 'roundrobin'
+        pickMode: 'random', // 'all', 'random', 'roundrobin'
       });
     }
   }, [messages, setMessages]);

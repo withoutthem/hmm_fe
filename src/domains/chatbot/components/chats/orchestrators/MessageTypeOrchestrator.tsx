@@ -12,7 +12,6 @@ import {
   BUSINESS_TYPE,
   type BusinessPayload,
 } from '@domains/chatbot/components/chats/apiCaseBusinesses/types/businessType';
-import HtmlRenderer from '@domains/chatbot/components/chats/renderers/formats/HtmlRenderer';
 
 interface MessageTypeOrchestratorProps {
   talkMessage: TalkMessage;
@@ -21,13 +20,11 @@ interface MessageTypeOrchestratorProps {
 /**
  * MessageTypeOrchestrator
  * ------------------------
- * 1. messageType (HTML, MARKDOWN, ADAPTIVE_CARD, JSON) 분기
+ * 1. messageType (MARKDOWN, ADAPTIVE_CARD, JSON) 분기
  * 2. JSON 메시지는 BusinessTypeOrchestrator에 위임
  */
 const MessageTypeOrchestrator = (props: MessageTypeOrchestratorProps) => {
   switch (props.talkMessage.messageType) {
-    case MessageType.HTML:
-      return <HtmlRenderer />;
     case MessageType.MARKDOWN: {
       const tokens = props.talkMessage.streamingToken ?? props.talkMessage.message ?? '';
       return <MarkDownRenderer tokens={tokens} />;
