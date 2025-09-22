@@ -6,7 +6,7 @@ interface MarkdownAnimatorProps {
 
 const MarkdownRenderer = ({ tokens }: MarkdownAnimatorProps) => {
   return (
-    <ChatbotBubbleWrap>
+    <ChatbotBubbleWrap className={'markdown_renderer'}>
       <div dangerouslySetInnerHTML={{ __html: tokens }} />
     </ChatbotBubbleWrap>
   );

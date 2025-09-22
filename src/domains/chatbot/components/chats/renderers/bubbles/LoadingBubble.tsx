@@ -3,7 +3,7 @@ import { AlignCenter } from '@shared/ui/layoutUtilComponents';
 import { popIn } from '@domains/common/utils/utils';
 
 export const LoadingBubble = () => (
-  <LoadingBubbleWrap>
+  <LoadingBubbleWrap className={'loading_bubble'}>
     <LoadingBubbleCon>
       <AlignCenter>
         <CircularProgress size={16} />

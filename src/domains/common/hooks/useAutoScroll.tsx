@@ -12,7 +12,7 @@ import useMessageStore, {
   type TalkMessage,
 } from '@domains/common/ui/store/message.store';
 import { scrollToBottomWithAnimation } from '@domains/common/utils/utils';
-import { adaptiveCardData } from '@domains/test/testData/adaptiveCardData';
+import { simulateChatbotReply } from '@domains/test/simulateReply';
 
 interface UseAutoScrollProps {
   messageContentRef: RefObject<HTMLDivElement | null>;
@@ -56,31 +56,11 @@ const useAutoScroll = (props: UseAutoScrollProps) => {
       setMessages((prev) => [...prev, loadingMsg]);
 
       // TEST
-      // 2) 2초 뒤 로딩 → 실제 응답(예: Adaptive Card)으로 교체
-      setTimeout(() => {
-        setMessages((prev) => {
-          if (prev.length === 0) return prev;
-          const newMsgs = [...prev];
-          const lastIdx = newMsgs.length - 1;
-          const lastMsg = newMsgs[lastIdx] as TalkMessage;
-
-          if (
-            lastMsg &&
-            lastMsg.sender === Sender.CHATBOT &&
-            (lastMsg.renderType ?? RenderType.NORMAL) === RenderType.LOADING
-          ) {
-            newMsgs[lastIdx] = {
-              sender: Sender.CHATBOT,
-              renderType: RenderType.NORMAL,
-              messageType: MessageType.ADAPTIVE_CARD,
-              message: '챗봇 응답: Adaptive Card 예시',
-              adaptiveCardInfo: adaptiveCardData,
-            };
-          }
-
-          return newMsgs;
-        });
-      }, 2000);
+      // 2) 일정 시간 뒤 LOADING → 다양한 테스트 케이스로 교체
+      simulateChatbotReply(setMessages, {
+        delayMs: 1000, // 필요 시 조정
+        pickMode: 'all', // 'all', 'random', 'roundrobin'
+      });
     }
   }, [messages, setMessages]);
 

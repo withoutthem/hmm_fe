@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 
 const HtmlRenderer = () => {
-  return <Box>HTML Renderer</Box>;
+  return <Box className={'html_renderer'}>HTML Renderer</Box>;
 };
 
 export default HtmlRenderer;
