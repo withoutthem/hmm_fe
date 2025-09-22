@@ -33,11 +33,6 @@ const GlobalMenu = () => {
     onClose();
   };
 
-  const onOpenBottomSheet = () => {
-    onClose();
-    setBottomSheetOpen(BottomSheetType.LANGUAGE);
-  };
-
   // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━━━┫
   const menuMap = [
     {
@@ -65,11 +60,6 @@ const GlobalMenu = () => {
       label: '퍼블리싱테스트보기',
       onClick: onPublisherCheck,
     },
-    {
-      icon: <FAQIcon />,
-      label: 'bottomSheet.LANGUAGE',
-      onClick: onOpenBottomSheet,
-    },
   ];
 
   return (
@@ -86,16 +76,16 @@ const GlobalMenu = () => {
 
 export default GlobalMenu;
 
-const StMenu = styled(Menu)({
+const StMenu = styled(Menu)(({ theme }) => ({
   '& .MuiPaper-root': {
     transform: 'translate(0px, -60px) !important',
-    background: '#fff',
+    background: theme.palette.secondary.main,
     borderRadius: '12px',
     boxShadow: '0px 0px 0.5px rgba(0, 0, 0, 0.25), 0px 16px 60px rgba(0, 0, 0, 0.3)',
 
     '& ul': { padding: '8px 0' },
   },
-});
+}));
 
 const StMenuItem = styled(MenuItem)({
   display: 'flex',

@@ -7,6 +7,8 @@ import SideBar from '@domains/common/components/sideBar/SideBar';
 import GlobalMenu from '@domains/common/components/menu/GlobalMenu';
 import type { ReactNode } from 'react';
 import GlobalBottomSheet from '@domains/common/components/bottomSheet/GlobalBottomSheet';
+import GlobalToast from '@domains/chatbot/components/toast/GlobalToast';
+import GlobalModal from '@domains/chatbot/components/modal/GlobalModal';
 
 interface LayoutProps {
   children: ReactNode;
@@ -22,6 +24,8 @@ const Layout = ({ children }: LayoutProps) => {
       <SideBar />
       <GlobalMenu />
       <GlobalBottomSheet />
+      <GlobalToast />
+      <GlobalModal />
     </StLayout>
   );
 };
@@ -35,10 +39,10 @@ const StLayout = styled(Box)<BoxProps>({
   flexDirection: 'column',
 });
 
-const StMain = styled(Box)<BoxProps>({
+const StMain = styled(Box)<BoxProps>(({ theme }) => ({
   width: '100%',
   flex: 1,
-  background: '#fff',
+  background: theme.palette.secondary.main,
   overflow: 'hidden',
   padding: '16px',
-});
+}));

@@ -45,14 +45,14 @@ const AdaptiveCardRenderer = ({ card, onSubmit }: AdaptiveCardRendererProps) => 
 export default AdaptiveCardRenderer;
 
 /** AdaptiveCard 스타일 */
-const AdaptiveCardStyleProvider = styled(Box)({
+const AdaptiveCardStyleProvider = styled(Box)(({ theme }) => ({
   '& input, & select': {
     border: '1px solid black',
     '&.ac-input-validation-failed': { borderColor: 'red', color: 'red' },
   },
-  '& button': { background: 'black', color: '#fff' },
+  '& button': { background: 'black', color: theme.palette.secondary.main },
   '& table': { width: '100%', borderCollapse: 'collapse' },
   '& td': { border: '1px solid #ddd' },
   '& .ac-horizontal-separator': { display: 'none !important' },
   '& #timeBox': { flexDirection: 'row !important', '& > div': { flex: '1 !important' } },
-});
+}));

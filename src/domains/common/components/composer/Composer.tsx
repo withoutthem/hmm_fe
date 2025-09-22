@@ -210,7 +210,7 @@ const ImagePreviewItem = styled(Box)({
   },
 });
 
-const DeleteButton = styled('button')(() => ({
+const DeleteButton = styled('button')(({ theme }) => ({
   position: 'absolute',
   top: '4px',
   right: '4px',
@@ -219,7 +219,7 @@ const DeleteButton = styled('button')(() => ({
   borderRadius: '50%',
   border: 'none',
   background: 'rgba(0,0,0,0.6)',
-  color: '#fff',
+  color: theme.palette.secondary.main,
   fontSize: '12px',
   cursor: 'pointer',
   lineHeight: 1,
@@ -311,7 +311,8 @@ const AddIconButton = styled(IconButton)({
   justifyContent: 'center',
   padding: 0,
 
-  '&:active svg path': { fill: 'red' },
+  // active 됬을때 아이콘 색 변경
+  // '&:active svg path': { fill: 'red' },
 });
 
 const StTextField = styled(TextField)(({ theme }) => ({

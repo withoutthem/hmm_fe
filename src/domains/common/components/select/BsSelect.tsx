@@ -2,7 +2,13 @@ import { Button, styled, Typography } from '@mui/material';
 import useUIStore, { BottomSheetType } from '@domains/common/ui/store/ui.store';
 import { DownIcon } from '@shared/icons/DownIcon';
 
-const BsSelect = (props: { value: string; type: BottomSheetType }) => {
+interface BsSelectProps {
+  value: string;
+  type: BottomSheetType;
+  disabled?: boolean;
+}
+
+const BsSelect = (props: BsSelectProps) => {
   const bottomSheetType = useUIStore((s) => s.bottomSheetType);
   const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
 
@@ -11,7 +17,11 @@ const BsSelect = (props: { value: string; type: BottomSheetType }) => {
   };
 
   return (
-    <BsSelectContainer onClick={onOpen} selected={bottomSheetType !== null}>
+    <BsSelectContainer
+      onClick={onOpen}
+      selected={bottomSheetType !== null}
+      disabled={props.disabled ?? false}
+    >
       <BsSelectLabel
         sx={{ flex: '1' }}
         variant={'subtitle2Light'}
@@ -29,7 +39,7 @@ export default BsSelect;
 const BsSelectContainer = styled(Button)<{ selected: boolean }>(({ theme, selected }) => ({
   border: '1px solid',
   borderColor: selected ? theme.palette.primary.light : theme.palette.grey[200],
-  boxShadow: selected ? 'inset 0 0 0 1px #1C2681' : 'none',
+  boxShadow: selected ? `inset 0 0 0 1px ${theme.palette.primary.light}` : 'none',
   padding: '0 20px',
   borderRadius: '8px',
   cursor: 'pointer',

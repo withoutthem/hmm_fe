@@ -174,12 +174,12 @@ const SideBar = () => {
 
 export default SideBar;
 
-const StSideBar = styled(Drawer)({
+const StSideBar = styled(Drawer)(({ theme }) => ({
   '& .MuiBackdrop-root': {
     background: 'transparent',
   },
   '& .MuiPaper-root': {
-    background: '#20265B',
+    background: theme.palette.primary.main,
     minWidth: '300px',
     padding: '64px 0 40px 26px',
     display: 'flex',
@@ -188,7 +188,7 @@ const StSideBar = styled(Drawer)({
     position: 'relative',
     width: '80%',
   },
-});
+}));
 
 // eslint-disable no-warning-comments - 화면이 넓이지면 필요할수도 있어서 주석처리
 // const CloseButton = styled(IconButton)({
@@ -238,6 +238,6 @@ const SideBarNavTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.grey[200],
 }));
 
-const SideBarFooterTypo = styled(Typography)({
-  color: '#777DB3',
-});
+const SideBarFooterTypo = styled(Typography)(({ theme }) => ({
+  color: theme.palette.secondary.contrastText,
+}));

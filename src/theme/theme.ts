@@ -1,6 +1,8 @@
 // src/styles/theme.ts
 import { createTheme } from '@mui/material/styles';
 import type { CSSProperties } from 'react';
+import DownIcon from '@assets/img/icon/ic_down.svg';
+import ClearIcon from '@assets/img/icon/ic_clear.svg';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -116,6 +118,8 @@ declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
     primary: true;
     secondary: true;
+    borderS: true;
+    borderM: true;
   }
 }
 
@@ -190,7 +194,7 @@ const theme = createTheme({
     },
     //Mono Tone &
     secondary: {
-      main: '#ffffff', // 모노톤 컬러1
+      main: '#FFFFFF', // 모노톤 컬러1
       dark: '#000000', // 모노톤 컬러2
       light: '#49519A', // 시멘틱 컬러3
       contrastText: '#777DB3', // 시멘틱 컬러4
@@ -221,8 +225,6 @@ const theme = createTheme({
     },
   },
   typography: {
-    allVariants: { lineHeight: 1.4 },
-
     display1Bold: { fontSize: '29px', fontWeight: 700 }, // Bold
     display1: { fontSize: '29px', fontWeight: 600 }, // SemiBold
     display2Bold: { fontSize: '24px', fontWeight: 700 }, // Bold
@@ -284,21 +286,22 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          padding: 16,
-          height: '56px',
-          fontSize: '17px',
-          lineHeight: '140%',
+          borderRadius: '8px',
+          padding: '13.5px',
+          height: '48px',
+          fontSize: '15px',
+          lineHeight: '1.4',
           fontWeight: 600,
+          minWidth: '58px',
         },
       },
       variants: [
         {
           props: { variant: 'primary' },
           style: {
-            backgroundColor: '#20265B',
-            color: '#fff',
-            '&&:active ': { backgroundColor: '#181C44' },
+            backgroundColor: '#1C2681',
+            color: '#FFFFFF',
+            '&&:active ': { backgroundColor: 'linear-gradient(#00000040, #00000040), #1C2681' },
             '&:disabled': { color: '#797D9D' },
           },
         },
@@ -306,9 +309,36 @@ const theme = createTheme({
           props: { variant: 'secondary' },
           style: {
             backgroundColor: '#E9ECEF',
-            color: '#343A40',
-            '&:active ': { backgroundColor: '#D2D5D8' },
+            color: '#495057',
+            '&:active ': { backgroundColor: 'linear-gradient(#0000001A, #0000001A), #E9ECEF' },
             '&:disabled': { color: '#B2BBC3' },
+          },
+        },
+        {
+          props: { variant: 'borderS' },
+          style: {
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #DEE2E6',
+            color: '#343A40',
+            minWidth: '76px',
+            height: 'auto',
+            padding: '9.5px 20px',
+            '&:active ': { backgroundColor: '#F1F3F5', borderColor: '#DEE2E6' },
+            '&:disabled': { background: '#E9ECEF', borderColor: '#DEE2E6', color: '#B2BBC3' },
+          },
+        },
+        {
+          props: { variant: 'borderM' },
+          style: {
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #DEE2E6',
+            height: 'auto',
+            color: '#343A40',
+            minWidth: '89px',
+            padding: '12px 22px',
+            fontSize: '17px',
+            '&:active ': { backgroundColor: '#F1F3F5', borderColor: '#DEE2E6' },
+            '&:disabled': { background: '#E9ECEF', borderColor: '#DEE2E6', color: '#B2BBC3' },
           },
         },
       ],
@@ -385,6 +415,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: '#343A40',
+          lineHeight: 1.4,
         },
       },
       variants: [
@@ -426,14 +457,20 @@ const theme = createTheme({
             display: 'none',
           },
 
-          '& .MuiInputBase-root.MuiOutlinedInput-root:hover': {
-            // hover했을때
-            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'blue' },
-          },
+          // '& .MuiInputBase-root.MuiOutlinedInput-root:hover': {
+          //   // hover했을때
+          //   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'blue' },
+          // },
+
+          '&.Mui-focused': { background: 'red', '& .MuiInputBase-input': { color: '#343A40' } },
 
           '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused': {
             //focus되었을때
-            '& .MuiOutlinedInput-notchedOutline': { borderColor: 'red', borderWidth: '1px' },
+            '& .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#1C2681',
+              borderWidth: '1px',
+              boxShadow: `inset 0 0 0 1px #1C2681`,
+            },
           },
 
           '& .MuiTextField-root': {
@@ -441,6 +478,32 @@ const theme = createTheme({
             borderRadius: '12px',
 
             '& label.Mui-focused': { display: 'none' },
+          },
+
+          '& .MuiInputBase-root.MuiInputBase-sizeSmall': { padding: '24px 20px', color: '#878F96' },
+
+          '& .MuiInputBase-root > .MuiInputBase-input.MuiInputBase-inputSizeSmall': {
+            padding: '0',
+          },
+
+          '& .MuiAutocomplete-endAdornment': { display: 'flex', gap: '4px' },
+
+          '& .MuiAutocomplete-clearIndicator': {
+            padding: '0',
+            background: `url("${ClearIcon}") center center no-repeat`,
+            width: '20px',
+            height: '20px',
+
+            '& svg': { display: 'none' },
+          },
+
+          '& .MuiAutocomplete-popupIndicator': {
+            padding: 0,
+            background: `url("${DownIcon}") center center no-repeat`,
+            width: '20px',
+            height: '20px',
+
+            '& svg': { display: 'none' },
           },
         },
       },

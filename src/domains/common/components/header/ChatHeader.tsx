@@ -35,14 +35,14 @@ const ChatHeader = () => {
 
 export default ChatHeader;
 
-const StHeader = styled(AlignCenter)<BoxProps>({
+const StHeader = styled(AlignCenter)<BoxProps>(({ theme }) => ({
   width: '100%',
   height: '48px',
-  background: '#fff',
+  background: theme.palette.secondary.main,
   position: 'relative',
   padding: '0 8px',
   justifyContent: 'space-between',
-});
+}));
 
 const HeaderIconButton = styled(IconButton)({
   width: '48px',
