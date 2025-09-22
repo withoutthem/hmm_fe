@@ -1,18 +1,22 @@
+// utils.ts (전체 교체 버전)
 import { keyframes } from '@mui/material';
 import DOMPurify from 'dompurify';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
-/**
- * ScrolltoBottom 애니메이션
- */
+/** Virtuoso 내부 스크롤러 셀렉터 */
 const SCROLLER_SELECTOR = '[data-testid="virtuoso-scroller"]';
 
+/** 내부 상태(전역) */
 let __scrollRaf: number | null = null;
 let __cancelUserListeners: (() => void) | null = null;
 let __animating = false;
 
+/** 스크롤러 캐시(필요 시마다 querySelector 비용 줄이려면 간단 캐시 사용) */
+let __scrollerCache: HTMLElement | null = null;
 function getScroller(): HTMLElement | null {
-  return document.querySelector(SCROLLER_SELECTOR) as HTMLElement | null;
+  if (__scrollerCache && document.body.contains(__scrollerCache)) return __scrollerCache;
+  __scrollerCache = document.querySelector(SCROLLER_SELECTOR) as HTMLElement | null;
+  return __scrollerCache;
 }
 
 function cancelOngoing() {
@@ -27,6 +31,7 @@ function cancelOngoing() {
   __animating = false;
 }
 
+/** 유저가 휠/터치/키보드로 개입하면 즉시 취소 */
 function onUserInterrupt(scroller: HTMLElement, onCancel: () => void) {
   let canceled = false;
   const cancelIfNeeded = () => {
@@ -34,8 +39,7 @@ function onUserInterrupt(scroller: HTMLElement, onCancel: () => void) {
     canceled = true;
     onCancel();
   };
-
-  const opts = { passive: true } as AddEventListenerOptions;
+  const opts: AddEventListenerOptions = { passive: true };
 
   const wheel = () => cancelIfNeeded();
   const touchstart = () => cancelIfNeeded();
@@ -55,7 +59,7 @@ function onUserInterrupt(scroller: HTMLElement, onCancel: () => void) {
   };
 }
 
-/** n 프레임(rAF) 기다리기 */
+/** n 프레임(rAF) 기다리기 — setTimeout 대신 프레임 동기화 */
 function waitFrames(n: number): Promise<void> {
   return new Promise((resolve) => {
     let left = n;
@@ -68,10 +72,10 @@ function waitFrames(n: number): Promise<void> {
   });
 }
 
-/** scrollHeight가 연속 frame 동안 안정화될 때까지 기다리기 (레이아웃/이미지/폰트 수렴) */
+/** scrollHeight가 연속 frames 동안 안정화될 때까지 대기 (레이아웃/이미지/폰트 수렴) */
 async function waitScrollHeightStable(
   el: HTMLElement,
-  { frames = 2, timeoutMs = 250 }: { frames?: number; timeoutMs?: number } = {}
+  { frames = 3, timeoutMs = 220 }: { frames?: number; timeoutMs?: number } = {}
 ) {
   const start = performance.now();
   let stableCount = 0;
@@ -90,8 +94,8 @@ async function waitScrollHeightStable(
   }
 }
 
-/** target index가 가상화로 아직 안 붙어 있으면 붙을 때까지 대기 */
-function waitForItemMount(index: number, maxFrames = 60): Promise<HTMLElement | null> {
+/** 가상화로 아직 붙지 않았으면 붙을 때까지 대기 */
+function waitForItemMount(index: number, maxFrames = 48): Promise<HTMLElement | null> {
   return new Promise((resolve) => {
     let frame = 0;
     const tick = () => {
@@ -112,22 +116,36 @@ function waitForItemMount(index: number, maxFrames = 60): Promise<HTMLElement | 
   });
 }
 
-function instantAlignTop(scroller: HTMLElement, targetEl: HTMLElement) {
+/** 최상단 정렬: 기존 instant(점프) 대신 아주 짧은 스무스 이동으로 "턱" 방지 */
+function smoothAlignTop(scroller: HTMLElement, targetEl: HTMLElement, duration = 120) {
   const scRect = scroller.getBoundingClientRect();
   const elRect = targetEl.getBoundingClientRect();
   const delta = elRect.top - scRect.top;
-  scroller.scrollTop += delta; // 즉시 최상단 정렬
+  if (Math.abs(delta) < 1) return; // 사실상 정렬됨
+
+  const start = scroller.scrollTop;
+  const end = start + delta;
+  const t0 = performance.now();
+
+  const step = (now: number) => {
+    const t = Math.min((now - t0) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3); // easeOutCubic
+    scroller.scrollTop = start + (end - start) * ease;
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
-function animateToBottom(scroller: HTMLElement, duration = 380) {
+/** 하단까지 부드럽게 */
+function animateToBottom(scroller: HTMLElement, duration = 320) {
   const start = scroller.scrollTop;
-  const startTime = performance.now();
+  const t0 = performance.now();
 
   const step = (now: number) => {
     if (!__animating) return;
-    const t = Math.min((now - startTime) / duration, 1);
+    const t = Math.min((now - t0) / duration, 1);
 
-    // 레이아웃 변동(가상 섹션 min-height 등) 대응: 매 프레임 목표 갱신
+    // 레이아웃 변동(예: min-height transition) 대응: 매 프레임 목표 갱신
     const end = scroller.scrollHeight - scroller.clientHeight;
     const dist = end - start;
 
@@ -139,8 +157,7 @@ function animateToBottom(scroller: HTMLElement, duration = 380) {
     if (t < 1) {
       __scrollRaf = requestAnimationFrame(step);
     } else {
-      // 마지막 정밀 스냅
-      scroller.scrollTop = end;
+      scroller.scrollTop = end; // 정밀 스냅
       cancelOngoing();
     }
   };
@@ -152,70 +169,59 @@ function animateToBottom(scroller: HTMLElement, duration = 380) {
 
 /**
  * 어디에 있든(맨위/중간/맨아래) → 마지막 메시지를
- * 1) 화면 최상단에 스냅 → 2) 바닥까지 부드럽게 이동
- * - 맨 위에 있을 때 "턱" 방지를 위해: 지연 + 안정화 프레임 대기 후 진행
- * - 마지막 아이템이 아직 렌더 전이면 먼저 강제 렌더 확보
+ * 1) 화면 최상단으로 "짧게 스무스 정렬" → 2) 바닥까지 부드럽게 이동
+ *  - 맨 위일 때는 1프레임 + 30~40ms 정도만 양보
+ *  - 안정화 프레임 3으로 딜레이 최소화
  */
 export async function scrollLastMessageUserThenBottom(
   virtuoso: VirtuosoHandle | null,
   lastIndex: number,
   options: {
-    /** 맨 위일 때만 추가로 기다릴 지연(ms) */
-    delayOnTopMs?: number;
-    /** 최상단 스냅 후 바닥으로 갈 때 애니메이션 길이(ms) */
-    durationMs?: number;
-    /** 안정화 프레임 수(연속 동일 scrollHeight) */
-    stableFrames?: number;
+    delayOnTopMs?: number; // 맨 위일 때만 추가 지연
+    durationMs?: number; // 하단 애니메이션 길이
+    stableFrames?: number; // scrollHeight 안정화 프레임
   } = {}
 ) {
-  const { delayOnTopMs = 30, durationMs = 680, stableFrames = 3 } = options;
+  const { delayOnTopMs = 40, durationMs = 320, stableFrames = 3 } = options;
 
   const scroller = getScroller();
   if (!scroller) return;
 
-  // 이전 애니메이션 취소
   cancelOngoing();
 
-  // 0) 맨 위 여부 판단
+  // 맨 위 여부
   const atTop = scroller.scrollTop <= 2;
 
-  // 1) 가상화 프리렌더: 마지막 아이템이 보장되도록 강제 스냅(end/auto)
-  virtuoso?.scrollToIndex({
-    index: lastIndex,
-    align: 'end',
-    behavior: 'auto',
-  });
+  // 가상화 프리렌더: 마지막 아이템 보장
+  virtuoso?.scrollToIndex({ index: lastIndex, align: 'end', behavior: 'auto' });
 
-  // 2) 렌더/측정이 붙을 시간을 약간 줌 + 아이템 마운트 대기
-  //    맨 위일 때만 추가 지연(딜레이)로 "턱" 방지
+  // 렌더 붙을 틈 + 맨 위일 때만 추가 지연
   if (atTop && delayOnTopMs > 0) {
-    await waitFrames(1); // 한 프레임 양보
+    await waitFrames(1);
     await new Promise((r) => setTimeout(r, delayOnTopMs));
   } else {
     await waitFrames(1);
   }
 
-  const targetEl = await waitForItemMount(lastIndex, 60);
-  // 렌더가 아주 늦으면 그냥 하단 애니메이션만 수행
-  if (!targetEl) {
-    await waitScrollHeightStable(scroller, { frames: stableFrames, timeoutMs: 250 });
-    animateToBottom(scroller, durationMs);
-    return;
+  // 대상 엘 대기
+  const targetEl = await waitForItemMount(lastIndex, 48);
+
+  // 안정화(짧게)
+  await waitScrollHeightStable(scroller, { frames: stableFrames, timeoutMs: 220 });
+
+  // 1) 최상단 정렬(짧은 easeOut)
+  if (targetEl) {
+    smoothAlignTop(scroller, targetEl, 120);
+    // 정렬 애니메이션이 끝나기 전에 다음 단계가 시작되면 끊겨 보일 수 있으니 2~3프레임만 양보
+    await waitFrames(2);
   }
 
-  // 3) 레이아웃 안정화(연속 프레임 동일 height) 기다리기
-  await waitScrollHeightStable(scroller, { frames: stableFrames, timeoutMs: 250 });
-
-  // 4) 먼저 즉시 최상단 정렬
-  instantAlignTop(scroller, targetEl);
-
-  // 5) 다음 프레임에 바닥으로 부드럽게 이동
-  await waitFrames(1);
+  // 2) 바닥으로 부드럽게 이동
   animateToBottom(scroller, durationMs);
 }
 
 /** (단독 하단 애니메이션 — 필요 시만 사용) */
-export const scrollToBottomWithAnimation = () => {
+export function scrollToBottomWithAnimation() {
   const scroller = getScroller();
   if (!scroller) return;
 
@@ -233,7 +239,7 @@ export const scrollToBottomWithAnimation = () => {
   __animating = true;
   __cancelUserListeners = onUserInterrupt(scroller, cancelOngoing);
 
-  const duration = 300;
+  const duration = 280;
   const t0 = performance.now();
 
   const step = (now: number) => {
@@ -255,30 +261,17 @@ export const scrollToBottomWithAnimation = () => {
   };
 
   __scrollRaf = requestAnimationFrame(step);
-};
+}
 
-/**
- * 팝인 애니메이션
- */
+/** 팝인 애니메이션(그대로 유지) */
 export const popIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
+  0% { opacity: 0; transform: scale(0.8); }
+  60% { opacity: 1; transform: scale(1.05); }
+  100% { transform: scale(1); }
 `;
 
-/**
- * 텍스트에서 쿼리와 일치하는 부분을 하이라이트 처리
- */
-
-export const highlightMatch = (text: string, query: string): string => {
+/** 텍스트 하이라이트 */
+export function highlightMatch(text: string, query: string): string {
   if (!query) return text;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
   if (idx === -1) return text;
@@ -289,14 +282,11 @@ export const highlightMatch = (text: string, query: string): string => {
 
   const highlighted = `${before}<span>${match}</span>${after}`;
   return DOMPurify.sanitize(highlighted);
-};
+}
 
-/**
- * Adaptive Card onSubmit 이벤트 핸들러
- */
-export const onAdaptiveCardSubmit = (data: Record<string, unknown>) => {
+/** Adaptive Card onSubmit */
+export function onAdaptiveCardSubmit(data: Record<string, unknown>) {
   const formData = data as Record<string, string>;
-
   const startKeys = Object.keys(formData).filter((key) => key.startsWith('startTime'));
   for (const startKey of startKeys) {
     const regex = /^startTime(\d+)$/;
@@ -310,15 +300,10 @@ export const onAdaptiveCardSubmit = (data: Record<string, unknown>) => {
       const startVal = formData[startKey];
       const endVal = formData[endKey];
 
-      console.log(`👉 비교: ${startKey}=${startVal}, ${endKey}=${endVal}`);
-
-      if (startVal && endVal) {
-        if (startVal >= endVal) {
-          alert('출차시간은 입차시간보다 뒤입니다.');
-        }
+      if (startVal && endVal && startVal >= endVal) {
+        alert('출차시간은 입차시간보다 뒤입니다.');
       }
     }
   }
-
   console.log('✅ 최종 formData:', formData);
-};
+}
