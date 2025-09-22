@@ -8,7 +8,9 @@ interface OfficeContactProps {
 
 const OfficeContact = (props: Readonly<OfficeContactProps>) => {
   const { data } = props;
-  return <Box>{data && <pre>{JSON.stringify(data, null, 2)}</pre>}</Box>;
+  return (
+    <Box className={'office_contact'}>{data && <pre>{JSON.stringify(data, null, 2)}</pre>}</Box>
+  );
 };
 
 export default OfficeContact;

@@ -1,6 +1,6 @@
 // src/domains/chatbot/components/chats/orchestrators/MessageTypeOrchestrator.tsx
 
-import MarkDownAnimator from '../renderers/formats/MarkdownRenderer';
+import MarkDownRenderer from '../renderers/formats/MarkdownRenderer';
 import AdaptiveCardRenderer from '../renderers/formats/AdaptiveCardRenderer';
 import BusinessTypeOrchestrator from './BusinessTypeOrchestrator';
 
@@ -30,7 +30,7 @@ const MessageTypeOrchestrator = (props: MessageTypeOrchestratorProps) => {
       return <HtmlRenderer />;
     case MessageType.MARKDOWN: {
       const tokens = props.talkMessage.streamingToken ?? props.talkMessage.message ?? '';
-      return <MarkDownAnimator tokens={tokens} />;
+      return <MarkDownRenderer tokens={tokens} />;
     }
 
     case MessageType.ADAPTIVE_CARD: {
@@ -42,8 +42,8 @@ const MessageTypeOrchestrator = (props: MessageTypeOrchestratorProps) => {
       return (
         <BusinessTypeOrchestrator
           talkMessage={props.talkMessage}
-          businessType={BUSINESS_TYPE.RETRIEVE_BOOKING_NUMBER}
-          payload={props.talkMessage.payload as BusinessPayload}
+          businessType={props.talkMessage?.businessType ?? BUSINESS_TYPE.FALLBACK}
+          payload={props.talkMessage?.payload as BusinessPayload}
         />
       );
 

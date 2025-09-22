@@ -36,7 +36,7 @@ const AdaptiveCardRenderer = ({ card, onSubmit }: AdaptiveCardRendererProps) => 
   }, [card, onSubmit]);
 
   return (
-    <AdaptiveCardStyleProvider>
+    <AdaptiveCardStyleProvider className={'adaptive_card adaptive_card_style_provider'}>
       <Box ref={containerRef} />
     </AdaptiveCardStyleProvider>
   );

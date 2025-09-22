@@ -11,7 +11,7 @@ const ChatbotFallbackBubble = ({ index }: ChatbotFallbackBubbleProps) => {
   const animated = useOnceAnimation(index);
 
   return (
-    <ChatbotBubbleWrap>
+    <ChatbotBubbleWrap className={'chatbot_fallback_bubble'}>
       <FallbackBubbleCon className={animated ? 'pop-in' : ''}>
         🤖 Fallback 응답입니다.
       </FallbackBubbleCon>

@@ -40,6 +40,7 @@ const ChatbotItemWrapper = (props: ChatbotItemWrapperProps) => {
     <Box
       ref={ref}
       component="section"
+      className={'chatbot_item_wrapper'}
       sx={{
         minHeight: isLastMessage ? (expanded ? (props.lastDiffHeight ?? 0) : 0) : 0,
         transition: enableTransition ? 'min-height .45s cubic-bezier(.22,.9,.3,1)' : 'none',

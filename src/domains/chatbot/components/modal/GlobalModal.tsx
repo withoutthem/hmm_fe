@@ -2,7 +2,7 @@ import { Box, styled } from '@mui/material';
 import useUIStore, { ModalType } from '@domains/common/ui/store/ui.store';
 import TestAlert from '@domains/chatbot/components/modal/components/TestAlert';
 import TestConfirm from '@domains/chatbot/components/modal/components/TestConfirm';
-import HeaderConfirm from '@domains/chatbot/components/modal/components/HeaderConfirm';
+import TestHeaderConfirm from '@domains/chatbot/components/modal/components/TestHeaderConfirm';
 
 const GlobalModal = () => {
   const isModalOpen = useUIStore((state) => state.isModalOpen);
@@ -14,7 +14,7 @@ const GlobalModal = () => {
     <StModalWrap onClick={setModalClose}>
       {modalType === ModalType.TESTALERT && <TestAlert />}
       {modalType === ModalType.TESTCONFIRM && <TestConfirm />}
-      {modalType === ModalType.TESTHEADERCONFIRM && <HeaderConfirm />}
+      {modalType === ModalType.TESTHEADERCONFIRM && <TestHeaderConfirm />}
     </StModalWrap>
   );
 };
