@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   ButtonGroup,
-  keyframes,
   styled,
   Tab,
   Tabs,
@@ -11,19 +10,41 @@ import {
 } from '@mui/material';
 import { type SyntheticEvent, useState } from 'react';
 import BsSelect from '@domains/common/components/select/BsSelect';
-import { BottomSheetType } from '@domains/common/ui/store/ui.store';
+import useUIStore, { BottomSheetType, ModalType } from '@domains/common/ui/store/ui.store';
 import useUserStore from '@domains/user/store/user.store';
 import BasicInput from '@domains/common/components/input/BasicInput';
 import { useForm } from 'react-hook-form';
+import ActionButton from '@domains/chatbot/components/button/ActionButton';
+import ListButton from '@domains/chatbot/components/button/ListButton';
+import TextButton from '@domains/chatbot/components/button/TextButton';
+import CheckboxButton from '@domains/chatbot/components/checkbox/CheckboxButton';
+import { ClipBackground } from '@domains/chatbot/components/text/ClipBackground';
 
 const PublishFloating = () => {
   const options = ['가나다', '나다라', '마바사', '아자'];
   const [tabValue, setTabValue] = useState(0);
   const globalLocale = useUserStore((s) => s.globalLocale);
   const { control } = useForm();
+  const setToastOpen = useUIStore((s) => s.setToastOpen);
+  const setModalOpen = useUIStore((s) => s.setModalOpen);
 
   const onTabValueChange = (event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
+  };
+
+  const onToastClick = (type?: 'success' | 'error' | 'warning' | undefined) => {
+    if (type) {
+      setToastOpen(
+        '토스트 메세지가 길어지면 길이는 자연스럽게 내려올건데 2줄이 넘으면 ... 처리를 해야합니다 텍스트의 최대는 두 줄 까지만 사용합니다.',
+        type
+      );
+    } else if (type === undefined) {
+      setToastOpen('토스트 메시지입니다');
+    }
+  };
+
+  const onModalClick = (modalContentType: ModalType | null) => {
+    setModalOpen?.(modalContentType);
   };
 
   return (
@@ -97,6 +118,37 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <ButtonGroup variant={'symmetry'}>
+            <Button variant={'borderS'}>버튼</Button>
+            <Button variant={'borderS'} disabled>
+              버튼
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup variant={'symmetry'}>
+            <Button variant={'borderM'}>버튼</Button>
+            <Button variant={'borderM'} disabled>
+              버튼
+            </Button>
+          </ButtonGroup>
+          <TestCodeBox>
+            {`
+            <ButtonGroup variant={'symmetry'}>
+              <Button variant={'borderS'}>버튼</Button>
+              <Button variant={'borderS'} disabled>
+                버튼
+              </Button>
+            </ButtonGroup>
+            <ButtonGroup variant={'symmetry'}>
+              <Button variant={'borderM'}>버튼</Button>
+              <Button variant={'borderM'} disabled>
+                버튼
+              </Button>
+            </ButtonGroup>
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
           <Autocomplete
             disablePortal
             id="autocomplete-example"
@@ -104,6 +156,23 @@ const PublishFloating = () => {
             renderInput={(params) => (
               <TextField
                 {...params}
+                // placeholder={'언어를 알려주세요.'}
+                label="Choose an option"
+                size="small"
+                fullWidth
+                InputLabelProps={{ className: '' }}
+              />
+            )}
+          />
+          <Autocomplete
+            disablePortal
+            id="autocomplete-example"
+            options={options}
+            disabled
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                // placeholder={'언어를 알려주세요.'}
                 label="Choose an option"
                 size="small"
                 fullWidth
@@ -159,6 +228,7 @@ const PublishFloating = () => {
 
         <TestBubble>
           <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} />
+          <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} disabled />
           <TestCodeBox>
             {`
             <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} />
@@ -211,6 +281,76 @@ const PublishFloating = () => {
             />
             `}
           </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <ActionButton label={'헬로'} />
+          <ActionButton label={'헬로'} disabled />
+
+          <TestCodeBox>
+            {`
+            <ActionButton label={'헬로'} />
+            <ActionButton label={'헬로'} disabled />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <ListButton label={'헬로'} />
+          <ListButton label={'헬로'} disabled />
+          <TestCodeBox>
+            {`
+            <ListButton label={'헬로'} />
+            <ListButton label={'헬로'} disabled />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <TextButton label={'내 정보 기억하기'} />
+          <TextButton label={'내 정보 기억하기'} accent />
+          <TestCodeBox>
+            {`
+            <TextButton label={'내 정보 기억하기'} />
+            <TextButton label={'내 정보 기억하기'} accent />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <CheckboxButton label={'메뉴명'} />
+          <CheckboxButton label={'메뉴명'} disabled />
+          <TestCodeBox>
+            {`
+            <CheckboxButton label={'메뉴명'} />
+            <CheckboxButton label={'메뉴명'} disabled />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <Button onClick={() => onToastClick()}>누르면 길이 긴 토스트</Button>
+          <Button onClick={() => onToastClick('error')}>error 토스트</Button>
+          <Button onClick={() => onToastClick('success')}>success 토스트</Button>
+          <Button onClick={() => onToastClick('warning')}>warning 토스트</Button>
+          <TestCodeBox>
+            {`
+            <Button onClick={() => onToastClick()}>길이 긴 토스트</Button>
+            <Button onClick={() => onToastClick('error')}>error 토스트</Button>
+            <Button onClick={() => onToastClick('success')}>success 토스트</Button>
+            <Button onClick={() => onToastClick('warning')}>warning 토스트</Button>
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <Button onClick={() => onModalClick(ModalType.TESTALERT)}>Alert 열기(TESTALERT)</Button>
+          <Button onClick={() => onModalClick(ModalType.TESTCONFIRM)}>
+            Confirm 열기(TESTCONFIRM)
+          </Button>
+          <Button onClick={() => onModalClick(ModalType.TESTHEADERCONFIRM)}>
+            Header Confirm 열기(TESTHEADERCONFIRM)
+          </Button>
         </TestBubble>
       </StPublishContainer>
     </StPublishFloating>
@@ -271,44 +411,4 @@ const TestCodeBox = styled('pre')({
   lineHeight: 1.4,
   margin: 0,
   whiteSpace: 'pre-wrap', // 줄바꿈 반영
-});
-
-// 하이라이트 왕복 애니메이션
-const shimmer = keyframes`
-    0% { background-position: 0 0; }
-    50% { background-position: 100% 0; }
-    100% { background-position: 0 0; }
-`;
-
-// 배경색 전환 애니메이션
-const colorShift = keyframes`
-  0% { background-color: #0037EB; }
-  45% { background-color: #0037EB; }
-  50% { background-color: #6D1AFE; }
-  95% { background-color: #6D1AFE; }
-  100% { background-color: #0037EB; }
-`;
-
-const ClipBackground = styled(Box)({
-  fontSize: '14px',
-  fontWeight: 'bold',
-  // 기본 배경 (퍼플 시작)
-  backgroundColor: 'purple',
-
-  // 하얀 빛줄기
-  backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)',
-  backgroundSize: '200% 100%',
-  backgroundRepeat: 'no-repeat',
-
-  // 텍스트 클리핑
-  backgroundClip: 'text',
-  WebkitBackgroundClip: 'text',
-  color: 'transparent',
-  WebkitTextFillColor: 'transparent',
-
-  // 두 애니메이션 동시 실행
-  animation: `
-    ${shimmer} 5s ease-in-out infinite,
-    ${colorShift} 10s linear infinite
-  `,
 });

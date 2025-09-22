@@ -29,6 +29,8 @@ const ChatHeader = () => {
         </HeaderIconButton>
         <HeaderIconButton onClick={onClose}>
           <CloseIcon />
+          {/* liveChat일때 끄기 아이콘 */}
+          {/*<LiveCloseIcon />*/}
         </HeaderIconButton>
       </AlignCenter>
     </StHeader>
@@ -37,24 +39,24 @@ const ChatHeader = () => {
 
 export default ChatHeader;
 
-const StHeader = styled(AlignCenter)<BoxProps>({
+const StHeader = styled(AlignCenter)<BoxProps>(({ theme }) => ({
   width: '100%',
   height: '68px',
-  background: '#fff',
+  background: theme.palette.secondary.main,
   position: 'relative',
   padding: '20px 8px 0px',
   justifyContent: 'space-between',
-});
+}));
 
 const HeaderIconButton = styled(IconButton)({
-  width: 48,
-  height: 48,
+  width: '48px',
+  height: '48px',
   cursor: 'pointer',
 });
 
 const Logo = styled(AlignCenter)({
-  width: 48,
-  height: 48,
+  width: '48px',
+  height: '48px',
   position: 'absolute',
   bottom: '0',
   left: '50%',

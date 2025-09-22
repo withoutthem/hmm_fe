@@ -75,7 +75,7 @@ const StInput = styled(Input)(({ theme }) => ({
 
   '&.Mui-focused': {
     borderColor: theme.palette.primary.light,
-    boxShadow: 'inset 0 0 0 1px #1C2681',
+    boxShadow: `inset 0 0 0 1px ${theme.palette.primary.light}`,
 
     '& .MuiInputAdornment-root': { display: 'flex' },
   },

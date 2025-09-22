@@ -21,8 +21,8 @@ const ChatbotFallbackBubble = ({ index }: ChatbotFallbackBubbleProps) => {
 
 export default ChatbotFallbackBubble;
 
-const FallbackBubbleCon = styled(Box)({
-  background: '#fff',
+const FallbackBubbleCon = styled(Box)(({ theme }) => ({
+  background: theme.palette.secondary.main,
   borderRadius: 8,
   padding: '8px 12px',
   transformOrigin: 'top left',
@@ -30,4 +30,4 @@ const FallbackBubbleCon = styled(Box)({
   '&.pop-in': {
     animation: `${popIn} 0.4s cubic-bezier(0.22, 1, 0.36, 1) both`,
   },
-});
+}));

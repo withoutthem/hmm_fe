@@ -20,12 +20,12 @@ const LoadingBubbleWrap = styled(Box)({
   justifyContent: 'flex-start',
 });
 
-const LoadingBubbleCon = styled(Box)({
+const LoadingBubbleCon = styled(Box)(({ theme }) => ({
   width: 'auto',
-  background: '#fff',
+  background: theme.palette.secondary.main,
   border: '1px solid #ccc',
   borderRadius: 12,
   padding: '10px 12px',
   transformOrigin: 'top left',
   animation: `${popIn} 0.4s cubic-bezier(0.22, 1, 0.36, 1) both`,
-});
+}));

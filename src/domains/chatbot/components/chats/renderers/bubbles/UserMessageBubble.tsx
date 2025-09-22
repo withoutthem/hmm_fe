@@ -74,12 +74,12 @@ const UserUpdateImg = styled('img')({
   objectFit: 'cover',
 });
 
-const UserTextBubble = styled(Box)({
+const UserTextBubble = styled(Box)(({ theme }) => ({
   maxWidth: 640,
   padding: '16px',
   borderRadius: '20px 0px 20px 20px',
   fontSize: '15px',
   lineHeight: 1.4,
-  background: '#E9ECEF',
+  background: theme.palette.grey[200],
   whiteSpace: 'pre-wrap',
-});
+}));
