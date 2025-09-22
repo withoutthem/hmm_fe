@@ -168,7 +168,7 @@ export async function scrollLastMessageUserThenBottom(
     stableFrames?: number;
   } = {}
 ) {
-  const { delayOnTopMs = 50, durationMs = 680, stableFrames = 10 } = options;
+  const { delayOnTopMs = 30, durationMs = 680, stableFrames = 3 } = options;
 
   const scroller = getScroller();
   if (!scroller) return;

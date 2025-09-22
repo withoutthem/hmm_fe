@@ -9,8 +9,12 @@ import { CloseIcon } from '@shared/icons/CloseIcon';
 const ChatHeader = () => {
   const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
 
+  const onClose = () => {
+    window.parent.postMessage({ type: 'chatbot-close' }, '*');
+  };
+
   return (
-    <StHeader component={'header'}>
+    <StHeader component="header">
       <HeaderIconButton onClick={() => setIsSidebarOpen(true)}>
         <MenuIcon />
       </HeaderIconButton>
@@ -23,10 +27,8 @@ const ChatHeader = () => {
         <HeaderIconButton>
           <MinimizeIcon />
         </HeaderIconButton>
-        <HeaderIconButton>
+        <HeaderIconButton onClick={onClose}>
           <CloseIcon />
-          {/* liveChat일때 끄기 아이콘 */}
-          {/*<LiveCloseIcon />*/}
         </HeaderIconButton>
       </AlignCenter>
     </StHeader>
@@ -37,23 +39,24 @@ export default ChatHeader;
 
 const StHeader = styled(AlignCenter)<BoxProps>({
   width: '100%',
-  height: '48px',
+  height: '68px',
   background: '#fff',
   position: 'relative',
-  padding: '0 8px',
+  padding: '20px 8px 0px',
   justifyContent: 'space-between',
 });
 
 const HeaderIconButton = styled(IconButton)({
-  width: '48px',
-  height: '48px',
+  width: 48,
+  height: 48,
+  cursor: 'pointer',
 });
 
 const Logo = styled(AlignCenter)({
-  width: '48px',
-  height: '48px',
+  width: 48,
+  height: 48,
   position: 'absolute',
-  top: '50%',
+  bottom: '0',
   left: '50%',
-  transform: 'translate(-50%, -50%)',
+  transform: 'translateX(-50%)',
 });

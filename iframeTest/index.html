@@ -1,13 +1,163 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>HMM E-Service</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+        img.bg { width:100vw; height:100vh; object-fit:contain; display:block; }
+
+        .chatbotui_box {
+            position: fixed; bottom:20px; right:20px; z-index:9999;
+            width:64px; height:64px; border-radius:50%;
+            box-shadow:0 8px 24px rgba(0,0,0,.2);
+            overflow:hidden; background:#fff;
+            transition: width .3s ease, height .3s ease, border-radius .25s ease, box-shadow .2s ease;
+        }
+        .chatbotui_box.is-open { width:min(450px); height:min(775px); border-radius:16px; }
+        .chatbotui_box.is-open:hover { box-shadow:0 12px 32px rgba(0,0,0,.28); }
+
+        .chatbotui_fab { position:absolute; inset:0; display:grid; place-items:center;
+            border:0; background:#1f6fff; color:#fff; cursor:pointer;
+            width:100%; height:100%; font-size:20px; border-radius:inherit; transition:transform .1s ease;
+        }
+        .chatbotui_fab:active { transform:scale(.97) }
+        .chatbotui_box.is-open .chatbotui_fab { display:none; }
+        .chatbotui_box.is-open .chatbotui_header { display:flex; height:68px; top:0px; z-index:1; position: absolute; left:55px; width: 300px;}
+        .chatbotui_framewrap { position:absolute; inset:0 0 0 0; display:none; background:#fff; }
+        .chatbotui_box.is-open .chatbotui_framewrap { display:block; }
+        #chatbotui { width:100%; height:100%; border:0; background:#fff; }
+
+        /* 닫힘 상태에서는 항상 우하단 고정 */
+        .chatbotui_box:not(.is-open) {
+            bottom:20px !important; right:20px !important; top:auto !important; left:auto !important;
+        }
+
+        /* 투명 드래그 핸들러(오버레이) */
+        .chatbotui_drag_handle{
+            position: absolute;
+            inset: 0;                 /* 박스 전체를 덮음 */
+            display: none;            /* 평소엔 숨김 */
+            cursor: move;
+            background: transparent;  /* 투명 */
+            z-index: 2;
+        }
+
+    </style>
 </head>
 <body>
-    이것은 HMM의 E-Service 입니다.
+<img class="bg" src="./eservice.png" alt="e-service" />
+
+<div id="chatbot-box" class="chatbotui_box" aria-expanded="false" aria-haspopup="dialog">
+    <div id="chatbot-drag-overlay" class="chatbotui_drag_handle" aria-hidden="true"></div>
+
+    <button id="chatbot-fab" class="chatbotui_fab" aria-label="Open chat">💬</button>
+
+    <div class="chatbotui_header" role="toolbar" id="outer-header">
+    </div>
+
+    <div class="chatbotui_framewrap">
+        <iframe id="chatbotui" src="http://localhost:5173" title="HMM Chatbot"></iframe>
+    </div>
+</div>
+
+
+<script>
+    (function($){
+        const $box = $('#chatbot-box');
+        const $fab = $('#chatbot-fab');
+        const $close = $('#chatbot-close');
+        const $overlay = $('#chatbot-drag-overlay');
+        const iframe = document.getElementById('chatbotui');
+
+        let open = false;
+
+        function restoreFabAnchor(){
+            $box.css({ top:'', left:'', bottom:'20px', right:'20px' });
+        }
+        function openChat(){
+            if (open) return; open = true;
+            $box.addClass('is-open').attr('aria-expanded','true');
+        }
+        function closeChat(){
+            if (!open) return; open = false;
+            $box.removeClass('is-open').attr('aria-expanded','false');
+            restoreFabAnchor();
+            hideOverlay();
+        }
+
+        $fab.on('click', openChat);
+        $close.on('click', closeChat);
+
+        // jQuery UI draggable — 투명 오버레이를 handle로 사용
+        $box.draggable({
+            handle: '#chatbot-drag-overlay',
+            containment: 'window',
+            start: () => {
+                // 드래그 중 iframe 포인터 차단 (선택사항)
+                if (iframe) iframe.style.pointerEvents = 'none';
+                document.body.style.userSelect = 'none';
+                document.body.style.cursor = 'move';
+            },
+            stop: () => {
+                if (iframe) iframe.style.pointerEvents = '';
+                document.body.style.userSelect = '';
+                document.body.style.cursor = '';
+                hideOverlay();
+            }
+        });
+
+        function showOverlay(){
+            $overlay.css('display','block');
+        }
+        function hideOverlay(){
+            $overlay.css('display','none');
+        }
+
+        // 특정 좌표에서 드래그를 "즉시 시작"시키기 위해 synthetic mousedown 발생
+        function dispatchSyntheticMouseDown(target, clientX, clientY){
+            const ev = new MouseEvent('mousedown', {
+                bubbles: true, cancelable: true, view: window,
+                clientX, clientY, button: 0
+            });
+            target.dispatchEvent(ev);
+        }
+
+        // 외부(부모) 헤더에서 직접 시작 — 오버레이를 보이고 그 자리에서 mousedown 위임
+        const outerHeader = document.getElementById('outer-header');
+        if (outerHeader){
+            outerHeader.addEventListener('mousedown', (e) => {
+                if (!$box.hasClass('is-open')) return;
+                showOverlay();
+                // 박스의 현재 위치를 top/left 기준으로 전환 (우하단 앵커 해제)
+                const rect = $box[0].getBoundingClientRect();
+                $box.css({ top: rect.top + 'px', left: rect.left + 'px', right:'', bottom:'' });
+
+                dispatchSyntheticMouseDown($overlay[0], e.clientX, e.clientY);
+            });
+        }
+
+        // ===== iframe 내부 헤더에서 오는 postMessage 처리 =====
+        // { type:'chatbot-drag-from-inner', clientX, clientY }
+        // { type:'chatbot-close' }
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (!data || typeof data !== 'object') return;
+
+            if (data.type === 'chatbot-close'){
+                closeChat();
+            }
+
+        });
+
+        // 전역 mouseup — 혹시 start만 되고 stop이 안 탄 경우 정리
+        window.addEventListener('mouseup', hideOverlay);
+    })(jQuery);
+</script>
+
 </body>
 </html>
