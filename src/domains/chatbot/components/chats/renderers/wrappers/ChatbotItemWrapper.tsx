@@ -43,7 +43,7 @@ const ChatbotItemWrapper = (props: ChatbotItemWrapperProps) => {
       className={'chatbot_item_wrapper'}
       sx={{
         minHeight: isLastMessage ? (expanded ? (props.lastDiffHeight ?? 0) : 0) : 0,
-        transition: enableTransition ? 'min-height .45s cubic-bezier(.22,.9,.3,1)' : 'none',
+        // transition: enableTransition ? 'min-height .45s cubic-bezier(.22,.9,.3,1)' : 'none',
       }}
     >
       {props.children}
