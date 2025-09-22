@@ -42,8 +42,8 @@ const MessageTypeOrchestrator = (props: MessageTypeOrchestratorProps) => {
       return (
         <BusinessTypeOrchestrator
           talkMessage={props.talkMessage}
-          businessType={BUSINESS_TYPE.RETRIEVE_BOOKING_NUMBER}
-          payload={props.talkMessage.payload as BusinessPayload}
+          businessType={props.talkMessage?.businessType ?? BUSINESS_TYPE.FALLBACK}
+          payload={props.talkMessage?.payload as BusinessPayload}
         />
       );
 

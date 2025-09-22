@@ -12,4 +12,6 @@ export const chatbotService = {
     const res = await GET<Suggestion[]>('https://jsonplaceholder.typicode.com/posts');
     return res.data;
   },
+
+  sendDapTalkMessage: async (message: string): Promise<void> => {},
 };
