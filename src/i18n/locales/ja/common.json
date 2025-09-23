@@ -7,6 +7,10 @@
     "goToFAQ": "FAQ へ"
   },
   "sideBar": {
+    "section": {
+      "bot": "HMM BOT",
+      "manual": "規程 / マニュアル"
+    },
     "ai-route": "AI ルート提案",
     "find-manager": "担当者を探す",
     "schedule": "スケジュール / カットオフ",

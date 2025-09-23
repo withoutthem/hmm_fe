@@ -7,6 +7,10 @@
     "goToFAQ": "FAQ 바로가기"
   },
   "sideBar": {
+    "section": {
+      "bot": "HMM BOT",
+      "manual": "규정/메뉴얼"
+    },
     "ai-route": "AI 경로 추천",
     "find-manager": "담당자 찾기",
     "schedule": "Schedule / Cut-off",

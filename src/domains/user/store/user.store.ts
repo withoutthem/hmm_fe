@@ -1,21 +1,24 @@
-// src/domains/common/ui/ui.store.ts
+// src/domains/user/store/user.store.ts
 import { create } from 'zustand';
-import {
-  getBrowserLocale,
-  normalizeToSupported,
-  type SupportedLocale,
-} from '@shared/locale/resolve';
+import { getBrowserLocaleRaw } from '@shared/locale/resolve';
 
 interface UserState {
+  // States
   userName: string | null;
   userEmail: string | null;
   userCountryCode: string | null;
-  globalLocale: SupportedLocale;
+  globalLocale: string;
 
+  // Actions
   setUserName: (name: string) => void;
   setUserEmail: (email: string) => void;
   setUserCountryCode: (countryCode: string) => void;
-  setUser: (user: { name: string; email: string; countryCode: string; langCode: string }) => void;
+  setUser: (user: {
+    name: string;
+    email: string;
+    countryCode: string;
+    globalLocale: string;
+  }) => void;
   setGlobalLocale: (locale: string) => void;
 }
 
@@ -25,22 +28,22 @@ const useUserStore = create<UserState>((set) => ({
   userEmail: null,
   userCountryCode: null,
 
-  // 초기 전역 로캘은 브라우저 감지값
-  globalLocale: getBrowserLocale(),
+  // 통신용: 브라우저 원본이 있으면 그걸, 없으면 'en-US'
+  globalLocale: getBrowserLocaleRaw() ?? 'en-US',
 
   // Actions
   setUserName: (name) => set({ userName: name }),
   setUserEmail: (email) => set({ userEmail: email }),
   setUserCountryCode: (countryCode) => set({ userCountryCode: countryCode }),
-  setUser: ({ name, email, countryCode }) =>
+  setUser: ({ name, email, countryCode, globalLocale }) =>
     set({
       userName: name,
       userEmail: email,
       userCountryCode: countryCode,
+      globalLocale,
     }),
 
-  // 글로벌 로캘 교체(문자열 입력도 normalize)
-  setGlobalLocale: (locale) => set({ globalLocale: normalizeToSupported(locale) }),
+  setGlobalLocale: (locale) => set({ globalLocale: (locale ?? '').trim() }),
 }));
 
 export default useUserStore;

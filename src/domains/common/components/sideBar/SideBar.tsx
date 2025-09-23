@@ -1,6 +1,7 @@
-// src/.../SideBar.tsx
+// src/domains/common/components/sideBar/SideBar.tsx
+
 import { Drawer, List, ListItem, styled, Typography, Button } from '@mui/material';
-import useUIStore from '@domains/common/ui/store/ui.store';
+import useUIStore, { BottomSheetType } from '@domains/common/ui/store/ui.store';
 import { ColumnBox } from '@shared/ui/layoutUtilComponents';
 import { BookingIcon } from '@shared/icons/BookingIcon';
 import { InvoiceIcon } from '@shared/icons/InvoiceIcon';
@@ -25,7 +26,7 @@ enum MenuGroup {
 
 interface MenuItem {
   id: string;
-  title: string; // 라벨 (t() 결과)
+  title: string;
   icon: ReactNode;
   group: MenuGroup;
 }
@@ -46,51 +47,53 @@ const SideBar = () => {
   // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━━━┫
   const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
   const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
+  const openBottomSheet = useUIStore((s) => s.setBottomSheetOpen);
+
   const globalLocale = useUserStore((s) => s.globalLocale);
   const setGlobalLocale = useUserStore((s) => s.setGlobalLocale);
 
-  // ┣━━━━━━━━━━━━━━━━ Variables ━━━━━━━━━━━━━━━━━━┫
+  // ┣━━━━━━━━━━━━━━━━ Menu Labels (i18n keys matched to JSON) ━━━━━━━━━━━━━┫
   const MenuInfo: Menu = {
     BOT: [
       {
         id: 'ai-route',
-        title: t('sideBar.ai-route', { defaultValue: 'AI 경로 추천' }),
+        title: t('sideBar.ai-route'),
         icon: <ScheduleIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'find-manager',
-        title: t('sideBar.find-manager', { defaultValue: '담당자 찾기' }),
+        title: t('sideBar.find-manager'),
         icon: <PersonSerachIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'schedule',
-        title: t('sideBar.schedule', { defaultValue: 'Schedule / Cut-off' }),
+        title: t('sideBar.schedule'),
         icon: <ScheduleIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'sercharge',
-        title: t('sideBar.sercharge', { defaultValue: '요율 및 Surcharge' }),
+        title: t('sideBar.sercharge'),
         icon: <SerchargeIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'manual-booking',
-        title: t('sideBar.manual-booking', { defaultValue: 'Booking/BL' }),
+        title: t('sideBar.manual-booking'),
         icon: <BookingIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'invoice',
-        title: t('sideBar.invoice', { defaultValue: 'Invoice' }),
+        title: t('sideBar.invoice'),
         icon: <InvoiceIcon />,
         group: MenuGroup.BOT,
       },
       {
         id: 'instant-quote',
-        title: t('sideBar.instant-quote', { defaultValue: '즉시 운임 견적 조회' }),
+        title: t('sideBar.instant-quote'),
         icon: <RequestQuoteIcon />,
         group: MenuGroup.BOT,
       },
@@ -98,51 +101,51 @@ const SideBar = () => {
     MANUAL: [
       {
         id: 'general-cargo',
-        title: t('sideBar.general-cargo', { defaultValue: '일반 화물' }),
+        title: t('sideBar.general-cargo'),
         icon: <BookingIcon />,
         group: MenuGroup.MANUAL,
       },
       {
-        id: 'hazardous-special',
-        title: t('sideBar.hazardous-special', { defaultValue: '위험물/특수화물' }),
+        id: 'dg-oog',
+        title: t('sideBar.dg-oog'),
         icon: <WarningAmberIcon />,
         group: MenuGroup.MANUAL,
       },
       {
         id: 'hi-quote',
-        title: t('sideBar.hi-quote', { defaultValue: 'Hi-Quote' }),
+        title: t('sideBar.hi-quote'),
         icon: <RequestQuoteIcon />,
         group: MenuGroup.MANUAL,
       },
       {
-        id: 'forms',
-        title: t('sideBar.forms', { defaultValue: '문서 양식 모음' }),
+        id: 'doc-forms',
+        title: t('sideBar.doc-forms'),
         icon: <InvoiceIcon />,
         group: MenuGroup.MANUAL,
       },
     ],
     SUPPORT: [
       {
-        id: 'connect-agent',
-        title: t('globalMenu.connectToAgent', { defaultValue: '상담사연결 (라이브챗)' }),
+        id: 'connect-to-agent',
+        title: t('sideBar.connect-to-agent'),
         icon: <PersonSerachIcon />,
         group: MenuGroup.SUPPORT,
       },
       {
         id: 'chat-history',
-        title: t('globalMenu.chatHistory', { defaultValue: '상담 이력' }),
+        title: t('sideBar.chat-history'),
         icon: <PersonSerachIcon />,
         group: MenuGroup.SUPPORT,
       },
       {
         id: 'faq',
-        title: t('globalMenu.goToFAQ', { defaultValue: 'FAQ' }),
+        title: t('sideBar.faq'),
         icon: <LocationIcon />,
         group: MenuGroup.SUPPORT,
       },
       {
-        id: 'language-settings',
-        title: t('sideBar.language-settings', { defaultValue: '사용자 언어 설정' }),
+        id: 'user-lang',
+        title: t('sideBar.user-lang'),
         icon: <ScheduleIcon />,
         group: MenuGroup.SUPPORT,
       },
@@ -150,17 +153,13 @@ const SideBar = () => {
   };
 
   // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━━━━┫
-
-  // 사이드바 닫기
   const onClose = () => setIsSidebarOpen(false);
 
-  // 라벨 그대로 발화
   const speak = (utterLabel: string) => {
-    run(utterLabel, { simulate: true }); // 유저 메시지로 전송 + LOADING
+    run(utterLabel, { simulate: true });
     onClose();
   };
 
-  // 언어 로테이션 테스트
   const onChangeLangClick = () => {
     const nowIdx = LOCALE_CYCLE.indexOf(globalLocale as (typeof LOCALE_CYCLE)[number]);
     const next = LOCALE_CYCLE[
@@ -169,12 +168,24 @@ const SideBar = () => {
     setGlobalLocale(next);
   };
 
+  const onSupportClick = (itemId: string, title: string) => {
+    if (itemId === 'user-lang') {
+      // 바텀시트 오픈 (언어 설정)
+      openBottomSheet(BottomSheetType.LANGUAGE);
+      onClose();
+      return;
+    }
+    speak(title);
+  };
+
+  // ┣━━━━━━━━━━━━━━━━ Render ━━━━━━━━━━━━━━━━━━━━━┫
   return (
     <StSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
       <SideBarNav>
+        {/* Bot */}
         <ColumnBox>
           <SideBarSectionTitle variant="subtitle2Bold" color="#7EE3F4">
-            {t('sideBar.section.bot', { defaultValue: 'HMM Bot' })}
+            {t('sideBar.section.bot')}
           </SideBarSectionTitle>
           <SidebarNav>
             {MenuInfo.BOT.map((item) => (
@@ -191,7 +202,7 @@ const SideBar = () => {
         {/* 규정/메뉴얼 */}
         <ColumnBox>
           <SideBarSectionTitle variant="subtitle2Bold" color="#C1B3FA">
-            {t('sideBar.section.manual', { defaultValue: '규정/메뉴얼' })}
+            {t('sideBar.section.manual')}
           </SideBarSectionTitle>
           <SidebarNav>
             {MenuInfo.MANUAL.map((item) => (
@@ -210,11 +221,7 @@ const SideBar = () => {
           <SidebarNav>
             {MenuInfo.SUPPORT.map((item) => (
               <SidebarNavItem key={item.id}>
-                <SidebarNavButton
-                  onClick={() =>
-                    item.id === 'language-settings' ? onChangeLangClick() : speak(item.title)
-                  }
-                >
+                <SidebarNavButton onClick={() => onSupportClick(item.id, item.title)}>
                   {item.icon}
                   <SideBarNavTypography variant="body1">{item.title}</SideBarNavTypography>
                 </SidebarNavButton>
@@ -224,7 +231,7 @@ const SideBar = () => {
         </ColumnBox>
       </SideBarNav>
 
-      {/* 테스트: 현재 로캘 표기 */}
+      {/* 테스트: 4개 로케일 로테이션 */}
       <TestButton onClick={onChangeLangClick}>
         TESTBUTTON 언어바꾸기 (현재: {globalLocale})
       </TestButton>

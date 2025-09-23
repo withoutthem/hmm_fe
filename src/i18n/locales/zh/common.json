@@ -7,6 +7,10 @@
     "goToFAQ": "进入 FAQ"
   },
   "sideBar": {
+    "section": {
+      "bot": "HMM BOT",
+      "manual": "规章 / 手册"
+    },
     "ai-route": "AI 路线推荐",
     "find-manager": "查找负责人",
     "schedule": "船期 / 截关",

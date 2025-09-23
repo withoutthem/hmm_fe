@@ -1,22 +1,18 @@
 // src/app/providers/ApplicationProvider.tsx
-import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import baseTheme from '@theme/theme';
 import { QueryProvider } from '@shared/platform/query';
 import { StompProvider } from '@app/providers/StompProvider';
-
-import { koKR, enUS, jaJP, zhCN } from '@mui/material/locale';
-import dayjs from 'dayjs';
-import 'dayjs/locale/ko';
-import 'dayjs/locale/en';
-import 'dayjs/locale/ja';
-import 'dayjs/locale/zh-cn';
-import useUserStore from '@domains/user/store/user.store';
-import { setupI18n } from '@/i18n';
-import i18n from 'i18next';
 import { connectOnce } from '@shared/platform/stomp';
+import { koKR, enUS, jaJP, zhCN } from '@mui/material/locale';
+import useUserStore from '@domains/user/store/user.store';
+import { normalizeToSupported } from '@shared/locale/resolve';
+import UserInfoProvider from './UserInfoProvider';
+import { setI18nLanguage } from '@/i18n';
+import i18n from 'i18next'; // ⬅️ i18n 상태 확인용
 
-interface ApplicationProvidersProps {
+interface Props {
   children: ReactNode;
 }
 
@@ -33,55 +29,42 @@ const pickMuiLocalePack = (locale: string) => {
   }
 };
 
-const applyDayjsLocale = (locale: string) => {
-  const lang = locale.split('-')[0];
-  const dj = locale === 'zh-CN' ? 'zh-cn' : lang;
-  dayjs.locale(dj);
-};
-
-const ApplicationProvider = ({ children }: ApplicationProvidersProps) => {
+const ApplicationProvider = ({ children }: Props) => {
   const globalLocale = useUserStore((s) => s.globalLocale);
-  const initializedRef = useRef(false);
-  const [i18nReady, setI18nReady] = useState(false); // 게이트
 
-  // WebSocket 연결 (StompProvider)
-  connectOnce();
-
-  // 최초 1회: i18n 초기화 + dayjs 로캘
+  // STOMP 연결
   useEffect(() => {
-    let mounted = true;
-    void (async () => {
-      if (!initializedRef.current) {
-        await setupI18n(globalLocale);
-        if (!mounted) return;
-        applyDayjsLocale(globalLocale);
-        initializedRef.current = true;
-        setI18nReady(true); // 준비 완료
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void connectOnce();
   }, []);
 
-  // 언어 변경 시 동기화
-  useEffect(() => {
-    if (!initializedRef.current) return;
-    void i18n.changeLanguage(globalLocale);
-    applyDayjsLocale(globalLocale);
-  }, [globalLocale]);
+  // UI 로캘은 지원 언어로 정규화
+  const uiLocale = useMemo(() => normalizeToSupported(globalLocale), [globalLocale]);
 
-  // MUI 로캘팩 합성
-  const themed = useMemo(() => {
-    const pack = pickMuiLocalePack(globalLocale);
-    return createTheme(baseTheme, pack);
-  }, [globalLocale]);
+  // ✅ i18n 초기화 완료될 때까지 렌더 지연 (SideBar의 useTranslation 보호)
+  const [i18nReady, setI18nReady] = useState<boolean>(i18n.isInitialized);
+  useEffect(() => {
+    if (i18n.isInitialized) return setI18nReady(true);
+    const onInit = () => setI18nReady(true);
+    i18n.on('initialized', onInit);
+    return () => {
+      i18n.off('initialized', onInit);
+    };
+  }, []);
+
+  // ✅ i18n이 초기화된 이후에만 언어 변경 호출
+  useEffect(() => {
+    if (!i18n.isInitialized) return;
+    void setI18nLanguage(uiLocale);
+  }, [uiLocale]);
+
+  const themed = useMemo(() => createTheme(baseTheme, pickMuiLocalePack(uiLocale)), [uiLocale]);
 
   return (
     <QueryProvider>
       <StompProvider>
-        <ThemeProvider theme={themed}>{i18nReady ? children : null}</ThemeProvider>
+        <UserInfoProvider>
+          <ThemeProvider theme={themed}>{i18nReady ? children : null}</ThemeProvider>
+        </UserInfoProvider>
       </StompProvider>
     </QueryProvider>
   );

@@ -12,11 +12,17 @@ import { CloseIcon } from '@shared/icons/CloseIcon';
 import SelectCheckIcon from '@assets/img/icon/ic_select_check.svg';
 import useUserStore from '@domains/user/store/user.store';
 import useUIStore from '@domains/common/ui/store/ui.store';
+import type { ChangeEvent } from 'react';
 
 const LanguageBottomSheet = () => {
   const globalLocale = useUserStore((s) => s.globalLocale);
   const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
   const setGlobalLocale = useUserStore((s) => s.setGlobalLocale);
+
+  const onRadioFormClick = (_e: ChangeEvent, value: string) => {
+    setGlobalLocale(value);
+    setBottomSheetOpen(null);
+  };
 
   return (
     <BottomSheetContainer>
@@ -27,7 +33,7 @@ const LanguageBottomSheet = () => {
         </CloseButton>
       </HeaderContainer>
       <BottonSheetContent>
-        <StRadioGroup value={globalLocale} onChange={(e) => setGlobalLocale(e.target.value)}>
+        <StRadioGroup value={globalLocale} onChange={onRadioFormClick}>
           <RadioFormLabel value="ko-KR" control={<Radio />} label="한국어" />
           <RadioFormLabel value="en-US" control={<Radio />} label="영어" />
           <RadioFormLabel value="cn" control={<Radio />} label="중국어" />

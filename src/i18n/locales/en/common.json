@@ -7,6 +7,10 @@
     "goToFAQ": "Go to FAQ"
   },
   "sideBar": {
+    "section": {
+      "bot": "HMM BOT",
+      "manual": "Regulations / Manuals"
+    },
     "ai-route": "AI Route Suggestion",
     "find-manager": "Find a Manager",
     "schedule": "Schedule / Cut-off",
