@@ -1,9 +1,9 @@
 {
-  "test": "This is a test",
+  "test": "Test",
   "globalMenu": {
-    "toStart": "Back to Start",
-    "connectToAgent": "Connect to Agent (Live Chat)",
-    "chatHistory": "Chat History",
+    "toStart": "Back to start",
+    "connectToAgent": "Connect to agent (Live chat)",
+    "chatHistory": "Chat history",
     "goToFAQ": "Go to FAQ"
   },
   "sideBar": {
@@ -11,20 +11,20 @@
       "bot": "HMM BOT",
       "manual": "Regulations / Manuals"
     },
-    "ai-route": "AI Route Suggestion",
-    "find-manager": "Find a Manager",
+    "ai-route": "AI route recommendation",
+    "find-manager": "Find a contact person",
     "schedule": "Schedule / Cut-off",
-    "sercharge": "Rates & Surcharge",
+    "sercharge": "Rates & surcharges",
     "manual-booking": "Booking/BL",
     "invoice": "Invoice",
-    "instant-quote": "Instant Freight Quote",
-    "general-cargo": "General Cargo",
-    "dg-oog": "DG / OOG",
+    "instant-quote": "Get an instant fare quote",
+    "general-cargo": "General cargo",
+    "dg-oog": "DG/OOG",
     "hi-quote": "Hi-Quote",
-    "doc-forms": "Document Templates",
-    "connect-to-agent": "Connect to Agent (Live Chat)",
-    "chat-history": "Chat History",
+    "doc-forms": "Collection of document forms",
+    "connect-to-agent": "Connect to agent (Live chat)",
+    "chat-history": "Chat history",
     "faq": "FAQ",
-    "user-lang": "Language Settings"
+    "user-lang": "Language settings"
   }
 }
