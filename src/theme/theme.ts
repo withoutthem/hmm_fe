@@ -483,7 +483,7 @@ const theme = createTheme({
 
           '& .MuiInputBase-root.MuiInputBase-sizeSmall': {
             height: '68px',
-            padding: '12px 20px',
+            padding: '12px 40px 12px 20px !important',
             color: '#878F96',
           },
 
@@ -491,7 +491,11 @@ const theme = createTheme({
             padding: '0',
           },
 
-          '& .MuiAutocomplete-endAdornment': { display: 'flex', gap: '4px' },
+          '& .MuiAutocomplete-endAdornment': {
+            display: 'flex',
+            gap: '4px',
+            right: '20px !important',
+          },
 
           '& .MuiAutocomplete-clearIndicator': {
             padding: '0',
@@ -503,12 +507,20 @@ const theme = createTheme({
           },
 
           '& .MuiAutocomplete-popupIndicator': {
+            display: 'none',
             padding: 0,
             background: `url("${DownIcon}") center center no-repeat`,
             width: '20px',
             height: '20px',
 
             '& svg': { display: 'none' },
+          },
+
+          '& .MuiOutlinedInput-input': { color: '#343A40' },
+
+          '& .MuiInputBase-root.Mui-disabled': {
+            borderColor: '#B2BBC3',
+            background: '#E9ECEF',
           },
         },
       },

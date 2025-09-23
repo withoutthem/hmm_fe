@@ -1,6 +1,6 @@
 import { Drawer, styled } from '@mui/material';
 import useUIStore, { BottomSheetType } from '@domains/common/ui/store/ui.store';
-import LanguageBottomSheet from '@domains/common/components/bottomSheet/components/LanguageBottomSheet';
+import Quotation from '@domains/chatbot/components/bottomSheet/components/Quotation';
 
 const GlobalBottomSheet = () => {
   const isBottomSheetOpen = useUIStore((s) => s.isBottomSheetOpen);
@@ -13,7 +13,7 @@ const GlobalBottomSheet = () => {
       open={isBottomSheetOpen}
       onClose={() => setBottomSheetOpen(null)}
     >
-      {bottomSheetType === BottomSheetType.LANGUAGE && <LanguageBottomSheet />}
+      {bottomSheetType === BottomSheetType.QUOTATION && <Quotation />}
     </StBottomSheet>
   );
 };

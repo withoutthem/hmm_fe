@@ -7,12 +7,17 @@ import {
   Tab,
   Tabs,
   TextField,
+  Typography,
 } from '@mui/material';
 import { type SyntheticEvent, useState } from 'react';
-import BsSelect from '@domains/common/components/select/BsSelect';
-import useUIStore, { BottomSheetType, ModalType } from '@domains/common/ui/store/ui.store';
+import BsSelect from '@domains/chatbot/components/select/BsSelect';
+import useUIStore, {
+  BottomSheetType,
+  ModalType,
+  SelectBottomSheetType,
+} from '@domains/common/ui/store/ui.store';
 import useUserStore from '@domains/user/store/user.store';
-import BasicInput from '@domains/common/components/input/BasicInput';
+import BasicInput from '@domains/chatbot/components/input/BasicInput';
 import { useForm } from 'react-hook-form';
 import ActionButton from '@domains/chatbot/components/button/ActionButton';
 import ListButton from '@domains/chatbot/components/button/ListButton';
@@ -21,6 +26,8 @@ import CheckboxButton, {
   ChecoboxButtonGroup,
 } from '@domains/chatbot/components/checkbox/CheckboxButton';
 import { ClipBackground } from '@domains/chatbot/components/text/ClipBackground';
+import BsDatePickerButton from '@domains/chatbot/components/datepicker/BsDatePickerButton';
+import StDatePicker from '@domains/chatbot/components/datepicker/StDatePicker';
 
 const PublishFloating = () => {
   const options = ['가나다', '나다라', '마바사', '아자'];
@@ -29,6 +36,7 @@ const PublishFloating = () => {
   const { control } = useForm();
   const setToastOpen = useUIStore((s) => s.setToastOpen);
   const setModalOpen = useUIStore((s) => s.setModalOpen);
+  const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
 
   const onTabValueChange = (event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -49,6 +57,10 @@ const PublishFloating = () => {
     setModalOpen?.(modalContentType);
   };
 
+  const onBottomSheetOpen = () => {
+    setBottomSheetOpen(BottomSheetType.QUOTATION);
+  };
+
   return (
     <StPublishFloating id={'publish'}>
       <PublushButton
@@ -64,6 +76,7 @@ const PublishFloating = () => {
 
       <StPublishContainer>
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>ButtonGroup + Button</Typography>
           <ButtonGroup variant={'symmetry'}>
             <Button variant={'secondary'} disabled>
               다음
@@ -85,9 +98,7 @@ const PublishFloating = () => {
             </ButtonGroup>
             `}
           </TestCodeBox>
-        </TestBubble>
 
-        <TestBubble>
           <ButtonGroup variant={'asymmetry'}>
             <Button variant={'secondary'}>다음</Button>
             <Button variant={'primary'}>확인</Button>
@@ -101,9 +112,7 @@ const PublishFloating = () => {
             </ButtonGroup>
             `}
           </TestCodeBox>
-        </TestBubble>
 
-        <TestBubble>
           <ButtonGroup variant={'column'}>
             <Button variant={'primary'}>Button</Button>
             <Button variant={'secondary'}>Button</Button>
@@ -117,9 +126,7 @@ const PublishFloating = () => {
             </ButtonGroup>
             `}
           </TestCodeBox>
-        </TestBubble>
 
-        <TestBubble>
           <ButtonGroup variant={'symmetry'}>
             <Button variant={'borderS'}>버튼</Button>
             <Button variant={'borderS'} disabled>
@@ -151,6 +158,7 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>Autocomplete</Typography>
           <Autocomplete
             disablePortal
             id="autocomplete-example"
@@ -203,6 +211,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>ClipBackground</Typography>
+
           <ClipBackground>변하는 글씨 만들기</ClipBackground>
           <TestCodeBox>
             {`
@@ -212,6 +222,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>Tabs + Tab</Typography>
+
           <Tabs value={tabValue} onChange={onTabValueChange}>
             <Tab value={0} label={'첫번째'} />
             <Tab value={1} label={'두번째'} />
@@ -229,16 +241,20 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
-          <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} />
-          <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} disabled />
+          <Typography variant={'subtitle2Bold'}>BsSelect</Typography>
+
+          <BsSelect value={globalLocale} type={SelectBottomSheetType.LANGUAGE} />
+          <BsSelect value={globalLocale} type={SelectBottomSheetType.LANGUAGE} disabled />
           <TestCodeBox>
             {`
-            <BsSelect value={globalLocale} type={BottomSheetType.LANGUAGE} />
+            <BsSelect value={globalLocale} type={SelectBottomSheetType.LANGUAGE} />
             `}
           </TestCodeBox>
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>BasicInput</Typography>
+
           <BasicInput
             control={control}
             name={'email'}
@@ -286,6 +302,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>ActionButton</Typography>
+
           <ActionButton label={'헬로'} />
           <ActionButton label={'헬로'} disabled />
 
@@ -298,6 +316,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>ListButton</Typography>
+
           <ListButton label={'헬로'} />
           <ListButton label={'헬로'} disabled />
           <TestCodeBox>
@@ -309,6 +329,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>TextButton</Typography>
+
           <TextButton label={'내 정보 기억하기'} />
           <TextButton label={'내 정보 기억하기'} accent />
           <TestCodeBox>
@@ -320,6 +342,8 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
+          <Typography variant={'subtitle2Bold'}>ChecoboxButtonGroup + CheckboxButton</Typography>
+
           <ChecoboxButtonGroup>
             <CheckboxButton label={'메뉴명'} />
             <CheckboxButton label={'메뉴명'} disabled />
@@ -339,28 +363,100 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
-          <Button onClick={() => onToastClick()}>누르면 길이 긴 토스트</Button>
-          <Button onClick={() => onToastClick('error')}>error 토스트</Button>
-          <Button onClick={() => onToastClick('success')}>success 토스트</Button>
-          <Button onClick={() => onToastClick('warning')}>warning 토스트</Button>
+          <Typography variant={'subtitle2Bold'}>Toast</Typography>
+
+          <Button onClick={() => onToastClick()} variant={'primary'}>
+            누르면 길이 긴 토스트
+          </Button>
+          <Button onClick={() => onToastClick('error')} variant={'primary'}>
+            error 토스트
+          </Button>
+          <Button onClick={() => onToastClick('success')} variant={'primary'}>
+            success 토스트
+          </Button>
+          <Button onClick={() => onToastClick('warning')} variant={'primary'}>
+            warning 토스트
+          </Button>
           <TestCodeBox>
             {`
-            <Button onClick={() => onToastClick()}>길이 긴 토스트</Button>
-            <Button onClick={() => onToastClick('error')}>error 토스트</Button>
-            <Button onClick={() => onToastClick('success')}>success 토스트</Button>
-            <Button onClick={() => onToastClick('warning')}>warning 토스트</Button>
+            <Button onClick={() => onToastClick()} variant={'primary'}>
+              누르면 길이 긴 토스트
+            </Button>
+            <Button onClick={() => onToastClick('error')} variant={'primary'}>
+              error 토스트
+            </Button>
+            <Button onClick={() => onToastClick('success')} variant={'primary'}>
+              success 토스트
+            </Button>
+            <Button onClick={() => onToastClick('warning')} variant={'primary'}>
+              warning 토스트
+            </Button>
             `}
           </TestCodeBox>
         </TestBubble>
 
         <TestBubble>
-          <Button onClick={() => onModalClick(ModalType.TESTALERT)}>Alert 열기(TESTALERT)</Button>
-          <Button onClick={() => onModalClick(ModalType.TESTCONFIRM)}>
+          <Typography variant={'subtitle2Bold'}>Modal</Typography>
+
+          <Button onClick={() => onModalClick(ModalType.TESTALERT)} variant={'primary'}>
+            Alert 열기(TESTALERT)
+          </Button>
+          <Button onClick={() => onModalClick(ModalType.TESTCONFIRM)} variant={'primary'}>
             Confirm 열기(TESTCONFIRM)
           </Button>
-          <Button onClick={() => onModalClick(ModalType.TESTHEADERCONFIRM)}>
+          <Button onClick={() => onModalClick(ModalType.TESTHEADERCONFIRM)} variant={'primary'}>
             Header Confirm 열기(TESTHEADERCONFIRM)
           </Button>
+
+          <TestCodeBox>
+            {`
+            <Button onClick={() => onModalClick(ModalType.TESTALERT)} variant={'primary'}>
+              Alert 열기(TESTALERT)
+            </Button>
+            <Button onClick={() => onModalClick(ModalType.TESTCONFIRM)} variant={'primary'}>
+              Confirm 열기(TESTCONFIRM)
+            </Button>
+            <Button onClick={() => onModalClick(ModalType.TESTHEADERCONFIRM)} variant={'primary'}>
+              Header Confirm 열기(TESTHEADERCONFIRM)
+            </Button>
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <Typography variant={'subtitle2Bold'}>StDatePickerButton</Typography>
+
+          <BsDatePickerButton />
+
+          <TestCodeBox>
+            {`
+            <BsDatePickerButton />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <Typography variant={'subtitle2Bold'}>StDatePicker</Typography>
+
+          <StDatePicker />
+
+          <TestCodeBox>
+            {`
+            <StDatePicker />
+            `}
+          </TestCodeBox>
+        </TestBubble>
+
+        <TestBubble>
+          <Typography variant={'subtitle2Bold'}>GlobalBottomSheet</Typography>
+
+          <Button variant={'primary'} onClick={onBottomSheetOpen}>
+            BottomSheet 열기
+          </Button>
+        </TestBubble>
+
+        <TestBubble>
+          <div style={{ height: '500px' }} />
         </TestBubble>
       </StPublishContainer>
     </StPublishFloating>
@@ -398,6 +494,9 @@ const StPublishContainer = styled(Box)({
   width: '100%',
   height: '100%',
   padding: '16px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
 });
 
 const TestBubble = styled(Box)({
@@ -405,6 +504,7 @@ const TestBubble = styled(Box)({
   borderRadius: '12px',
   border: '1px solid',
   padding: '16px',
+  width: '100%',
   maxWidth: '500px',
   display: 'flex',
   flexDirection: 'column',

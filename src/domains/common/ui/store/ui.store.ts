@@ -3,6 +3,10 @@ import { create } from 'zustand';
 
 // BottomSheet의 종류를 enum으로 정의
 export enum BottomSheetType {
+  QUOTATION = 'QUOTATION',
+}
+
+export enum SelectBottomSheetType {
   LANGUAGE = 'LANGUAGE',
 }
 

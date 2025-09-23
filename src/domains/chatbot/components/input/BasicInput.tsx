@@ -82,6 +82,8 @@ const StInput = styled(Input)(({ theme }) => ({
   '&.Mui-error': {
     backgroundColor: '#FCEEEE',
     borderColor: '#FF0000',
+
+    '&.Mui-focused': { boxShadow: 'none' },
   },
   '&.Mui-disabled': {
     borderColor: theme.palette.grey[400],

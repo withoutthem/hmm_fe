@@ -6,7 +6,7 @@ import GlobalDialog from '@domains/chatbot/components/dialog/GlobalDialog';
 import SideBar from '@domains/common/components/sideBar/SideBar';
 import GlobalMenu from '@domains/common/components/menu/GlobalMenu';
 import type { ReactNode } from 'react';
-import GlobalBottomSheet from '@domains/common/components/bottomSheet/GlobalBottomSheet';
+import GlobalBottomSheet from '@domains/chatbot/components/bottomSheet/GlobalBottomSheet';
 import GlobalToast from '@domains/chatbot/components/toast/GlobalToast';
 import GlobalModal from '@domains/chatbot/components/modal/GlobalModal';
 

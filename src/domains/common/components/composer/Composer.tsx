@@ -317,7 +317,7 @@ const AddIconButton = styled(IconButton)({
 
 const StTextField = styled(TextField)(({ theme }) => ({
   padding: '8px 12px',
-  backgroundColor: theme.palette.grey[50],
+  backgroundColor: theme.palette.grey[100],
   borderRadius: '8px',
   flex: 1,
 

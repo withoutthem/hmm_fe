@@ -11,18 +11,16 @@ import { FlexBox } from '@shared/ui/layoutUtilComponents';
 import { CloseIcon } from '@shared/icons/CloseIcon';
 import SelectCheckIcon from '@assets/img/icon/ic_select_check.svg';
 import useUserStore from '@domains/user/store/user.store';
-import useUIStore from '@domains/common/ui/store/ui.store';
 
-const LanguageBottomSheet = () => {
+const LanguageBottomSheet = (props: { onClose: () => void }) => {
   const globalLocale = useUserStore((s) => s.globalLocale);
-  const setBottomSheetOpen = useUIStore((s) => s.setBottomSheetOpen);
   const setGlobalLocale = useUserStore((s) => s.setGlobalLocale);
 
   return (
     <BottomSheetContainer>
       <HeaderContainer>
         <Header variant={'title2Bold'}>사용할 언어 선택</Header>
-        <CloseButton onClick={() => setBottomSheetOpen(null)}>
+        <CloseButton onClick={props.onClose}>
           <CloseIcon />
         </CloseButton>
       </HeaderContainer>
@@ -53,7 +51,7 @@ const LanguageBottomSheet = () => {
 
 export default LanguageBottomSheet;
 
-const BottomSheetContainer = styled(Box)({
+export const BottomSheetContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
@@ -62,21 +60,21 @@ const BottomSheetContainer = styled(Box)({
   flex: '1',
 });
 
-const HeaderContainer = styled(FlexBox)({
+export const HeaderContainer = styled(FlexBox)({
   padding: '30px 20px 0 20px',
 });
 
-const Header = styled(Typography)({
+export const Header = styled(Typography)({
   flex: '1',
 });
 
-const CloseButton = styled(IconButton)({
+export const CloseButton = styled(IconButton)({
   padding: 0,
   width: '28px',
   height: '28px',
 });
 
-const BottonSheetContent = styled(Box)({
+export const BottonSheetContent = styled(Box)({
   flex: '1',
   padding: '16px 0',
   overflowY: 'hidden',
