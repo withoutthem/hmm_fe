@@ -4,20 +4,41 @@ import DOMPurify from 'dompurify';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
 /** Virtuoso 내부 스크롤러 셀렉터 */
-const SCROLLER_SELECTOR = '[data-testid="virtuoso-scroller"]';
+export const SCROLLER_SELECTOR = '[data-testid="virtuoso-scroller"]';
+
+export function getScroller(): HTMLElement | null {
+  return document.querySelector(SCROLLER_SELECTOR) as HTMLElement | null;
+}
+
+/**
+ * 특정 data-item-index 요소를 "스크롤러 최상단"에 붙입니다. (애니메이션 없음, 점프)
+ * - 아이템이 아직 가상화로 붙지 않았다면, 최대 maxFrames까지 매 프레임 재시도
+ * - 성공 시 true 반환
+ */
+export async function alignItemToTop(index: number, maxFrames = 48): Promise<boolean> {
+  const scroller = getScroller();
+  if (!scroller) return false;
+
+  let frame = 0;
+  while (frame < maxFrames) {
+    const el = scroller.querySelector(`[data-item-index="${index}"]`) as HTMLElement | null;
+    if (el) {
+      const scRect = scroller.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const delta = elRect.top - scRect.top; // 스크롤러 상단 ~ 아이템 상단 차이
+      scroller.scrollTop += delta; // 최상단 정렬 (점프)
+      return true;
+    }
+    frame++;
+    await new Promise((r) => requestAnimationFrame(r));
+  }
+  return false;
+}
 
 /** 내부 상태(전역) */
 let __scrollRaf: number | null = null;
 let __cancelUserListeners: (() => void) | null = null;
 let __animating = false;
-
-/** 스크롤러 캐시(필요 시마다 querySelector 비용 줄이려면 간단 캐시 사용) */
-let __scrollerCache: HTMLElement | null = null;
-function getScroller(): HTMLElement | null {
-  if (__scrollerCache && document.body.contains(__scrollerCache)) return __scrollerCache;
-  __scrollerCache = document.querySelector(SCROLLER_SELECTOR) as HTMLElement | null;
-  return __scrollerCache;
-}
 
 function cancelOngoing() {
   if (__scrollRaf) {
@@ -263,7 +284,7 @@ export function scrollToBottomWithAnimation() {
   __scrollRaf = requestAnimationFrame(step);
 }
 
-/** 팝인 애니메이션(그대로 유지) */
+/** 팝인 애니메이션 */
 export const popIn = keyframes`
   0% { opacity: 0; transform: scale(0.8); }
   60% { opacity: 1; transform: scale(1.05); }
