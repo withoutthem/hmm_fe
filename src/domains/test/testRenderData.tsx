@@ -1,6 +1,6 @@
 import type { TalkMessage } from '@domains/common/ui/store/message.store';
 import { MessageType, RenderType, Sender } from '@domains/common/ui/store/message.store';
-import { adaptiveCardData } from '@domains/test/testData/adaptiveCardData';
+import { parkingData, lifeEventData } from '@domains/test/testData/parkingData';
 import {
   BUSINESS_TYPE,
   type BusinessPayload,
@@ -25,7 +25,7 @@ const buildAdaptiveCard: TestMessageBuilder = () => ({
   renderType: RenderType.NORMAL,
   messageType: MessageType.ADAPTIVE_CARD,
   message: '챗봇 응답: Adaptive Card 예시',
-  adaptiveCardInfo: adaptiveCardData,
+  adaptiveCardInfo: lifeEventData,
 });
 
 /** JSON → BusinessType: 예약번호 조회 */

@@ -443,6 +443,7 @@ const theme = createTheme({
         root: {
           background: '#fff',
           borderRadius: '8px',
+          height: '68px',
 
           '& fieldset': {
             borderRadius: '8px',
@@ -462,7 +463,7 @@ const theme = createTheme({
           //   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'blue' },
           // },
 
-          '&.Mui-focused': { background: 'red', '& .MuiInputBase-input': { color: '#343A40' } },
+          '&.Mui-focused': { '& .MuiInputBase-input': { color: '#343A40' } },
 
           '& .MuiInputBase-root.MuiOutlinedInput-root.Mui-focused': {
             //focus되었을때
@@ -480,7 +481,11 @@ const theme = createTheme({
             '& label.Mui-focused': { display: 'none' },
           },
 
-          '& .MuiInputBase-root.MuiInputBase-sizeSmall': { padding: '24px 20px', color: '#878F96' },
+          '& .MuiInputBase-root.MuiInputBase-sizeSmall': {
+            height: '68px',
+            padding: '12px 20px',
+            color: '#878F96',
+          },
 
           '& .MuiInputBase-root > .MuiInputBase-input.MuiInputBase-inputSizeSmall': {
             padding: '0',
@@ -516,9 +521,17 @@ const theme = createTheme({
           background: '#fff',
 
           '& div[role="tablist"]': {
+            gap: '4px',
+
             '& button': {
               flex: '1',
               maxWidth: 'none',
+              padding: '20px 8px 6px 8px',
+              color: '#878F96',
+
+              '&.Mui-selected': {
+                color: '#343A40',
+              },
             },
           },
 

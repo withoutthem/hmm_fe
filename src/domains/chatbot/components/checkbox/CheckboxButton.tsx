@@ -1,4 +1,4 @@
-import { FormControlLabel, Checkbox, styled } from '@mui/material';
+import { FormControlLabel, Checkbox, styled, Box } from '@mui/material';
 
 interface CheckboxButtonProps {
   label: string;
@@ -19,10 +19,11 @@ export default CheckboxButton;
 const StCheckboxButton = styled(FormControlLabel)(({ theme }) => ({
   background: theme.palette.grey[50],
   margin: '0',
-  padding: '11px 8px',
+  padding: '4px 8px',
+  minHeight: '46px',
   borderRadius: '8px',
   minWidth: '52px',
-  border: `1px solid ${theme.palette.grey[500]}`,
+  border: `1px solid ${theme.palette.grey[50]}`,
   color: theme.palette.grey[800],
   fontSize: '14px',
   lineHeight: '1.4',
@@ -36,3 +37,9 @@ const StCheckboxButton = styled(FormControlLabel)(({ theme }) => ({
 
   '& .MuiCheckbox-root': { display: 'none' },
 }));
+
+export const ChecoboxButtonGroup = styled(Box)({
+  display: 'grid',
+  gap: '8px',
+  gridTemplateColumns: '1fr 1fr',
+});

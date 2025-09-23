@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import * as AdaptiveCards from 'adaptivecards';
 import { Action } from 'adaptivecards';
 import { Box, styled } from '@mui/material';
+import DatePickerIcon from '@assets/img/icon/ic_datepicker.svg';
+import DownIcon from '@assets/img/icon/ic_down.svg';
+import TimeIcon from '@assets/img/icon/ic_time.svg';
 
 interface AdaptiveCardRendererProps {
   card: AdaptiveCards.IAdaptiveCard;
@@ -46,13 +49,69 @@ export default AdaptiveCardRenderer;
 
 /** AdaptiveCard 스타일 */
 const AdaptiveCardStyleProvider = styled(Box)(({ theme }) => ({
-  '& input, & select': {
-    border: '1px solid black',
-    '&.ac-input-validation-failed': { borderColor: 'red', color: 'red' },
-  },
   '& button': { background: 'black', color: theme.palette.secondary.main },
   '& table': { width: '100%', borderCollapse: 'collapse' },
   '& td': { border: '1px solid #ddd' },
   '& .ac-horizontal-separator': { display: 'none !important' },
-  '& #timeBox': { flexDirection: 'row !important', '& > div': { flex: '1 !important' } },
+
+  '& .ac-textBlock': {
+    fontSize: '15px !important',
+    lineHeight: '1.4 !important',
+    fontWeight: '600 !important',
+    fontFamily: `"Pretendard", -apple-system, "Segoe UI", Roboto, sans-serif !important`,
+    letterSpacing: '0px',
+  },
+  '& input, & select': {
+    border: '1px solid #DEE2E6',
+    borderRadius: '8px',
+    padding: '12px 20px',
+    color: '#343A40',
+    height: '68px',
+
+    '&.ac-input-validation-failed': { borderColor: '#F00', background: '#FCEEEE' },
+  },
+
+  '& input': {
+    '&::placeholder': { color: '#878F96', fontWeight: '500' },
+
+    '&[type="date"]::-webkit-calendar-picker-indicator': {
+      // display: 'none',
+      // WebkitAppearance: 'none',
+      width: '20px',
+      height: '20px',
+      background: `url("${DatePickerIcon}") no-repeat center center`,
+      backgroundSize: '20px 20px',
+    },
+    '&[type="time"]::-webkit-calendar-picker-indicator': {
+      width: '20px',
+      height: '20px',
+      background: `url("${TimeIcon}") no-repeat center center`,
+      backgroundSize: '20px 20px',
+    },
+  },
+
+  '& select': {
+    appearance: 'none' /* 공통 */,
+    WebkitAppearance: 'none' /* 크롬/사파리 */,
+    MozAppearance: 'none' /* 파이어폭스 */,
+    background: `#FFF url("${DownIcon}") no-repeat right 20px center`,
+  },
+  '& #columnBox': { flexDirection: 'column !important', gap: '8px' },
+  '& #flexBox': { flexDirection: 'row !important' },
+  '& #rowBox': { flexDirection: 'row !important', gap: '8px', '>div': { flex: '1 !important' } },
+  '& .ac-actionSet': { '& > button': { flex: '1 !important' } },
+  '& .ac-pushButton': {
+    height: '56px',
+    borderRadius: '12px',
+    padding: '16px 0',
+    fontSize: '17px',
+    fontWeight: '600',
+    lineHeight: '1.4',
+    background: '#20265B',
+    color: '#fff',
+
+    '&.style-destructive': { background: '#E9ECEF', color: '#343A40' },
+  },
+  '& #h16': { height: '16px' },
+  '& #h24': { height: '24px' },
 }));

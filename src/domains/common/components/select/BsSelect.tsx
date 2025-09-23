@@ -40,10 +40,10 @@ const BsSelectContainer = styled(Button)<{ selected: boolean }>(({ theme, select
   border: '1px solid',
   borderColor: selected ? theme.palette.primary.light : theme.palette.grey[200],
   boxShadow: selected ? `inset 0 0 0 1px ${theme.palette.primary.light}` : 'none',
-  padding: '0 20px',
+  padding: '12px 20px',
   borderRadius: '8px',
   cursor: 'pointer',
-  height: '72px',
+  height: '68px',
 
   '&:disabled': {
     background: theme.palette.grey[200],

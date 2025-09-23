@@ -305,5 +305,10 @@ export function onAdaptiveCardSubmit(data: Record<string, unknown>) {
       }
     }
   }
-  console.log('✅ 최종 formData:', formData);
+
+  if (formData.action === 'cancle') {
+    console.log('취소버튼누름', formData);
+  } else {
+    console.log('✅ 최종 formData:', formData);
+  }
 }

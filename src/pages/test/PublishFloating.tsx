@@ -17,7 +17,9 @@ import { useForm } from 'react-hook-form';
 import ActionButton from '@domains/chatbot/components/button/ActionButton';
 import ListButton from '@domains/chatbot/components/button/ListButton';
 import TextButton from '@domains/chatbot/components/button/TextButton';
-import CheckboxButton from '@domains/chatbot/components/checkbox/CheckboxButton';
+import CheckboxButton, {
+  ChecoboxButtonGroup,
+} from '@domains/chatbot/components/checkbox/CheckboxButton';
 import { ClipBackground } from '@domains/chatbot/components/text/ClipBackground';
 
 const PublishFloating = () => {
@@ -318,12 +320,20 @@ const PublishFloating = () => {
         </TestBubble>
 
         <TestBubble>
-          <CheckboxButton label={'메뉴명'} />
-          <CheckboxButton label={'메뉴명'} disabled />
-          <TestCodeBox>
-            {`
+          <ChecoboxButtonGroup>
             <CheckboxButton label={'메뉴명'} />
             <CheckboxButton label={'메뉴명'} disabled />
+            <CheckboxButton label={'메뉴명'} />
+            <CheckboxButton label={'메뉴명'} />
+          </ChecoboxButtonGroup>
+          <TestCodeBox>
+            {`
+            <ChecoboxButtonGroup>
+              <CheckboxButton label={'메뉴명'} />
+              <CheckboxButton label={'메뉴명'} disabled />
+              <CheckboxButton label={'메뉴명'} />
+              <CheckboxButton label={'메뉴명'} />
+            </ChecoboxButtonGroup>
             `}
           </TestCodeBox>
         </TestBubble>

@@ -58,10 +58,10 @@ export default BasicInput;
 
 const StInput = styled(Input)(({ theme }) => ({
   border: '1px solid',
-  padding: '0 20px',
+  padding: '12px 20px',
   borderRadius: '8px',
   borderColor: theme.palette.grey[200],
-  height: '72px',
+  height: '68px',
 
   '&:before, &:after': { display: 'none' },
   '& .MuiInputBase-input': {
