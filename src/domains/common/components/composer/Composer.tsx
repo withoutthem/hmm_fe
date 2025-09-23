@@ -93,9 +93,9 @@ const Composer = () => {
                     {visibleSuggestions.map((suggestion, idx) => (
                       <SuggestionListItem
                         key={suggestion.body + idx}
-                        onClick={() => {
+                        onClick={async () => {
                           const picked = onSuggestionClick(suggestion.body);
-                          sendPicked(picked);
+                          await sendPicked(picked);
                         }}
                       >
                         <span

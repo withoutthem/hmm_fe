@@ -1,20 +1,15 @@
-// src/domains/common/components/composer/hooks/useSendMessage.ts
 import { useCallback, useRef } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
-import useMessageStore, {
-  MessageType,
-  Sender,
-  type TalkMessage,
-} from '@domains/common/ui/store/message.store';
 import type { UseFormHandleSubmit } from 'react-hook-form';
 import type { ComposerFormValues } from '@domains/common/components/composer/Composer';
+import useChatFlow from '@domains/common/hooks/useChatFlow';
 
 interface UseSendMessageOptions {
   getMessage: () => string;
   images: File[];
   clearForm: () => void;
   clearImages: () => void;
-  afterSend?: () => void; // 예: 자동완성 clear
+  afterSend?: () => void;
   handleSubmit?: UseFormHandleSubmit<ComposerFormValues>;
 }
 
@@ -26,23 +21,8 @@ export const useSendMessage = ({
   afterSend,
   handleSubmit,
 }: UseSendMessageOptions) => {
-  const setMessages = useMessageStore((s) => s.setMessages);
-
-  // 엔터/버튼 더블 트리거 방지
+  const { run } = useChatFlow();
   const sendingRef = useRef(false);
-
-  const pushUserMessage = useCallback(
-    (payload: { message?: string; images?: File[] }) => {
-      const userMsg: TalkMessage = {
-        sender: Sender.USER,
-        messageType: MessageType.MARKDOWN,
-        ...(payload.message ? { message: payload.message } : {}),
-        ...(payload.images?.length ? { images: payload.images } : {}),
-      };
-      setMessages((prev) => [...prev, userMsg]);
-    },
-    [setMessages]
-  );
 
   const clearComposer = useCallback(() => {
     clearForm();
@@ -51,28 +31,25 @@ export const useSendMessage = ({
   }, [clearForm, clearImages, afterSend]);
 
   const doSend = useCallback(() => {
-    if (sendingRef.current) return; // 중복 방지
+    if (sendingRef.current) return;
     sendingRef.current = true;
 
     try {
       const trimmed = (getMessage() ?? '').trim();
       if (!trimmed && images.length === 0) return;
 
-      pushUserMessage({ message: trimmed, images });
+      run(trimmed, { images, simulate: true }); // USER → LOADING → simulate
       clearComposer();
     } finally {
-      // 다음 프레임에서 해제 (동시에 두 번 못 들어오게)
       requestAnimationFrame(() => {
         sendingRef.current = false;
       });
     }
-  }, [getMessage, images, pushUserMessage, clearComposer]);
+  }, [getMessage, images, run, clearComposer]);
 
-  /** 외부에서 직접 호출하는 전송 함수(버튼 클릭 등) */
-  const send = useCallback(() => {
+  const send = useCallback(async () => {
     if (handleSubmit) {
-      // RHF validation 사용 시
-      void handleSubmit(() => {
+      void handleSubmit(async () => {
         doSend();
       })();
     } else {
@@ -80,15 +57,14 @@ export const useSendMessage = ({
     }
   }, [handleSubmit, doSend]);
 
-  /** 자동완성 선택 시 전송 */
   const sendPicked = useCallback(
-    (picked: string) => {
+    async (picked: string) => {
       if (!picked) return;
       if (sendingRef.current) return;
       sendingRef.current = true;
 
       try {
-        pushUserMessage({ message: picked });
+        run(picked, { simulate: true });
         clearComposer();
       } finally {
         requestAnimationFrame(() => {
@@ -96,19 +72,16 @@ export const useSendMessage = ({
         });
       }
     },
-    [pushUserMessage, clearComposer]
+    [run, clearComposer]
   );
 
-  /** 엔터 전송 핸들러(IME 조합 중에는 무시) */
   const onKeyDownEnterToSend = useCallback(
-    (e: ReactKeyboardEvent<HTMLDivElement>) => {
-      // IME 조합 중에는 전송 금지
+    async (e: ReactKeyboardEvent<HTMLDivElement>) => {
       const native: KeyboardEvent = e.nativeEvent;
       if (native.isComposing) return;
-
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        send();
+        await send();
       }
     },
     [send]

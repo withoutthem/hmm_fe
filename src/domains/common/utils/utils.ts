@@ -3,21 +3,61 @@ import { keyframes } from '@mui/material';
 import DOMPurify from 'dompurify';
 import type { VirtuosoHandle } from 'react-virtuoso';
 
+// src/domains/common/utils/utils.ts
 /** Virtuoso 내부 스크롤러 셀렉터 */
 const SCROLLER_SELECTOR = '[data-testid="virtuoso-scroller"]';
+
+/** 스크롤러 얻기 (캐시 없이 단순 접근판) */
+export function getScroller(): HTMLElement | null {
+  return document.querySelector(SCROLLER_SELECTOR) as HTMLElement | null;
+}
+
+/** 가상화 아이템이 실제 DOM에 붙을 때까지 대기 */
+async function waitForItemMount(index: number, maxFrames = 60): Promise<HTMLElement | null> {
+  return new Promise((resolve) => {
+    let frames = 0;
+    const tick = () => {
+      const scroller = getScroller();
+      const el = scroller?.querySelector(`[data-item-index="${index}"]`) as HTMLElement | null;
+      if (el) return resolve(el);
+      frames++;
+      if (frames >= maxFrames) return resolve(null);
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+}
+
+/**
+ * 마지막 사용자 버블(=index)을 “스크롤러 최상단”에 1회 정렬
+ */
+export async function alignItemToTop(
+  index: number,
+  opts?: { smooth?: boolean; durationMs?: number }
+): Promise<void> {
+  const scroller = getScroller();
+  if (!scroller) return;
+
+  const el = await waitForItemMount(index);
+  if (!el) return;
+
+  if (opts?.smooth) {
+    // 짧은 스무스 정렬 (이미 utils에 있는 smoothAlignTop 사용)
+    smoothAlignTop(scroller, el, opts.durationMs ?? 120);
+    return;
+  }
+
+  // 즉시 점프(무애니메이션)
+  const scRect = scroller.getBoundingClientRect();
+  const elRect = el.getBoundingClientRect();
+  const delta = elRect.top - scRect.top;
+  scroller.scrollTop += delta;
+}
 
 /** 내부 상태(전역) */
 let __scrollRaf: number | null = null;
 let __cancelUserListeners: (() => void) | null = null;
 let __animating = false;
-
-/** 스크롤러 캐시(필요 시마다 querySelector 비용 줄이려면 간단 캐시 사용) */
-let __scrollerCache: HTMLElement | null = null;
-function getScroller(): HTMLElement | null {
-  if (__scrollerCache && document.body.contains(__scrollerCache)) return __scrollerCache;
-  __scrollerCache = document.querySelector(SCROLLER_SELECTOR) as HTMLElement | null;
-  return __scrollerCache;
-}
 
 function cancelOngoing() {
   if (__scrollRaf) {
@@ -92,28 +132,6 @@ async function waitScrollHeightStable(
     }
     if (performance.now() - start > timeoutMs) break;
   }
-}
-
-/** 가상화로 아직 붙지 않았으면 붙을 때까지 대기 */
-function waitForItemMount(index: number, maxFrames = 48): Promise<HTMLElement | null> {
-  return new Promise((resolve) => {
-    let frame = 0;
-    const tick = () => {
-      const scroller = getScroller();
-      const el = scroller?.querySelector(`[data-item-index="${index}"]`) as HTMLElement | null;
-      if (el) {
-        resolve(el);
-        return;
-      }
-      frame++;
-      if (frame >= maxFrames) {
-        resolve(null);
-        return;
-      }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
 }
 
 /** 최상단 정렬: 기존 instant(점프) 대신 아주 짧은 스무스 이동으로 "턱" 방지 */
@@ -263,7 +281,7 @@ export function scrollToBottomWithAnimation() {
   __scrollRaf = requestAnimationFrame(step);
 }
 
-/** 팝인 애니메이션(그대로 유지) */
+/** 팝인 애니메이션 */
 export const popIn = keyframes`
   0% { opacity: 0; transform: scale(0.8); }
   60% { opacity: 1; transform: scale(1.05); }

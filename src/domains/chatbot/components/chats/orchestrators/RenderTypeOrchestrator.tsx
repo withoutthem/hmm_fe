@@ -11,7 +11,6 @@ interface RenderTypeOrchestratorProps {
   index: number;
   messagesLength: number;
   lastDiffHeight: number | null;
-  atBottom: boolean;
 }
 
 /**
@@ -22,7 +21,7 @@ interface RenderTypeOrchestratorProps {
  * 3. NORMAL → NodeTypeOrchestrator
  */
 const RenderTypeOrchestrator = (props: RenderTypeOrchestratorProps) => {
-  const { talkMessage, index, messagesLength, lastDiffHeight, atBottom } = props;
+  const { talkMessage, index, messagesLength, lastDiffHeight } = props;
   const isLast = index === messagesLength - 1;
 
   // USER 메시지
@@ -48,7 +47,7 @@ const RenderTypeOrchestrator = (props: RenderTypeOrchestratorProps) => {
   }
 
   return (
-    <ChatbotItemWrapper isLastMessage={isLast} lastDiffHeight={lastDiffHeight} atBottom={atBottom}>
+    <ChatbotItemWrapper isLastMessage={isLast} lastDiffHeight={lastDiffHeight}>
       {node}
     </ChatbotItemWrapper>
   );
