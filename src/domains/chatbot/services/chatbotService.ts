@@ -8,7 +8,9 @@ export interface Suggestion {
 }
 
 export interface DaptalkSendMessageDto {
+  chatbotId: string;
   message: string;
+  //작업중
 }
 
 export const chatbotService = {
