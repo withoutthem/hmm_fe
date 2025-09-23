@@ -1,3 +1,30 @@
 {
-  "test": "这是一个测试"
+  "test": "测试",
+  "globalMenu": {
+    "toStart": "返回首页",
+    "connectToAgent": "连接客服（在线聊天）",
+    "chatHistory": "聊天记录",
+    "goToFAQ": "前往 FAQ"
+  },
+  "sideBar": {
+    "section": {
+      "bot": "HMM BOT",
+      "manual": "规程 / 手册"
+    },
+    "ai-route": "AI 路线推荐",
+    "find-manager": "寻找联系人",
+    "schedule": "时刻表 / 截关",
+    "sercharge": "费率与附加费",
+    "manual-booking": "Booking/BL",
+    "invoice": "发票",
+    "instant-quote": "即时报价",
+    "general-cargo": "一般货物",
+    "dg-oog": "危险品 / 特殊货物",
+    "hi-quote": "Hi-Quote",
+    "doc-forms": "文件模板",
+    "connect-to-agent": "连接客服（在线聊天）",
+    "chat-history": "聊天记录",
+    "faq": "FAQ",
+    "user-lang": "语言设置"
+  }
 }

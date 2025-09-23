@@ -1,22 +1,29 @@
-// src/shared/locale/resolve.ts
+/** UI가 직접 지원하는 로캘 (한/중/영/일) */
 export const SUPPORTED = ['ko-KR', 'zh-CN', 'en-US', 'ja-JP'] as const;
 export type SupportedLocale = (typeof SUPPORTED)[number];
 
-export const normalizeToSupported = (input?: string): SupportedLocale => {
+/** 내부 전용: 소문자 비교용 캐시 */
+const SUPPORTED_LOWER = SUPPORTED.map((s) => s.toLowerCase());
+
+/** 문자열 타입 가드 */
+const isString = (v: unknown): v is string => typeof v === 'string';
+/** string[] 타입 가드 */
+const isStringArray = (v: unknown): v is string[] => Array.isArray(v) && v.every(isString);
+
+/** normalizeToSupported */
+export const normalizeToSupported = (input?: string | null): SupportedLocale => {
   const v = (input ?? '').trim().toLowerCase();
   if (!v) return 'en-US';
 
-  // 완전 일치 우선
-  const hit = SUPPORTED.find((s) => s.toLowerCase() === v);
-  if (hit) return hit;
+  const ix = SUPPORTED_LOWER.indexOf(v);
+  if (ix >= 0) return SUPPORTED[ix] as SupportedLocale;
 
-  // 언어 코드만 들어온 경우 베이스 매핑
   const base = v.split('-')[0];
   switch (base) {
     case 'ko':
       return 'ko-KR';
     case 'zh':
-      return 'zh-CN'; // 기본 중국어는 간체(중국)
+      return 'zh-CN';
     case 'ja':
       return 'ja-JP';
     default:
@@ -24,42 +31,46 @@ export const normalizeToSupported = (input?: string): SupportedLocale => {
   }
 };
 
-// ---------- 타입 가드 ----------
-const isString = (v: unknown): v is string => typeof v === 'string';
-const isStringArray = (v: unknown): v is string[] => Array.isArray(v) && v.every(isString);
+/** 브라우저 선호언어 원본 */
+export const getBrowserLocaleRaw = (): string | undefined => {
+  if (typeof navigator === 'undefined') return undefined;
+  const n: unknown = navigator;
 
-// ---------- 브라우저 로캘 안전 추출 ----------
-export const getBrowserLocale = (): SupportedLocale => {
-  let cand: string | undefined;
+  const langs = (n as { languages?: unknown }).languages;
+  if (isStringArray(langs) && langs[0]) return langs[0];
 
-  if (typeof navigator !== 'undefined') {
-    const navUnknown: unknown = navigator;
+  const language = (n as { language?: unknown }).language;
+  if (isString(language)) return language;
 
-    // languages[0]
-    const langs = (navUnknown as { languages?: unknown }).languages;
-    if (!cand && isStringArray(langs) && langs.length > 0) {
-      cand = langs[0];
-    }
+  const userLanguage = (n as { userLanguage?: unknown }).userLanguage;
+  if (isString(userLanguage)) return userLanguage;
 
-    // language
-    const language = (navUnknown as { language?: unknown }).language;
-    if (!cand && isString(language)) {
-      cand = language;
-    }
+  const browserLanguage = (n as { browserLanguage?: unknown }).browserLanguage;
+  if (isString(browserLanguage)) return browserLanguage;
 
-    // userLanguage (IE/레거시)
-    const userLanguage = (navUnknown as { userLanguage?: unknown }).userLanguage;
-    if (!cand && isString(userLanguage)) {
-      cand = userLanguage;
-    }
+  return undefined;
+};
 
-    // browserLanguage (IE/레거시)
-    const browserLanguage = (navUnknown as { browserLanguage?: unknown }).browserLanguage;
-    if (!cand && isString(browserLanguage)) {
-      cand = browserLanguage;
-    }
+/** 정규화된 브라우저 로캘 */
+// export const getBrowserLocale = (): SupportedLocale => {
+//   const raw = getBrowserLocaleRaw();
+//   return normalizeToSupported(raw);
+// };
+
+/** 정책 우선순위 해석 */
+export const resolvePreferredLocales = (
+  hmmLocale?: string | null
+): {
+  uiLocale: SupportedLocale;
+  rawPreferred: string | null;
+  source: 'hmm' | 'browser' | 'fallback';
+} => {
+  if (isString(hmmLocale) && hmmLocale.trim()) {
+    return { uiLocale: normalizeToSupported(hmmLocale), rawPreferred: hmmLocale, source: 'hmm' };
   }
-
-  // cand가 없거나 이상하면 normalize에서 안전 처리
-  return normalizeToSupported(cand);
+  const raw = getBrowserLocaleRaw();
+  if (raw) {
+    return { uiLocale: normalizeToSupported(raw), rawPreferred: raw, source: 'browser' };
+  }
+  return { uiLocale: 'en-US', rawPreferred: null, source: 'fallback' };
 };

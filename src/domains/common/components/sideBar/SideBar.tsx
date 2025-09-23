@@ -1,8 +1,8 @@
+// src/domains/common/components/sideBar/SideBar.tsx
+
 import { Drawer, List, ListItem, styled, Typography, Button } from '@mui/material';
-import useUIStore from '@domains/common/ui/store/ui.store';
+import useUIStore, { SelectBottomSheetType } from '@domains/common/ui/store/ui.store';
 import { ColumnBox } from '@shared/ui/layoutUtilComponents';
-// eslint-disable no-warning-comments - 화면이 넓이지면 필요할수도 있어서 주석처리
-// import { CloseWIcon } from '@shared/icons/CloseWIcon';
 import { BookingIcon } from '@shared/icons/BookingIcon';
 import { InvoiceIcon } from '@shared/icons/InvoiceIcon';
 import { LocationIcon } from '@shared/icons/LocationIcon';
@@ -13,10 +13,15 @@ import { SerchargeIcon } from '@shared/icons/SerchargeIcon';
 import { WarningAmberIcon } from '@shared/icons/WarningAmberIcon';
 import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import useChatFlow from '@domains/common/hooks/useChatFlow';
+import { TestButton } from '@/domains/chatbot/components/button/TestButton';
+import useUserStore from '@domains/user/store/user.store';
+import type { SupportedLocale } from '@shared/locale/resolve';
 
 enum MenuGroup {
   BOT = 'bot',
   MANUAL = 'manual',
+  SUPPORT = 'support',
 }
 
 interface MenuItem {
@@ -29,30 +34,37 @@ interface MenuItem {
 interface Menu {
   BOT: MenuItem[];
   MANUAL: MenuItem[];
+  SUPPORT: MenuItem[];
 }
+
+const LOCALE_CYCLE = ['ko-KR', 'en-US', 'zh-CN', 'ja-JP'] as const;
 
 const SideBar = () => {
   // ┣━━━━━━━━━━━━━━━━ GlobalHooks ━━━━━━━━━━━━━━━━┫
   const { t } = useTranslation();
+  const { run } = useChatFlow();
 
+  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━━━┫
+  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
+  const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
+  const openBottomSheet = useUIStore((s) => s.setBottomSheetOpen);
+
+  const globalLocale = useUserStore((s) => s.globalLocale);
+  const setGlobalLocale = useUserStore((s) => s.setGlobalLocale);
+
+  // ┣━━━━━━━━━━━━━━━━ Menu Labels (i18n keys matched to JSON) ━━━━━━━━━━━━━┫
   const MenuInfo: Menu = {
     BOT: [
       {
-        id: 'sercharge',
-        title: t('sideBar.sercharge'),
-        icon: <SerchargeIcon />,
+        id: 'ai-route',
+        title: t('sideBar.ai-route'),
+        icon: <ScheduleIcon />,
         group: MenuGroup.BOT,
       },
       {
-        id: 'invoice',
-        title: t('sideBar.invoice'),
-        icon: <InvoiceIcon />,
-        group: MenuGroup.BOT,
-      },
-      {
-        id: 'booking',
-        title: t('sideBar.booking'),
-        icon: <BookingIcon />,
+        id: 'find-manager',
+        title: t('sideBar.find-manager'),
+        icon: <PersonSerachIcon />,
         group: MenuGroup.BOT,
       },
       {
@@ -62,23 +74,35 @@ const SideBar = () => {
         group: MenuGroup.BOT,
       },
       {
-        id: 'cargo-tracking',
-        title: t('sideBar.cargo-tracking'),
-        icon: <LocationIcon />,
+        id: 'sercharge',
+        title: t('sideBar.sercharge'),
+        icon: <SerchargeIcon />,
         group: MenuGroup.BOT,
       },
       {
-        id: 'find-manager',
-        title: t('sideBar.find-manager'),
-        icon: <PersonSerachIcon />,
+        id: 'manual-booking',
+        title: t('sideBar.manual-booking'),
+        icon: <BookingIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'invoice',
+        title: t('sideBar.invoice'),
+        icon: <InvoiceIcon />,
+        group: MenuGroup.BOT,
+      },
+      {
+        id: 'instant-quote',
+        title: t('sideBar.instant-quote'),
+        icon: <RequestQuoteIcon />,
         group: MenuGroup.BOT,
       },
     ],
     MANUAL: [
       {
-        id: 'hi-quote',
-        title: t('sideBar.hi-quote'),
-        icon: <RequestQuoteIcon />,
+        id: 'general-cargo',
+        title: t('sideBar.general-cargo'),
+        icon: <BookingIcon />,
         group: MenuGroup.MANUAL,
       },
       {
@@ -88,56 +112,85 @@ const SideBar = () => {
         group: MenuGroup.MANUAL,
       },
       {
-        id: 'manual-booking',
-        title: t('sideBar.manual-booking'),
-        icon: <BookingIcon />,
+        id: 'hi-quote',
+        title: t('sideBar.hi-quote'),
+        icon: <RequestQuoteIcon />,
         group: MenuGroup.MANUAL,
+      },
+      {
+        id: 'doc-forms',
+        title: t('sideBar.doc-forms'),
+        icon: <InvoiceIcon />,
+        group: MenuGroup.MANUAL,
+      },
+    ],
+    SUPPORT: [
+      {
+        id: 'connect-to-agent',
+        title: t('sideBar.connect-to-agent'),
+        icon: <PersonSerachIcon />,
+        group: MenuGroup.SUPPORT,
+      },
+      {
+        id: 'chat-history',
+        title: t('sideBar.chat-history'),
+        icon: <PersonSerachIcon />,
+        group: MenuGroup.SUPPORT,
+      },
+      {
+        id: 'faq',
+        title: t('sideBar.faq'),
+        icon: <LocationIcon />,
+        group: MenuGroup.SUPPORT,
+      },
+      {
+        id: 'user-lang',
+        title: t('sideBar.user-lang'),
+        icon: <ScheduleIcon />,
+        group: MenuGroup.SUPPORT,
       },
     ],
   };
 
-  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
-  const setIsSidebarOpen = useUIStore((s) => s.setIsSidebarOpen);
+  // ┣━━━━━━━━━━━━━━━━ Handlers ━━━━━━━━━━━━━━━━━━━┫
+  const onClose = () => setIsSidebarOpen(false);
 
-  const onClose = () => {
-    setIsSidebarOpen(false);
+  const speak = (utterLabel: string) => {
+    run(utterLabel, { simulate: true });
+    onClose();
   };
 
-  const onNavItemClick = (id: string) => {
-    const actions: Record<string, () => void> = {
-      sercharge: () => console.log('Sercharge clicked'),
-      invoice: () => console.log('Invoice clicked'),
-      booking: () => console.log('Booking clicked'),
-      schedule: () => console.log('Schedule clicked'),
-      'cargo-tracking': () => console.log('Cargo tracking clicked'),
-      'find-manager': () => console.log('Find a Manager clicked'),
-      'hi-quote': () => console.log('Hi quote clicked'),
-      'dg-oog': () => console.log('DG/OOG clicked'),
-      'manual-booking': () => console.log('Manual Booking clicked'),
-    };
+  const onChangeLangClick = () => {
+    const nowIdx = LOCALE_CYCLE.indexOf(globalLocale as (typeof LOCALE_CYCLE)[number]);
+    const next = LOCALE_CYCLE[
+      (nowIdx === -1 ? 0 : nowIdx + 1) % LOCALE_CYCLE.length
+    ] as SupportedLocale;
+    setGlobalLocale(next);
+  };
 
-    if (actions[id]) {
-      actions[id]();
+  const onSupportClick = (itemId: string, title: string) => {
+    if (itemId === 'user-lang') {
+      // 바텀시트 오픈 (언어 설정)
+      // openBottomSheet(SelectBottomSheetType.LANGUAGE);
       onClose();
+      return;
     }
+    speak(title);
   };
 
+  // ┣━━━━━━━━━━━━━━━━ Render ━━━━━━━━━━━━━━━━━━━━━┫
   return (
     <StSideBar anchor="left" open={isSidebarOpen} onClose={onClose}>
-      {/*<CloseButton onClick={onClose}>*/}
-      {/*  <CloseWIcon />*/}
-      {/*</CloseButton>*/}
-
       <SideBarNav>
-        {/* HMM Bot 메뉴 */}
+        {/* Bot */}
         <ColumnBox>
           <SideBarSectionTitle variant="subtitle2Bold" color="#7EE3F4">
-            HMM Bot
+            {t('sideBar.section.bot')}
           </SideBarSectionTitle>
           <SidebarNav>
             {MenuInfo.BOT.map((item) => (
               <SidebarNavItem key={item.id}>
-                <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
+                <SidebarNavButton onClick={() => speak(item.title)}>
                   {item.icon}
                   <SideBarNavTypography variant="body1">{item.title}</SideBarNavTypography>
                 </SidebarNavButton>
@@ -146,15 +199,29 @@ const SideBar = () => {
           </SidebarNav>
         </ColumnBox>
 
-        {/* Manual 메뉴 */}
+        {/* 규정/메뉴얼 */}
         <ColumnBox>
           <SideBarSectionTitle variant="subtitle2Bold" color="#C1B3FA">
-            Manual
+            {t('sideBar.section.manual')}
           </SideBarSectionTitle>
           <SidebarNav>
             {MenuInfo.MANUAL.map((item) => (
               <SidebarNavItem key={item.id}>
-                <SidebarNavButton onClick={() => onNavItemClick(item.id)}>
+                <SidebarNavButton onClick={() => speak(item.title)}>
+                  {item.icon}
+                  <SideBarNavTypography variant="body1">{item.title}</SideBarNavTypography>
+                </SidebarNavButton>
+              </SidebarNavItem>
+            ))}
+          </SidebarNav>
+        </ColumnBox>
+
+        {/* 지원/기타 */}
+        <ColumnBox>
+          <SidebarNav>
+            {MenuInfo.SUPPORT.map((item) => (
+              <SidebarNavItem key={item.id}>
+                <SidebarNavButton onClick={() => onSupportClick(item.id, item.title)}>
                   {item.icon}
                   <SideBarNavTypography variant="body1">{item.title}</SideBarNavTypography>
                 </SidebarNavButton>
@@ -163,6 +230,11 @@ const SideBar = () => {
           </SidebarNav>
         </ColumnBox>
       </SideBarNav>
+
+      {/* 테스트: 4개 로케일 로테이션 */}
+      <TestButton onClick={onChangeLangClick}>
+        TESTBUTTON 언어바꾸기 (현재: {globalLocale})
+      </TestButton>
 
       <SideBarFooterTypo variant="body3Light">
         2025 HMM All
@@ -175,9 +247,7 @@ const SideBar = () => {
 export default SideBar;
 
 const StSideBar = styled(Drawer)(({ theme }) => ({
-  '& .MuiBackdrop-root': {
-    background: 'transparent',
-  },
+  '& .MuiBackdrop-root': { background: 'transparent' },
   '& .MuiPaper-root': {
     background: theme.palette.primary.main,
     minWidth: '300px',
@@ -190,18 +260,7 @@ const StSideBar = styled(Drawer)(({ theme }) => ({
   },
 }));
 
-// eslint-disable no-warning-comments - 화면이 넓이지면 필요할수도 있어서 주석처리
-// const CloseButton = styled(IconButton)({
-//   position: 'absolute',
-//   top: '19px',
-//   right: '8px',
-//   width: '48px',
-//   height: '48px',
-// });
-
-const SideBarNav = styled(ColumnBox)({
-  gap: '48px',
-});
+const SideBarNav = styled(ColumnBox)({ gap: '48px' });
 
 const SideBarSectionTitle = styled(Typography)((props: { color: string }) => ({
   marginBottom: '8px',
@@ -214,9 +273,7 @@ const SidebarNav = styled(List)({
   gap: '12px',
 });
 
-const SidebarNavItem = styled(ListItem)({
-  padding: '0',
-});
+const SidebarNavItem = styled(ListItem)({ padding: 0 });
 
 const SidebarNavButton = styled(Button)({
   gap: '8px',
@@ -227,11 +284,7 @@ const SidebarNavButton = styled(Button)({
   minWidth: 'auto',
   width: '100%',
   justifyContent: 'flex-start',
-
-  '& svg': {
-    width: '20px',
-    height: '20px',
-  },
+  '& svg': { width: 20, height: 20 },
 });
 
 const SideBarNavTypography = styled(Typography)(({ theme }) => ({
