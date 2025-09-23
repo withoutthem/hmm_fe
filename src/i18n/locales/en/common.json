@@ -1,20 +1,26 @@
 {
   "test": "This is a test",
   "globalMenu": {
-    "toStart": "Go To Start",
+    "toStart": "Back to Start",
     "connectToAgent": "Connect to Agent (Live Chat)",
     "chatHistory": "Chat History",
     "goToFAQ": "Go to FAQ"
   },
   "sideBar": {
-    "sercharge": "Sercharge",
-    "invoice": "Invoice",
-    "booking": "Booking",
-    "schedule": "Schedule",
-    "cargo-tracking": "Cargo Tracking",
+    "ai-route": "AI Route Suggestion",
     "find-manager": "Find a Manager",
-    "hi-quote": "Hi Quote",
-    "dg-oog": "DG/OOG",
-    "manual-booking": "Booking/BL"
+    "schedule": "Schedule / Cut-off",
+    "sercharge": "Rates & Surcharge",
+    "manual-booking": "Booking/BL",
+    "invoice": "Invoice",
+    "instant-quote": "Instant Freight Quote",
+    "general-cargo": "General Cargo",
+    "dg-oog": "DG / OOG",
+    "hi-quote": "Hi-Quote",
+    "doc-forms": "Document Templates",
+    "connect-to-agent": "Connect to Agent (Live Chat)",
+    "chat-history": "Chat History",
+    "faq": "FAQ",
+    "user-lang": "Language Settings"
   }
 }

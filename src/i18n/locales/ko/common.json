@@ -7,14 +7,20 @@
     "goToFAQ": "FAQ 바로가기"
   },
   "sideBar": {
-    "sercharge": "Sercharge",
+    "ai-route": "AI 경로 추천",
+    "find-manager": "담당자 찾기",
+    "schedule": "Schedule / Cut-off",
+    "sercharge": "요율 및 Surcharge",
+    "manual-booking": "Booking/BL",
     "invoice": "Invoice",
-    "booking": "Booking",
-    "schedule": "Schedule",
-    "cargo-tracking": "Cargo Tracking",
-    "find-manager": "Find a Manager",
-    "hi-quote": "Hi quote",
-    "dg-oog": "DG/OOG",
-    "manual-booking": "Booking/BL"
+    "instant-quote": "즉시 운임 견적 조회",
+    "general-cargo": "일반 화물",
+    "dg-oog": "위험물/특수화물",
+    "hi-quote": "Hi-Quote",
+    "doc-forms": "문서 양식 모음",
+    "connect-to-agent": "상담사연결 (라이브챗)",
+    "chat-history": "상담 이력",
+    "faq": "FAQ",
+    "user-lang": "사용자 언어 설정"
   }
 }

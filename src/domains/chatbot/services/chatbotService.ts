@@ -7,11 +7,15 @@ export interface Suggestion {
   body: string;
 }
 
+export interface DaptalkSendMessageDto {
+  message: string;
+}
+
 export const chatbotService = {
   getSuggestions: async (): Promise<Suggestion[]> => {
     const res = await GET<Suggestion[]>('https://jsonplaceholder.typicode.com/posts');
     return res.data;
   },
 
-  sendDapTalkMessage: async (message: string): Promise<void> => {},
+  sendDapTalkMessage: async (message: DaptalkSendMessageDto): Promise<void> => {},
 };

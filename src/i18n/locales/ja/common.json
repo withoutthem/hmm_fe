@@ -1,3 +1,26 @@
 {
-  "test": "これはテストです"
+  "test": "テストです",
+  "globalMenu": {
+    "toStart": "最初に戻る",
+    "connectToAgent": "オペレーターに接続（ライブチャット）",
+    "chatHistory": "チャット履歴",
+    "goToFAQ": "FAQ へ"
+  },
+  "sideBar": {
+    "ai-route": "AI ルート提案",
+    "find-manager": "担当者を探す",
+    "schedule": "スケジュール / カットオフ",
+    "sercharge": "料金・サーチャージ",
+    "manual-booking": "Booking/BL",
+    "invoice": "インボイス",
+    "instant-quote": "即時見積り",
+    "general-cargo": "一般貨物",
+    "dg-oog": "危険物 / 特殊貨物",
+    "hi-quote": "Hi-Quote",
+    "doc-forms": "書類テンプレート",
+    "connect-to-agent": "オペレーターに接続（ライブチャット）",
+    "chat-history": "チャット履歴",
+    "faq": "FAQ",
+    "user-lang": "言語設定"
+  }
 }

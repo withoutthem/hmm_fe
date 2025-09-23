@@ -1,3 +1,26 @@
 {
-  "test": "这是一个测试"
+  "test": "这是测试",
+  "globalMenu": {
+    "toStart": "返回首页",
+    "connectToAgent": "连接客服（在线客服）",
+    "chatHistory": "聊天记录",
+    "goToFAQ": "进入 FAQ"
+  },
+  "sideBar": {
+    "ai-route": "AI 路线推荐",
+    "find-manager": "查找负责人",
+    "schedule": "船期 / 截关",
+    "sercharge": "费率与附加费",
+    "manual-booking": "订舱/提单（Booking/BL）",
+    "invoice": "发票",
+    "instant-quote": "即时运价询价",
+    "general-cargo": "普通货物",
+    "dg-oog": "危险品 / 超限货",
+    "hi-quote": "Hi-Quote",
+    "doc-forms": "单证模板",
+    "connect-to-agent": "连接客服（在线客服）",
+    "chat-history": "聊天记录",
+    "faq": "常见问题（FAQ）",
+    "user-lang": "语言设置"
+  }
 }
