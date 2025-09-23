@@ -1,3 +1,4 @@
+// src/pages/MainPage.tsx
 import { Box, IconButton, styled } from '@mui/material';
 import { Virtuoso, type VirtuosoHandle } from 'react-virtuoso';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -5,7 +6,10 @@ import useMessageStore, { Sender, type TalkMessage } from '@domains/common/ui/st
 import useAutoScroll from '@domains/common/hooks/useAutoScroll';
 import PublishFloating from '@pages/test/PublishFloating';
 import RenderTypeOrchestrator from '@domains/chatbot/components/chats/orchestrators/RenderTypeOrchestrator';
-import { scrollLastMessageUserThenBottom } from '@domains/common/utils/utils';
+import {
+  scrollLastMessageUserThenBottom,
+  scrollToBottomWithAnimation, // ✅ 추가
+} from '@domains/common/utils/utils'; // ✅ 동일 파일에서 가져옴
 
 import ic_scroll_to_bottom from '@assets/img/icon/ic_scroll_to_bottom.svg';
 
@@ -22,32 +26,23 @@ const renderChatMessage =
   );
 
 const MainPage = () => {
-  // ┣━━━━━━━━━━━━━━━━ Stores ━━━━━━━━━━━━━━━━━━━┫
   const messages = useMessageStore((s) => s.messages);
 
-  // ┣━━━━━━━━━━━━━━━━ States ━━━━━━━━━━━━━━━━━━━┫
   const [lastDiffHeight, setLastDiffHeight] = useState<number | null>(null);
   const [atBottom, setAtBottom] = useState(true);
 
-  // ┣━━━━━━━━━━━━━━━━ Refs ━━━━━━━━━━━━━━━━━━━┫
   const messageContentRef = useRef<HTMLDivElement | null>(null);
   const virtuosoRef = useRef<VirtuosoHandle | null>(null);
 
-  // ┣━━━━━━━━━━━━━━━━ Hooks ━━━━━━━━━━━━━━━━━━━┫
-  // 높이 보정 계산만 담당시키세요. (강제 스크롤 금지)
-  useAutoScroll({
-    messageContentRef,
-    setLastDiffHeight,
-  });
+  useAutoScroll({ messageContentRef, setLastDiffHeight });
 
-  // ❶ 커스텀 애니메이션 트리거 (맨위/중간/맨아래 모두 동일하게 동작)
+  // 사용자 메시지 추가 시: 한 번만 “내 메시지 → 바닥” 정렬
   const scrollUserThenBottom = useCallback(async () => {
     const lastIndex = messages.length - 1;
     if (lastIndex < 0) return;
     await scrollLastMessageUserThenBottom(virtuosoRef.current, lastIndex);
   }, [messages.length]);
 
-  // ❷ "사용자 메시지 추가" 시, 항상 트리거
   useEffect(() => {
     if (messages.length === 0) return;
     const last = messages[messages.length - 1];
@@ -55,6 +50,18 @@ const MainPage = () => {
       void scrollUserThenBottom();
     }
   }, [messages.length, messages, scrollUserThenBottom]);
+
+  // ✅ 스크롤-투-바텀 버튼 클릭 핸들러
+  const onClickScrollToBottom = useCallback(() => {
+    scrollToBottomWithAnimation();
+    // 애니메이션이 끝나도 atBottomStateChange 이벤트가 즉시 안 올 수 있어,
+    // 한 틱 뒤에 상태를 스냅샷 하여 보정합니다(시각적 깜빡임 방지).
+    requestAnimationFrame(() => {
+      // Virtuoso가 바닥으로 내려갔으면 이 콜백이 곧 트리거되지만,
+      // 바로 버튼을 숨기고 싶다면 아래 한 줄을 유지하세요.
+      setAtBottom(true);
+    });
+  }, []);
 
   return (
     <MainPageContainer className={'main_page'}>
@@ -65,18 +72,20 @@ const MainPage = () => {
           ref={virtuosoRef}
           overscan={10}
           itemContent={renderChatMessage(messages, lastDiffHeight, atBottom)}
-          followOutput={false} // ✅ Virtuoso 자동 스크롤 OFF (충돌 방지)
+          followOutput={false}
           atBottomStateChange={setAtBottom}
           computeItemKey={(index, item) => item.messageId ?? `${item.sender}-${index}`}
-          increaseViewportBy={{ top: 0, bottom: 600 }} // 하단 프리로딩
+          increaseViewportBy={{ top: 0, bottom: 600 }}
         />
       </MessagesContainer>
 
       {/* TEST */}
       <PublishFloating />
+
+      {/* ✅ 바닥 아닐 때만 노출 & 클릭 시 부드럽게 하단 이동 */}
       {messages.length > 0 && !atBottom && (
-        <ScrollToBottomButton>
-          <Box component={'img'} src={ic_scroll_to_bottom} />
+        <ScrollToBottomButton aria-label="최신 메시지로 이동" onClick={onClickScrollToBottom}>
+          <Box component={'img'} src={ic_scroll_to_bottom} alt="" />
         </ScrollToBottomButton>
       )}
     </MainPageContainer>
