@@ -3,8 +3,6 @@
 import MarkDownRenderer from '../renderers/formats/MarkdownRenderer';
 import AdaptiveCardRenderer from '../renderers/formats/AdaptiveCardRenderer';
 import BusinessTypeOrchestrator from './BusinessTypeOrchestrator';
-
-// (테스트용 샘플 데이터) 실제 메시지에 adaptiveCardInfo 있으면 그걸 사용
 import { onAdaptiveCardSubmit } from '@domains/common/utils/utils';
 import { parkingData } from '@domains/test/testData/parkingData';
 import { MessageType, type TalkMessage } from '@domains/common/ui/store/message.store';

@@ -46,5 +46,5 @@
 
     "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["src", "node_modules/@types/node/globals.d.ts", "node_modules/@types/jest/index.d.ts"]
 }
